@@ -1,0 +1,20 @@
+# 0xRIP
+
+![0xRIP Logo](public/logo.svg)
+
+**0xRIP** — 数字死亡与数字灵魂的仪式与墓地。
+
+---
+
+
+
+## License
+
+本项目采用 **Apache License 2.0** 开源协议。详见 [LICENSE](LICENSE)。
+
+```
+Copyright 2025 The 0xRIP Project
+Licensed under the Apache License, Version 2.0.
+```
+
+---
