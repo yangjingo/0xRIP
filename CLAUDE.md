@@ -77,6 +77,6 @@ All new assets and interactions must follow **CYBER NECROPOLIS** style:
 
 ## Key Files
 
-- `docs/ui-interaction.md` — Complete interaction specification (required reading for new features)
+- `docs/README.md` — Doc index. **Frontend**: `docs/frontend/ui.md` (interaction spec), `docs/frontend/architecture.md`. **Backend**: `docs/backend/ai-integration.md`. **Story**: `docs/story/README.md`, `docs/story/soul.md`, `docs/story/logo.md`.
 - `src/main.ts` — All game logic, Three.js setup, command processing
 - `src/style.css` — Visual system, do not modify core color values
