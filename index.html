@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>0xRIP - 数字墓地 | Cyber Necropolis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- 加载动画 -->
+  <div id="loader" class="loader">
+    <div class="loader-content">
+      <div class="loader-logo glitch" data-text="0xRIP">0xRIP</div>
+      <div class="loader-bar">
+        <div class="loader-progress"></div>
+      </div>
+      <div class="loader-text">INITIALIZING CYBER NECROPOLIS...</div>
+    </div>
+  </div>
+
+  <!-- 主应用 -->
+  <div id="app" class="hidden">
+    <!-- Three.js 画布容器 -->
+    <div id="canvas-container"></div>
+    
+    <!-- 扫描线效果 -->
+    <div class="scanlines"></div>
+    
+    <!-- 故障效果覆盖层 -->
+    <div id="glitch-overlay" class="glitch-overlay"></div>
+    
+    <!-- 粒子尘埃 -->
+    <div class="dust-particles"></div>
+
+    <!-- HUD 界面 -->
+    <div class="hud">
+      <!-- 顶部状态栏 -->
+      <header class="hud-header">
+        <div class="hud-brand">
+          <span class="brand-logo">◉</span>
+          <span class="brand-text glitch" data-text="0xRIP">0xRIP</span>
+        </div>
+        <div class="hud-stats">
+          <div class="stat-item">
+            <span class="stat-label">SOULS</span>
+            <span id="soul-count" class="stat-value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">TIME</span>
+            <span id="time-display" class="stat-value">00:00:00</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">FPS</span>
+            <span id="fps-display" class="stat-value">60</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- 埋葬仪式向导（步骤 1～4） -->
+      <div id="burial-ritual-panel" class="burial-ritual-panel hidden">
+        <div class="ritual-inner">
+          <div class="ritual-header">
+            <span class="ritual-title">◈ 埋葬仪式</span>
+            <button id="ritual-close" class="panel-close" aria-label="关闭">×</button>
+          </div>
+          <div class="ritual-body">
+            <!-- 步骤 1：选择棺材类型 -->
+            <div id="ritual-step-1" class="ritual-step">
+              <p class="ritual-step-desc">选择棺材类型</p>
+              <div class="coffin-options">
+                <button type="button" class="coffin-btn" data-type="zip">[1] 标准压缩包 (.zip棺)</button>
+                <button type="button" class="coffin-btn" data-type="nft">[2] 区块链永存 (NFT碑)</button>
+                <button type="button" class="coffin-btn" data-type="quantum">[3] 量子纠缠态 (薛定谔棺)</button>
+                <button type="button" class="coffin-btn" data-type="blackhole">[4] 黑洞存储</button>
+              </div>
+              <button type="button" id="ritual-step-1-next" class="cyber-btn btn-primary ritual-next" disabled>下一步</button>
+            </div>
+            <!-- 步骤 2：墓志铭 -->
+            <div id="ritual-step-2" class="ritual-step hidden">
+              <p class="ritual-step-desc">撰写墓志铭（最多 64 字）</p>
+              <div class="epitaph-row">
+                <input type="text" id="ritual-epitaph" class="cyber-input epitaph-input" maxlength="64" placeholder="例：while(alive) { love++; }" />
+                <button type="button" id="ritual-epitaph-auto" class="cyber-btn btn-small">自动生成</button>
+              </div>
+              <button type="button" id="ritual-step-2-next" class="cyber-btn btn-primary ritual-next">下一步</button>
+            </div>
+            <!-- 步骤 3：确认死亡 -->
+            <div id="ritual-step-3" class="ritual-step hidden">
+              <p class="ritual-step-desc">一旦落棺，它就不再属于桌面。你确定吗？</p>
+              <div id="ritual-death-preview" class="death-preview"></div>
+              <button type="button" id="ritual-confirm-death" class="cyber-btn btn-danger">确认死亡</button>
+            </div>
+            <!-- 步骤 4：上传记忆与资料 -->
+            <div id="ritual-step-4" class="ritual-step hidden">
+              <p class="ritual-step-desc">为此灵魂补充记忆与资料（可跳过）</p>
+              <div class="memory-upload">
+                <label class="upload-zone" id="upload-zone">
+                  <input type="file" id="ritual-file-txt" accept=".txt,text/plain" multiple hidden />
+                  <span>拖放或点击上传 .txt</span>
+                </label>
+                <input type="url" id="ritual-url" class="cyber-input url-input" placeholder="填入网页 URL（讣告、纪念页…）" />
+              </div>
+              <div class="ritual-step-4-actions">
+                <button type="button" id="ritual-skip-memory" class="cyber-btn btn-secondary">稍后再说</button>
+                <button type="button" id="ritual-done" class="cyber-btn btn-primary">完成</button>
+              </div>
+            </div>
+          </div>
+          <div class="ritual-footer">
+            <span id="ritual-step-indicator">步骤 1/4</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 墓碑详情面板 -->
+      <div id="grave-detail-panel" class="grave-detail-panel hidden">
+        <div class="panel-header">
+          <span class="panel-title">⚡ SOUL DATA</span>
+          <button id="close-detail" class="panel-close">×</button>
+        </div>
+        <div class="panel-content">
+          <div class="detail-id" id="detail-id">0x00000000</div>
+          <h2 class="detail-name" id="detail-name">UNKNOWN</h2>
+          <p class="detail-epitaph" id="detail-epitaph"></p>
+          <div class="detail-meta">
+            <span class="meta-item">
+              <span class="meta-label">BURIED</span>
+              <span id="detail-date">--/--/----</span>
+            </span>
+            <span class="meta-item">
+              <span class="meta-label">COORDS</span>
+              <span id="detail-coords">0, 0</span>
+            </span>
+          </div>
+          <div class="detail-timeline">
+            <h4 class="timeline-title">此人的一生</h4>
+            <div id="detail-timeline-content" class="timeline-content">
+              <p class="timeline-placeholder">暂无时间线数据。在埋葬时上传记忆与资料，或稍后为该碑补充上传。</p>
+            </div>
+          </div>
+          <div class="detail-actions">
+            <button id="btn-mourn" class="cyber-btn btn-primary">🌸 MOURN</button>
+            <button id="btn-summon" class="cyber-btn btn-secondary">👻 SUMMON</button>
+            <button id="btn-decay" class="cyber-btn btn-danger">☠️ DECAY</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部终端 -->
+      <div class="hud-terminal">
+        <div class="terminal-header">
+          <span class="terminal-title">◈ TERMINAL v9.9.9</span>
+          <div class="terminal-controls">
+            <span class="control-dot active"></span>
+            <span class="control-dot"></span>
+            <span class="control-dot"></span>
+          </div>
+        </div>
+        <div class="terminal-body">
+          <div id="terminal-output" class="terminal-output"></div>
+          <div class="terminal-input-line">
+            <span class="terminal-prompt">root@0xRIP:~$</span>
+            <input 
+              type="text" 
+              id="terminal-input" 
+              class="terminal-input" 
+              placeholder="输入 HELP 查看指令..." 
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <span class="terminal-cursor"></span>
+          </div>
+        </div>
+        <div class="terminal-shortcuts">
+          <button class="shortcut-btn" data-cmd="BURY">BURY</button>
+          <button class="shortcut-btn" data-cmd="SUMMON">SUMMON</button>
+          <button class="shortcut-btn" data-cmd="LIST">LIST</button>
+          <button class="shortcut-btn" data-cmd="HELP">HELP</button>
+          <button class="shortcut-btn" data-cmd="DOOM">DOOM</button>
+        </div>
+      </div>
+
+      <!-- 侧边提示 -->
+      <aside class="hud-sidebar">
+        <div class="sidebar-section">
+          <h3 class="sidebar-title">⌨ COMMANDS</h3>
+          <ul class="command-list">
+            <li><span class="cmd-name">BURY</span><span class="cmd-desc">埋葬新数据</span></li>
+            <li><span class="cmd-name">SUMMON</span><span class="cmd-desc">召唤灵魂</span></li>
+            <li><span class="cmd-name">MOURN</span><span class="cmd-desc">献花悼念</span></li>
+            <li><span class="cmd-name">LIST</span><span class="cmd-desc">列表查看</span></li>
+            <li><span class="cmd-name">DECAY</span><span class="cmd-desc">删除数据</span></li>
+            <li><span class="cmd-name">HELP</span><span class="cmd-desc">帮助信息</span></li>
+            <li><span class="cmd-name">DOOM</span><span class="cmd-desc">???</span></li>
+          </ul>
+        </div>
+        <div class="sidebar-section">
+          <h3 class="sidebar-title">🖱 CONTROLS</h3>
+          <ul class="control-list">
+            <li>WASD / 鼠标拖拽 → 移动</li>
+            <li>滚轮 → 缩放</li>
+            <li>点击墓碑 → 查看详情</li>
+            <li>F → 全屏切换</li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- 底部工具栏 -->
+      <footer class="hud-footer">
+        <div class="footer-status">
+          <span class="status-indicator online"></span>
+          <span class="status-text">SYSTEM ONLINE</span>
+        </div>
+        <div class="footer-coords" id="footer-coords">X: 0.00 | Z: 0.00</div>
+      </footer>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>

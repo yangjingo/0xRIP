@@ -4,7 +4,8 @@
 
 **0xRIP** — 数字死亡与数字灵魂的仪式与墓地。
 
-文档按 **frontend**（UI、架构图）、**backend**（AI 接入）、**story**（故事、灵魂、Logo）组织，见 [docs/](docs/README.md)。
+文档按 **frontend**（UI、架构图）、**backend**（AI 接入）、**story**（故事、灵魂、Logo）组织，见 [docs/](docs/README.md)。  
+API 配置：复制 [.env.example](.env.example) 为 `.env` 并填入 Key，详见 [docs/backend/env.md](docs/backend/env.md)。
 
 ---
 
