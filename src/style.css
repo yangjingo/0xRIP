@@ -380,6 +380,10 @@ html, body {
   transform: translateY(-50%) translateX(100px);
 }
 
+.grave-detail-panel:not(.hidden) {
+  animation: panel-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .panel-header {
   display: flex;
   justify-content: space-between;
@@ -528,6 +532,10 @@ html, body {
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-cyan), 0 0 80px rgba(0, 243, 255, 0.15);
   overflow: hidden;
+}
+
+.burial-ritual-panel:not(.hidden) .ritual-inner {
+  animation: ritual-fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .ritual-header {
@@ -719,6 +727,11 @@ html, body {
 .cyber-btn.btn-primary:hover {
   background: rgba(0, 243, 255, 0.15);
   box-shadow: var(--shadow-cyan);
+  animation: energy-pulse 1s ease-in-out infinite;
+}
+
+.cyber-btn.btn-primary:active {
+  transform: scale(0.98);
 }
 
 .cyber-btn.btn-secondary {
@@ -1138,6 +1151,55 @@ html, body {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
   75% { transform: translateX(5px); }
+}
+
+/* 面板进入动画 */
+@keyframes panel-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(100%) translateY(-50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(-50%);
+  }
+}
+
+/* 仪式面板淡入 */
+@keyframes ritual-fade-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 按钮点击波纹 */
+@keyframes btn-ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* 能量脉冲效果 */
+@keyframes energy-pulse {
+  0% {
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(0, 243, 255, 0.8), 0 0 60px rgba(255, 0, 255, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+  }
 }
 
 /* 打字机效果光标 */
