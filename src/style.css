@@ -6,35 +6,46 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;700&display=swap');
 
 :root {
-  /* 核心配色 - 赛博朋克霓虹 */
-  --neon-cyan: #00f3ff;
-  --neon-pink: #ff00ff;
-  --neon-purple: #b300ff;
+  /* 希卡科技配色 */
+  --color-bg-deep: #0a0e1a;
+  --color-bg-panel: #1a2035;
+  --color-bg-card: #232b45;
+  --color-accent-gold: #c9a227;
+  --color-accent-cyan: #4fd1c5;
+  --color-accent-orange: #f5a623;
+  --color-text-primary: #e8e4d9;
+  --color-text-secondary: #6b7280;
+  --color-text-muted: #4a5568;
+
+  /* 保留兼容性别名 */
+  --neon-cyan: var(--color-accent-cyan);
+  --neon-pink: var(--color-accent-gold);
+  --neon-purple: var(--color-accent-orange);
   --neon-green: #00ff88;
   --neon-orange: #ff6600;
   --neon-red: #ff0033;
-  
+
   /* 深色主题 */
-  --dark-bg: #0a0a0f;
-  --dark-surface: #111118;
-  --dark-elevated: #1a1a24;
+  --dark-bg: var(--color-bg-deep);
+  --dark-surface: var(--color-bg-panel);
+  --dark-elevated: var(--color-bg-card);
   --dark-border: #222233;
-  
+
   /* 文字颜色 */
-  --text-primary: #e0e0ff;
-  --text-secondary: #8888aa;
-  --text-muted: #555577;
-  
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
+
   /* 渐变 */
-  --gradient-cyan: linear-gradient(135deg, #00f3ff 0%, #0088ff 100%);
-  --gradient-pink: linear-gradient(135deg, #ff00ff 0%, #ff0088 100%);
-  --gradient-purple: linear-gradient(135deg, #b300ff 0%, #6600ff 100%);
-  
+  --gradient-cyan: linear-gradient(135deg, #4fd1c5 0%, #0088ff 100%);
+  --gradient-pink: linear-gradient(135deg, #c9a227 0%, #ff0088 100%);
+  --gradient-purple: linear-gradient(135deg, #f5a623 0%, #6600ff 100%);
+
   /* 阴影 */
-  --shadow-cyan: 0 0 20px rgba(0, 243, 255, 0.4);
-  --shadow-pink: 0 0 20px rgba(255, 0, 255, 0.4);
-  --shadow-glow: 0 0 30px rgba(0, 243, 255, 0.2);
-  
+  --shadow-cyan: 0 0 20px rgba(79, 209, 197, 0.4);
+  --shadow-pink: 0 0 20px rgba(201, 162, 39, 0.4);
+  --shadow-glow: 0 0 30px rgba(79, 209, 197, 0.2);
+
   /* 尺寸 */
   --border-radius: 4px;
   --transition-fast: 0.15s ease;
