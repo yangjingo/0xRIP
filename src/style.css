@@ -1311,3 +1311,97 @@ body.glitch-active {
   bottom: -6px;
   right: -6px;
 }
+
+/* ===== 希卡符文动画 ===== */
+
+/* 符文发光脉冲 */
+@keyframes sheikah-glow {
+  0%, 100% {
+    opacity: 0.6;
+    filter: drop-shadow(0 0 5px var(--color-accent-gold));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 15px var(--color-accent-gold));
+  }
+}
+
+/* 符文旋转 */
+@keyframes sheikah-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 激活闪光 */
+@keyframes sheikah-activate {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+/* 打字机效果 */
+@keyframes typewriter {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* 面板滑入 */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* 应用动画的类 */
+.animate-glow {
+  animation: sheikah-glow 2s ease-in-out infinite;
+}
+
+.animate-rotate {
+  animation: sheikah-rotate 10s linear infinite;
+}
+
+.animate-activate {
+  animation: sheikah-activate 0.5s ease-out;
+}
+
+.animate-slide-right {
+  animation: slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slide-left {
+  animation: slide-in-left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
