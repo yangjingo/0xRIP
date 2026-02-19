@@ -1206,3 +1206,105 @@ body.glitch-active {
   75% { filter: hue-rotate(270deg); transform: translate(-3px, 3px); }
   100% { filter: hue-rotate(360deg); transform: translate(0, 0); }
 }
+
+/* ===== 希卡风格基础组件 ===== */
+
+/* 希卡面板 */
+.sheikah-panel {
+  background: linear-gradient(135deg,
+    rgba(26, 32, 53, 0.95) 0%,
+    rgba(10, 14, 26, 0.98) 100%);
+  border: 1px solid var(--color-accent-gold);
+  border-radius: 12px;
+  box-shadow:
+    0 0 20px rgba(201, 162, 39, 0.1),
+    inset 0 1px 0 rgba(201, 162, 39, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+/* 希卡按钮 */
+.sheikah-btn {
+  background: transparent;
+  border: 1px solid var(--color-accent-gold);
+  color: var(--color-accent-gold);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sheikah-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(201, 162, 39, 0.3) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease;
+}
+
+.sheikah-btn:hover::before {
+  width: 200%;
+  height: 200%;
+}
+
+.sheikah-btn:hover {
+  background: rgba(201, 162, 39, 0.1);
+  box-shadow: 0 0 15px rgba(201, 162, 39, 0.3);
+}
+
+.sheikah-btn:active {
+  transform: scale(0.98);
+}
+
+/* 希卡输入框 */
+.sheikah-input {
+  background: rgba(10, 14, 26, 0.8);
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  color: var(--color-text-primary);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.sheikah-input:focus {
+  outline: none;
+  border-color: var(--color-accent-gold);
+  box-shadow: 0 0 10px rgba(201, 162, 39, 0.2);
+}
+
+.sheikah-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* 希卡装饰边框 */
+.sheikah-border {
+  position: relative;
+}
+
+.sheikah-border::before,
+.sheikah-border::after {
+  content: '◇';
+  position: absolute;
+  color: var(--color-accent-gold);
+  font-size: 12px;
+}
+
+.sheikah-border::before {
+  top: -6px;
+  left: -6px;
+}
+
+.sheikah-border::after {
+  bottom: -6px;
+  right: -6px;
+}
