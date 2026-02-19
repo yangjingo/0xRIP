@@ -205,41 +205,6 @@ html, body {
 }
 
 /* =============================================
-   扫描线效果
-   ============================================= */
-.scanlines {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 50;
-  background: linear-gradient(
-    to bottom,
-    transparent 50%,
-    rgba(0, 0, 0, 0.15) 50%
-  );
-  background-size: 100% 4px;
-  animation: scanline-scroll 8s linear infinite;
-}
-
-.scanlines::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 0, 0, 0.03),
-    rgba(0, 255, 0, 0.01),
-    rgba(0, 0, 255, 0.03)
-  );
-  pointer-events: none;
-}
-
-@keyframes scanline-scroll {
-  0% { background-position: 0 0; }
-  100% { background-position: 0 100%; }
-}
-
-/* =============================================
    Glitch 故障效果
    ============================================= */
 .glitch-overlay {
