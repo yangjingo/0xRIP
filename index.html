@@ -148,37 +148,28 @@
         </div>
       </div>
 
-      <!-- 底部终端 -->
-      <div class="hud-terminal">
-        <div class="terminal-header">
-          <span class="terminal-title">◈ TERMINAL v9.9.9</span>
-          <div class="terminal-controls">
-            <span class="control-dot active"></span>
-            <span class="control-dot"></span>
-            <span class="control-dot"></span>
+      <!-- 希卡终端 -->
+      <div id="terminal">
+        <div class="terminal-container">
+          <div class="terminal-header">
+            <span class="logo">0xRIP TERMINAL</span>
+            <div class="terminal-controls">
+              <span class="control minimize">─</span>
+              <span class="control maximize">□</span>
+            </div>
           </div>
-        </div>
-        <div class="terminal-body">
-          <div id="terminal-output" class="terminal-output"></div>
-          <div class="terminal-input-line">
-            <span class="terminal-prompt">root@0xRIP:~$</span>
-            <input 
-              type="text" 
-              id="terminal-input" 
-              class="terminal-input" 
-              placeholder="输入 HELP 查看指令..." 
-              autocomplete="off"
-              spellcheck="false"
-            />
-            <span class="terminal-cursor"></span>
+          <div class="terminal-tabs">
+            <button class="terminal-tab active" data-mode="cli">命令行</button>
+            <button class="terminal-tab" data-mode="gui">图形界面</button>
           </div>
-        </div>
-        <div class="terminal-shortcuts">
-          <button class="shortcut-btn" data-cmd="BURY">BURY</button>
-          <button class="shortcut-btn" data-cmd="SUMMON">SUMMON</button>
-          <button class="shortcut-btn" data-cmd="LIST">LIST</button>
-          <button class="shortcut-btn" data-cmd="HELP">HELP</button>
-          <button class="shortcut-btn" data-cmd="DOOM">DOOM</button>
+          <div class="terminal-output" id="terminal-output">
+            <div class="output-line">◇ 欢迎来到 0xRIP 数字墓地</div>
+            <div class="output-line">◇ 输入 HELP 查看可用命令</div>
+          </div>
+          <div class="terminal-input-container">
+            <span class="terminal-prompt">></span>
+            <input type="text" class="terminal-input" id="terminal-input" placeholder="输入命令..." autocomplete="off">
+          </div>
         </div>
       </div>
 
