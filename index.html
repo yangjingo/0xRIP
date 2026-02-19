@@ -34,29 +34,30 @@
     <!-- 粒子尘埃 -->
     <div class="dust-particles"></div>
 
+    <!-- 状态栏 -->
+    <div id="status-bar">
+      <div class="status-brand">0xRIP</div>
+      <div class="status-stats">
+        <div class="stat-item">
+          <span class="stat-icon">◇</span>
+          <span class="stat-label">SOULS</span>
+          <span class="stat-value" id="stat-souls">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon">◇</span>
+          <span class="stat-label">TIME</span>
+          <span class="stat-value" id="stat-time">00:00</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-icon">◇</span>
+          <span class="stat-label">FPS</span>
+          <span class="stat-value" id="stat-fps">60</span>
+        </div>
+      </div>
+    </div>
+
     <!-- HUD 界面 -->
     <div class="hud">
-      <!-- 顶部状态栏 -->
-      <header class="hud-header">
-        <div class="hud-brand">
-          <span class="brand-logo">◉</span>
-          <span class="brand-text glitch" data-text="0xRIP">0xRIP</span>
-        </div>
-        <div class="hud-stats">
-          <div class="stat-item">
-            <span class="stat-label">SOULS</span>
-            <span id="soul-count" class="stat-value">0</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">TIME</span>
-            <span id="time-display" class="stat-value">00:00:00</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">FPS</span>
-            <span id="fps-display" class="stat-value">60</span>
-          </div>
-        </div>
-      </header>
 
       <!-- 埋葬仪式向导（步骤 1～4） -->
       <div id="burial-ritual-panel" class="burial-ritual-panel hidden">

@@ -312,69 +312,68 @@ html, body {
 }
 
 /* =============================================
-   顶部状态栏
+   希卡状态栏
    ============================================= */
-.hud-header {
-  grid-column: 1 / -1;
+#status-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1.25rem;
-  background: rgba(10, 10, 15, 0.8);
-  border: 1px solid var(--dark-border);
-  border-radius: var(--border-radius);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  padding: 0 20px;
+  background: linear-gradient(180deg,
+    rgba(10, 14, 26, 0.95) 0%,
+    rgba(10, 14, 26, 0.8) 100%);
+  border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+  z-index: 200;
 }
 
-.hud-brand {
+.status-brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 10px;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 18px;
+  color: var(--color-accent-gold);
 }
 
-.brand-logo {
-  font-size: 1.5rem;
-  color: var(--neon-cyan);
-  animation: pulse-glow 2s ease-in-out infinite;
+.status-brand::before {
+  content: '◇';
+  font-size: 20px;
 }
 
-@keyframes pulse-glow {
-  0%, 100% { text-shadow: 0 0 10px var(--neon-cyan); }
-  50% { text-shadow: 0 0 25px var(--neon-cyan), 0 0 40px var(--neon-cyan); }
-}
-
-.brand-text {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--neon-cyan);
-  letter-spacing: 0.15em;
-}
-
-.hud-stats {
+.status-stats {
   display: flex;
-  gap: 2rem;
+  align-items: center;
+  gap: 30px;
 }
 
 .stat-item {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
 }
 
 .stat-label {
-  font-size: 0.625rem;
-  color: var(--text-muted);
-  letter-spacing: 0.15em;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 10px;
 }
 
 .stat-value {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--neon-cyan);
-  text-shadow: var(--shadow-cyan);
+  color: var(--color-text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+}
+
+.stat-icon {
+  color: var(--color-accent-gold);
+  font-size: 14px;
 }
 
 /* =============================================
