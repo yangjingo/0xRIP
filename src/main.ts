@@ -4,6 +4,10 @@
  */
 
 import * as THREE from 'three';
+import { EffectComposer } from 'three-stdlib';
+import { RenderPass } from 'three-stdlib';
+import { ShaderPass } from 'three-stdlib';
+import { pixelateVertexShader, pixelateFragmentShader } from './shaders/pixelate';
 import './style.css';
 
 // =============================================
@@ -43,6 +47,7 @@ let lastMouseX = 0;
 // =============================================
 // Three.js 场景
 // =============================================
+let composer: EffectComposer;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(DARK_BG);
 scene.fog = new THREE.FogExp2(DARK_BG, 0.02);
@@ -52,6 +57,23 @@ const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 document.getElementById('canvas-container')?.appendChild(renderer.domElement);
+
+// 像素化后处理
+composer = new EffectComposer(renderer);
+const renderPass = new RenderPass(scene, camera);
+composer.addPass(renderPass);
+
+const pixelatePass = new ShaderPass({
+  uniforms: {
+    tDiffuse: { value: null },
+    pixelSize: { value: 4.0 },
+    resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+    colorDepth: { value: 32.0 }
+  },
+  vertexShader: pixelateVertexShader,
+  fragmentShader: pixelateFragmentShader
+});
+composer.addPass(pixelatePass);
 
 // =============================================
 // 灯光系统
@@ -660,8 +682,8 @@ function animate() {
   const timeStr = now.toLocaleTimeString('en-US', { hour12: false });
   const timeEl = document.getElementById('time-display');
   if (timeEl) timeEl.textContent = timeStr;
-  
-  renderer.render(scene, camera);
+
+  composer.render();
 }
 animate();
 
@@ -670,4 +692,5 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  composer.setSize(window.innerWidth, window.innerHeight);
 });
