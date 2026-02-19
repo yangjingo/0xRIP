@@ -3,7 +3,7 @@
    赛博数字墓地 - 全新视觉系统
    ============================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Quicksand:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
   /* 希卡科技配色 */
@@ -63,8 +63,19 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: var(--dark-bg);
-  font-family: 'Share Tech Mono', 'Noto Sans SC', monospace;
+  font-family: 'Quicksand', sans-serif;
   color: var(--text-primary);
+  line-height: 1.6;
+}
+
+/* 标题字体 */
+.font-display {
+  font-family: 'Cinzel Decorative', serif;
+}
+
+/* 等宽字体（终端用） */
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
 }
 
 /* =============================================
