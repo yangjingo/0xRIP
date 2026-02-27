@@ -54,9 +54,8 @@ flowchart TB
         G[场景 C 招魂仪式]
     end
 
-    subgraph Backend["数据与后端"]
-        H[墓碑 id · people/ · 记忆与资料]
-        I[LLM / VLM / Voice · 时间线加工]
+    subgraph Data["数据层"]
+        H[墓碑 id · 记忆与资料]
     end
 
     A --> B

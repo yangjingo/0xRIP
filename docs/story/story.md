@@ -81,6 +81,5 @@
 | [soul.md](./soul.md) | 灵魂与数字死亡概念、people 目录 |
 | [logo.md](./logo.md) | Logo 使用规范 |
 
-→ 交互与视觉规范：[Frontend - UI](../frontend/ui.md)  
-→ 流程图与架构图：[Frontend - 架构图](../frontend/architecture.md)  
-→ 后端与 AI 接入：[Backend - AI 接入](../backend/ai-integration.md)
+→ 交互与视觉规范：[Frontend - UI](../frontend/ui.md)
+→ 流程图与架构图：[Frontend - 架构图](../frontend/architecture.md)

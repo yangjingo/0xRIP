@@ -376,4 +376,3 @@ def summon_corrupted():
 | [Story](./story/README.md) | 叙事版故事 |
 | [Soul](./story/soul.md) | 灵魂与数字死亡概念 |
 | [Frontend - UI](./frontend/ui.md) | 交互与视觉规范 |
-| [Backend - AI 接入](./backend/ai-integration.md) | AI 使用边界 |

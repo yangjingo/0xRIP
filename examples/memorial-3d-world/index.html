@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>0xRIP — 3D Memorial World</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --mv-bg: #fafafa;
+      --mv-white: #ffffff;
+      --mv-gray-light: #e8e8e8;
+      --mv-gray: #c0c0c0;
+      --mv-gray-dark: #808080;
+      --mv-charcoal: #404040;
+      --mv-text: #1a1a1a;
+      --mv-text-dim: #666666;
+      --sheikah-blue: #00d4ff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Space Mono', 'Cormorant Garamond', monospace;
+      overflow: hidden;
+      background: var(--mv-bg);
+      color: var(--mv-text);
+    }
+
+    /* 3D World fullscreen */
+    #world-container {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+    }
+
+    /* Top brand */
+    .brand-header {
+      position: fixed;
+      top: 30px;
+      left: 40px;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .brand-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      color: var(--mv-charcoal);
+    }
+
+    .brand-subtitle {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--mv-gray-dark);
+      margin-top: 4px;
+    }
+
+    /* Bottom Sheikah Slate panel */
+    .sheikah-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(255,255,255,0.98), rgba(255,255,255,0.95));
+      border-top: 1px solid var(--mv-gray-light);
+      backdrop-filter: blur(20px);
+      z-index: 100;
+      transform: translateY(calc(100% - 70px));
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sheikah-panel.expanded {
+      transform: translateY(0);
+    }
+
+    .panel-handle {
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-bottom: 1px solid var(--mv-gray-light);
+      position: relative;
+    }
+
+    .panel-handle::before {
+      content: '';
+      width: 40px;
+      height: 3px;
+      background: var(--mv-gray);
+      border-radius: 2px;
+      transition: background 0.3s;
+    }
+
+    .panel-handle:hover::before {
+      background: var(--sheikah-blue);
+    }
+
+    .sheikah-eye {
+      position: absolute;
+      left: 40px;
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--mv-gray-dark);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      transition: all 0.3s;
+    }
+
+    .sheikah-eye::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px;
+      height: 6px;
+      background: var(--mv-charcoal);
+      border-radius: 50%;
+      transition: all 0.3s;
+    }
+
+    .sheikah-panel.expanded .sheikah-eye {
+      border-color: var(--sheikah-blue);
+      box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+    }
+
+    .sheikah-panel.expanded .sheikah-eye::after {
+      background: var(--sheikah-blue);
+    }
+
+    .panel-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-style: italic;
+      color: var(--mv-text-dim);
+    }
+
+    .panel-content {
+      height: 380px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .panel-section {
+      padding: 24px 30px;
+      border-right: 1px solid var(--mv-gray-light);
+      overflow-y: auto;
+    }
+
+    .panel-section:last-child {
+      border-right: none;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--mv-text-dim);
+    }
+
+    .section-header::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--sheikah-blue);
+      border-radius: 50%;
+    }
+
+    /* Grave list */
+    .grave-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .grave-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: var(--mv-bg);
+      border: 1px solid transparent;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .grave-item:hover, .grave-item.active {
+      background: var(--mv-white);
+      border-color: var(--sheikah-blue);
+      box-shadow: 0 2px 12px rgba(0, 212, 255, 0.1);
+    }
+
+    .grave-marker {
+      width: 10px;
+      height: 10px;
+      background: var(--mv-gray);
+      border-radius: 50%;
+      transition: all 0.3s;
+    }
+
+    .grave-item:hover .grave-marker, .grave-item.active .grave-marker {
+      background: var(--sheikah-blue);
+      box-shadow: 0 0 8px var(--sheikah-blue);
+    }
+
+    .grave-info { flex: 1; }
+    .grave-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      color: var(--mv-charcoal);
+      margin-bottom: 2px;
+    }
+    .grave-id {
+      font-size: 9px;
+      color: var(--mv-text-dim);
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* Detail card */
+    .detail-card {
+      background: var(--mv-white);
+      border: 1px solid var(--mv-gray-light);
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .detail-id {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--mv-text-dim);
+      margin-bottom: 6px;
+    }
+    .detail-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      color: var(--mv-charcoal);
+      margin-bottom: 10px;
+    }
+    .detail-epitaph {
+      font-size: 12px;
+      color: var(--mv-text-dim);
+      font-style: italic;
+      line-height: 1.5;
+      padding: 10px;
+      background: var(--mv-bg);
+      border-radius: 4px;
+    }
+
+    /* Action buttons */
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .action-btn {
+      padding: 12px;
+      background: var(--mv-white);
+      border: 1px solid var(--mv-gray-light);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mv-text-dim);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .action-btn:hover {
+      border-color: var(--sheikah-blue);
+      color: var(--sheikah-blue);
+    }
+    .action-btn.primary {
+      background: var(--mv-charcoal);
+      border-color: var(--mv-charcoal);
+      color: var(--mv-white);
+    }
+    .action-btn.primary:hover {
+      background: var(--sheikah-blue);
+      border-color: var(--sheikah-blue);
+    }
+
+    /* Tooltip */
+    .tooltip {
+      position: fixed;
+      padding: 10px 14px;
+      background: var(--mv-charcoal);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--mv-white);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s;
+      z-index: 200;
+    }
+    .tooltip.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .controls-hint {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 20px;
+      font-size: 11px;
+      color: var(--mv-text-dim);
+      z-index: 50;
+      opacity: 0.8;
+    }
+
+    /* Language switcher */
+    .lang-switcher {
+      position: absolute;
+      right: 40px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .lang-btn {
+      padding: 6px 12px;
+      background: transparent;
+      border: 1px solid var(--mv-gray-light);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 11px;
+      color: var(--mv-text-dim);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .lang-btn:hover {
+      border-color: var(--sheikah-blue);
+      color: var(--sheikah-blue);
+    }
+
+    .lang-btn.active {
+      background: var(--mv-charcoal);
+      border-color: var(--mv-charcoal);
+      color: var(--mv-white);
+    }
+
+    .lang-btn.active:hover {
+      background: var(--sheikah-blue);
+      border-color: var(--sheikah-blue);
+    }
+
+    .lang-divider {
+      width: 1px;
+      height: 16px;
+      background: var(--mv-gray-light);
+    }
+  </style>
+</head>
+<body>
+  <div id="world-container"></div>
+
+  <div class="brand-header">
+    <div class="brand-title">0xRIP</div>
+    <div class="brand-subtitle">Digital Memorial</div>
+  </div>
+
+  <div class="controls-hint">Drag to rotate · Scroll to zoom · Click monument</div>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <!-- Bottom panel -->
+  <div class="sheikah-panel" id="sheikahPanel">
+    <div class="panel-handle" onclick="togglePanel()">
+      <div class="sheikah-eye"></div>
+      <div class="panel-title" id="panelTitle">Sheikah Slate</div>
+      <div class="lang-switcher" onclick="event.stopPropagation()">
+        <button class="lang-btn active" id="lang-en" onclick="switchLanguage('en')">EN</button>
+        <div class="lang-divider"></div>
+        <button class="lang-btn" id="lang-zh" onclick="switchLanguage('zh')">中</button>
+      </div>
+    </div>
+
+    <div class="panel-content">
+      <div class="panel-section">
+        <div class="section-header">Monuments</div>
+        <div class="grave-list" id="graveList"></div>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-header">Selected</div>
+        <div id="detailContainer">
+          <div style="text-align:center;padding:40px;color:var(--mv-gray)">
+            <div style="font-size:32px;margin-bottom:12px">🪦</div>
+            <div style="font-size:12px">Select a monument</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-header">Actions</div>
+        <div class="action-grid">
+          <button class="action-btn" onclick="uploadMemory()">Upload</button>
+          <button class="action-btn primary" onclick="summonSpirit()">Summon</button>
+          <button class="action-btn" onclick="resetCamera()">Reset View</button>
+          <button class="action-btn" onclick="autoRotate()">Auto Rotate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    // ============================================
+    // Monument Valley style 3D world
+    // ============================================
+
+    const API_BASE = 'http://localhost:3000/api';
+
+    const Colors = {
+      white: 0xffffff,
+      lightGray: 0xf0f0f0,
+      midGray: 0xd0d0d0,
+      darkGray: 0x909090,
+      charcoal: 0x505050,
+      black: 0x1a1a1a,
+      sheikahBlue: 0x00d4ff,
+      shadow: 0xc0c0c0,
+    };
+
+    // ============================================
+    // Internationalization
+    // ============================================
+    const i18n = {
+      en: {
+        brandSubtitle: 'Digital Memorial',
+        panelTitle: 'Sheikah Slate',
+        monuments: 'Monuments',
+        selected: 'Selected',
+        actions: 'Actions',
+        selectMonument: 'Select a monument',
+        upload: 'Upload',
+        summon: 'Summon',
+        resetView: 'Reset View',
+        autoRotate: 'Auto Rotate',
+        controlsHint: 'Drag to rotate · Scroll to zoom · Click monument',
+        uploadPrompt: 'Please select a monument first',
+        summonPrompt: 'Summoning spirit from',
+        uploadSuccess: 'Memory uploaded',
+        uploadFailed: 'Upload failed',
+        sampleData: [
+          { id: '0x13F29F2E', name: 'Memory of Spring', epitaph: 'while(alive) { love++; }' },
+          { id: '0xA7B3C9D1', name: 'The Last Conversation', epitaph: 'Conversation ended at line 1024' },
+          { id: '0xF8E2D4C5', name: 'Unsent Letters', epitaph: 'Drafts folder full, words unsent' },
+          { id: '0xB5A1C9E3', name: 'Digital Echo', epitaph: '404 Not Found' },
+          { id: '0xC3D4E5F6', name: 'Winter Dreams', epitaph: 'Frozen in time' },
+          { id: '0xD5E6F7A8', name: 'Summer Rain', epitaph: 'Washed away' },
+        ]
+      },
+      zh: {
+        brandSubtitle: '数字纪念碑',
+        panelTitle: '希卡石板',
+        monuments: '纪念碑',
+        selected: '已选择',
+        actions: '操作',
+        selectMonument: '选择一个纪念碑',
+        upload: '上传',
+        summon: '召唤',
+        resetView: '重置视角',
+        autoRotate: '自动旋转',
+        controlsHint: '拖拽旋转 · 滚轮缩放 · 点击纪念碑',
+        uploadPrompt: '请先选择一个纪念碑',
+        summonPrompt: '正在召唤灵魂来自',
+        uploadSuccess: '记忆已上传',
+        uploadFailed: '上传失败',
+        sampleData: [
+          { id: '0x13F29F2E', name: '春日记忆', epitaph: 'while(alive) { love++; }' },
+          { id: '0xA7B3C9D1', name: '最后的对话', epitaph: '对话结束于第1024行' },
+          { id: '0xF8E2D4C5', name: '未寄出的信', epitaph: '草稿箱已满，话语未寄' },
+          { id: '0xB5A1C9E3', name: '数字回声', epitaph: '404 未找到' },
+          { id: '0xC3D4E5F6', name: '冬日梦境', epitaph: '冻结在时间中' },
+          { id: '0xD5E6F7A8', name: '夏日 rain', epitaph: '被雨水冲走' },
+        ]
+      }
+    };
+
+    let currentLang = localStorage.getItem('0xrip-lang') || 'en';
+
+    function t(key) {
+      return i18n[currentLang][key] || i18n['en'][key];
+    }
+
+    function switchLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('0xrip-lang', lang);
+
+      // Update button states
+      document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+      document.getElementById('lang-zh').classList.toggle('active', lang === 'zh');
+
+      // Update all text elements
+      document.querySelector('.brand-subtitle').textContent = t('brandSubtitle');
+      document.getElementById('panelTitle').textContent = t('panelTitle');
+      document.querySelector('.controls-hint').textContent = t('controlsHint');
+
+      // Update section headers
+      const headers = document.querySelectorAll('.section-header');
+      if (headers[0]) headers[0].textContent = t('monuments');
+      if (headers[1]) headers[1].textContent = t('selected');
+      if (headers[2]) headers[2].textContent = t('actions');
+
+      // Update buttons
+      const buttons = document.querySelectorAll('.action-btn');
+      if (buttons[0]) buttons[0].textContent = t('upload');
+      if (buttons[1]) buttons[1].textContent = t('summon');
+      if (buttons[2]) buttons[2].textContent = t('resetView');
+      if (buttons[3]) buttons[3].textContent = t('autoRotate');
+
+      // Update empty state
+      const emptyState = document.querySelector('#detailContainer > div');
+      if (emptyState && !selectedGrave) {
+        emptyState.querySelector('div:last-child').textContent = t('selectMonument');
+      }
+
+      // Update grave list with new names
+      updateGraveList(getSampleData());
+
+      // Update selected grave display if any
+      if (selectedGrave) {
+        updateSelectedGrave(selectedGrave.userData);
+      }
+    }
+
+    function getSampleData() {
+      return t('sampleData').map((item, index) => ({
+        ...item,
+        date: '2026.02.27',
+        memoryCount: [3, 7, 12, 5, 2, 4][index]
+      }));
+    }
+
+    // Initialize language on load
+    document.addEventListener('DOMContentLoaded', () => {
+      switchLanguage(currentLang);
+    });
+
+    let scene, camera, renderer, controls;
+    let raycaster, mouse;
+    let graves = [];
+    let ghost;
+    let selectedGrave = null;
+    let isAutoRotating = false;
+
+    // Initialize
+    async function init() {
+      init3D();
+      createMonumentValleyWorld();
+      await loadGraves();
+      animate();
+    }
+
+    function init3D() {
+      const container = document.getElementById('world-container');
+
+      // Scene with fog for depth
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xf5f5f5);
+      scene.fog = new THREE.Fog(0xf5f5f5, 30, 120);
+
+      // Perspective camera - 3D
+      camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.set(40, 35, 40);
+
+      // Renderer
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      container.appendChild(renderer.domElement);
+
+      // Controls
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.minDistance = 15;
+      controls.maxDistance = 100;
+      controls.maxPolarAngle = Math.PI / 2.1;
+
+      // Lighting
+      setupLighting();
+
+      // Interaction
+      raycaster = new THREE.Raycaster();
+      mouse = new THREE.Vector2();
+
+      window.addEventListener('resize', onWindowResize);
+      renderer.domElement.addEventListener('click', onClick);
+      renderer.domElement.addEventListener('mousemove', onMouseMove);
+    }
+
+    function setupLighting() {
+      // Ambient light
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      scene.add(ambientLight);
+
+      // Main light - from above
+      const sunLight = new THREE.DirectionalLight(0xffffff, 0.5);
+      sunLight.position.set(30, 50, 20);
+      sunLight.castShadow = true;
+      sunLight.shadow.mapSize.width = 4096;
+      sunLight.shadow.mapSize.height = 4096;
+      sunLight.shadow.camera.near = 0.1;
+      sunLight.shadow.camera.far = 200;
+      sunLight.shadow.camera.left = -60;
+      sunLight.shadow.camera.right = 60;
+      sunLight.shadow.camera.top = 60;
+      sunLight.shadow.camera.bottom = -60;
+      sunLight.shadow.radius = 8;
+      scene.add(sunLight);
+
+      // Fill light
+      const fillLight = new THREE.DirectionalLight(0xf5f5f5, 0.3);
+      fillLight.position.set(-20, 20, -20);
+      scene.add(fillLight);
+    }
+
+    // Create Monument Valley style 3D world
+    function createMonumentValleyWorld() {
+      const worldGroup = new THREE.Group();
+
+      // ========== Central main platform ==========
+      const mainPlatform = createPlatform({
+        width: 20,
+        height: 4,
+        depth: 20,
+        x: 0, y: -2, z: 0,
+        color: Colors.white,
+      });
+      worldGroup.add(mainPlatform);
+
+      // ========== North high platform (connected by stairs) ==========
+      const northStairs = createStairs({
+        steps: 8,
+        width: 4,
+        rise: 0.5,
+        run: 1.5,
+        x: 0, y: 0, z: -12,
+        direction: new THREE.Vector3(0, 1, -1),
+      });
+      worldGroup.add(northStairs);
+
+      const northPlatform = createPlatform({
+        width: 15,
+        height: 3,
+        depth: 15,
+        x: 0, y: 4, z: -25,
+        color: Colors.lightGray,
+      });
+      worldGroup.add(northPlatform);
+
+      // ========== East floating island ==========
+      const eastBridge = createBridge({
+        width: 3,
+        length: 12,
+        x: 16, y: 2, z: 5,
+        rotation: -0.2,
+      });
+      worldGroup.add(eastBridge);
+
+      const eastIsland = createPlatform({
+        width: 12,
+        height: 6,
+        depth: 12,
+        x: 28, y: 1, z: 8,
+        color: Colors.white,
+      });
+      worldGroup.add(eastIsland);
+
+      // East island steps
+      const eastSteps = createSteppedPlatform({
+        steps: 3,
+        width: 8,
+        x: 28, y: 4, z: 8,
+      });
+      worldGroup.add(eastSteps);
+
+      // ========== West spiral structure ==========
+      const westSpiral = createSpiralStructure({
+        radius: 8,
+        height: 12,
+        x: -25, y: 0, z: 0,
+      });
+      worldGroup.add(westSpiral);
+
+      // West top platform
+      const westTop = createPlatform({
+        width: 10,
+        height: 2,
+        depth: 10,
+        x: -25, y: 13, z: 0,
+        color: Colors.lightGray,
+      });
+      worldGroup.add(westTop);
+
+      // ========== South lower area ==========
+      const southRamp = createRamp({
+        width: 6,
+        length: 15,
+        height: -4,
+        x: 0, y: -2, z: 18,
+      });
+      worldGroup.add(southRamp);
+
+      const southPlatform = createPlatform({
+        width: 18,
+        height: 4,
+        depth: 18,
+        x: 0, y: -6, z: 35,
+        color: Colors.midGray,
+      });
+      worldGroup.add(southPlatform);
+
+      // ========== Decorative landmarks ==========
+      // Central obelisk
+      const obelisk = createObelisk({
+        height: 12,
+        x: 0, y: 2, z: 0,
+      });
+      worldGroup.add(obelisk);
+
+      // Arch structure
+      const arch = createArch({
+        width: 10,
+        height: 8,
+        x: -15, y: 0, z: 20,
+      });
+      worldGroup.add(arch);
+
+      // Floating geometry decorations
+      createFloatingGeometry(worldGroup);
+
+      scene.add(worldGroup);
+
+      // Ghost
+      createGhost();
+
+      // Particle effects
+      createParticles();
+    }
+
+    // Create base platform
+    function createPlatform({ width, height, depth, x, y, z, color }) {
+      const group = new THREE.Group();
+      group.position.set(x, y, z);
+
+      // Main body
+      const geometry = new THREE.BoxGeometry(width, height, depth);
+      const material = new THREE.MeshLambertMaterial({ color });
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      group.add(mesh);
+
+      // Edge highlight
+      const edgeGeo = new THREE.EdgesGeometry(geometry);
+      const edgeMat = new THREE.LineBasicMaterial({
+        color: Colors.midGray,
+        transparent: true,
+        opacity: 0.3,
+      });
+      const edges = new THREE.LineSegments(edgeGeo, edgeMat);
+      group.add(edges);
+
+      return group;
+    }
+
+    // Create stairs
+    function createStairs({ steps, width, rise, run, x, y, z, direction }) {
+      const group = new THREE.Group();
+      group.position.set(x, y, z);
+
+      for (let i = 0; i < steps; i++) {
+        const stepGeo = new THREE.BoxGeometry(width, rise, run);
+        const stepMat = new THREE.MeshLambertMaterial({
+          color: i % 2 === 0 ? Colors.white : Colors.lightGray,
+        });
+        const step = new THREE.Mesh(stepGeo, stepMat);
+
+        step.position.set(
+          direction.x * i * run * 0.5,
+          i * rise,
+          direction.z * i * run * 0.5 - 5
+        );
+        step.castShadow = true;
+        step.receiveShadow = true;
+        group.add(step);
+      }
+
+      return group;
+    }
+
+    // Create bridge
+    function createBridge({ width, length, x, y, z, rotation }) {
+      const group = new THREE.Group();
+      group.position.set(x, y, z);
+      group.rotation.y = rotation;
+
+      const geometry = new THREE.BoxGeometry(length, 1, width);
+      const material = new THREE.MeshLambertMaterial({ color: Colors.lightGray });
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      group.add(mesh);
+
+      // Railings
+      [-1, 1].forEach(side => {
+        const railGeo = new THREE.BoxGeometry(length, 0.5, 0.3);
+        const rail = new THREE.Mesh(railGeo, material);
+        rail.position.set(0, 0.5, side * (width / 2 - 0.3));
+        group.add(rail);
+      });
+
+      return group;
+    }
+
+    // Create stepped platform
+    function createSteppedPlatform({ steps, width, x, y, z }) {
+      const group = new THREE.Group();
+      group.position.set(x, y, z);
+
+      for (let i = 0; i < steps; i++) {
+        const size = width - i * 2;
+        const stepGeo = new THREE.BoxGeometry(size, 1.5, size);
+        const stepMat = new THREE.MeshLambertMaterial({
+          color: Colors.white,
+        });
+        const step = new THREE.Mesh(stepGeo, stepMat);
+        step.position.y = i * 1.5;
+        step.castShadow = true;
+        step.receiveShadow = true;
+        group.add(step);
+      }
+
+      return group;
+    }
+
+    // Create spiral structure
+    function createSpiralStructure({ radius, height, x, y, z }) {
+      const group = new THREE.Group();
+      group.position.set(x, y, z);
+
+      const segments = 12;
+      for (let i = 0; i < segments; i++) {
+        const angle = (i / segments) * Math.PI * 2;
+        const h = (i / segments) * height;
+
+        const platform = new THREE.Mesh(
+          new THREE.CylinderGeometry(3, 3, 0.5, 6),
+          new THREE.MeshLambertMaterial({ color: Colors.lightGray, flatShading: true })
+        );
+
+        platform.position.set(
+          Math.cos(angle) * radius,
+          h,
+          Math.sin(angle) * radius
+        );
+        platform.castShadow = true;
+        platform.receiveShadow = true;
+        group.add(platform);
+
+        // Connecting pillars
+        if (i < segments - 1) {
+          const pillar = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.3, 0.3, height / segments + 0.5, 6),
+            new THREE.MeshLambertMaterial({ color: Colors.midGray })
+          );
+          pillar.position.copy(platform.position);
+          pillar.position.y += height / segments / 2;
+          group.add(pillar);
+        }
+      }
+
+      // Central pillar
+      const centerPillar = new THREE.Mesh(
+        new THREE.CylinderGeometry(1, 1.5, height, 8),
+        new THREE.MeshLambertMaterial({ color: Colors.white })
+      );
+      centerPillar.position.y = height / 2;
+      centerPillar.castShadow = true;
+      group.add(centerPillar);
+
+      return group;
+    }
+
+    // Create ramp
+    function createRamp({ width, length, height, x, y, z }) {
+      const group = new THREE.Group();
+      group.position.set(x, y, z);
+
+      const geometry = new THREE.BoxGeometry(width, 1, length);
+      const material = new THREE.MeshLambertMaterial({ color: Colors.lightGray });
+      const mesh = new THREE.Mesh(geometry, material);
+
+      // Rotate to form ramp
+      mesh.rotation.x = Math.atan2(-height, length);
+      mesh.position.y = height / 2;
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      group.add(mesh);
+
+      return group;
+    }
+
+    // Create obelisk
+    function createObelisk({ height, x, y, z }) {
+      const group = new THREE.Group();
+      group.position.set(x, y, z);
+
+      // Main body
+      const body = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.8, 1.5, height * 0.7, 4),
+        new THREE.MeshLambertMaterial({ color: Colors.white, flatShading: true })
+      );
+      body.position.y = height * 0.35;
+      body.castShadow = true;
+      group.add(body);
+
+      // Top
+      const top = new THREE.Mesh(
+        new THREE.ConeGeometry(0.8, height * 0.3, 4),
+        new THREE.MeshLambertMaterial({ color: Colors.charcoal, flatShading: true })
+      );
+      top.position.y = height * 0.85;
+      top.castShadow = true;
+      group.add(top);
+
+      return group;
+    }
+
+    // Create arch
+    function createArch({ width, height, x, y, z }) {
+      const group = new THREE.Group();
+      group.position.set(x, y, z);
+
+      const pillarWidth = 2;
+      const pillarDepth = 2;
+
+      // Left pillar
+      const leftPillar = new THREE.Mesh(
+        new THREE.BoxGeometry(pillarWidth, height, pillarDepth),
+        new THREE.MeshLambertMaterial({ color: Colors.white })
+      );
+      leftPillar.position.set(-width / 2 + pillarWidth / 2, height / 2, 0);
+      leftPillar.castShadow = true;
+      leftPillar.receiveShadow = true;
+      group.add(leftPillar);
+
+      // Right pillar
+      const rightPillar = new THREE.Mesh(
+        new THREE.BoxGeometry(pillarWidth, height, pillarDepth),
+        new THREE.MeshLambertMaterial({ color: Colors.white })
+      );
+      rightPillar.position.set(width / 2 - pillarWidth / 2, height / 2, 0);
+      rightPillar.castShadow = true;
+      rightPillar.receiveShadow = true;
+      group.add(rightPillar);
+
+      // Beam
+      const beam = new THREE.Mesh(
+        new THREE.BoxGeometry(width, pillarWidth, pillarDepth),
+        new THREE.MeshLambertMaterial({ color: Colors.lightGray })
+      );
+      beam.position.set(0, height + pillarWidth / 2, 0);
+      beam.castShadow = true;
+      group.add(beam);
+
+      return group;
+    }
+
+    // Create floating geometry decorations
+    function createFloatingGeometry(parent) {
+      const geometries = [
+        new THREE.TetrahedronGeometry(1),
+        new THREE.OctahedronGeometry(0.8),
+        new THREE.BoxGeometry(1.2, 1.2, 1.2),
+      ];
+
+      for (let i = 0; i < 20; i++) {
+        const geo = geometries[i % 3];
+        const mat = new THREE.MeshLambertMaterial({
+          color: i % 2 === 0 ? Colors.midGray : Colors.lightGray,
+          transparent: true,
+          opacity: 0.6,
+          flatShading: true,
+        });
+        const mesh = new THREE.Mesh(geo, mat);
+
+        // Random position
+        const angle = (i / 20) * Math.PI * 2;
+        const radius = 35 + Math.random() * 15;
+        mesh.position.set(
+          Math.cos(angle) * radius,
+          10 + Math.random() * 20,
+          Math.sin(angle) * radius
+        );
+
+        mesh.userData = {
+          rotationSpeed: (Math.random() - 0.5) * 0.02,
+          floatSpeed: 0.5 + Math.random() * 0.5,
+          floatOffset: Math.random() * Math.PI * 2,
+        };
+
+        parent.add(mesh);
+
+        // Animation
+        mesh.userData.animate = (time) => {
+          mesh.rotation.x += mesh.userData.rotationSpeed;
+          mesh.rotation.y += mesh.userData.rotationSpeed;
+          mesh.position.y += Math.sin(time * mesh.userData.floatSpeed + mesh.userData.floatOffset) * 0.02;
+        };
+      }
+    }
+
+    // Create grave
+    function createGrave(data, position) {
+      const group = new THREE.Group();
+      group.position.copy(position);
+
+      const height = 3.5;
+
+      // Main body
+      const body = new THREE.Mesh(
+        new THREE.BoxGeometry(2, height, 2),
+        new THREE.MeshLambertMaterial({ color: Colors.white })
+      );
+      body.position.y = height / 2;
+      body.castShadow = true;
+      body.receiveShadow = true;
+      group.add(body);
+
+      // Top
+      const top = new THREE.Mesh(
+        new THREE.CylinderGeometry(1.2, 1.4, 0.4, 8),
+        new THREE.MeshLambertMaterial({ color: Colors.charcoal, flatShading: true })
+      );
+      top.position.y = height + 0.2;
+      top.castShadow = true;
+      group.add(top);
+
+      // Selection indicator
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(2.5, 3, 32),
+        new THREE.MeshBasicMaterial({
+          color: Colors.sheikahBlue,
+          transparent: true,
+          opacity: 0,
+          side: THREE.DoubleSide,
+        })
+      );
+      ring.rotation.x = -Math.PI / 2;
+      ring.name = 'selector';
+      group.add(ring);
+
+      group.userData = {
+        type: 'grave',
+        ...data,
+        originalY: position.y,
+      };
+
+      return group;
+    }
+
+    async function loadGraves() {
+      try {
+        const response = await fetch(`${API_BASE}/graves`);
+        const result = await response.json();
+
+        if (result.success && result.data.length > 0) {
+          placeGraves(result.data);
+        } else {
+          // Use translated sample data
+          placeGraves(getSampleData());
+        }
+      } catch (error) {
+        console.error('Failed to load graves:', error);
+        // Use translated sample data on error
+        placeGraves(getSampleData());
+      }
+    }
+
+    function placeGraves(data) {
+      // Grave positions (distributed across different levels)
+      const positions = [
+        new THREE.Vector3(0, 2, 0),          // Beside central obelisk
+        new THREE.Vector3(-8, 4, -20),       // North platform
+        new THREE.Vector3(8, 4, -20),        // North platform
+        new THREE.Vector3(28, 7, 8),         // East island top level
+        new THREE.Vector3(-25, 15, 0),       // West spiral top
+        new THREE.Vector3(0, -2, 35),        // South lower area
+      ];
+
+      data.forEach((item, index) => {
+        const pos = positions[index % positions.length];
+        // Add random offset
+        pos.x += (Math.random() - 0.5) * 4;
+        pos.z += (Math.random() - 0.5) * 4;
+
+        const grave = createGrave(item, pos);
+        graves.push(grave);
+        scene.add(grave);
+
+        // Entrance animation
+        grave.scale.set(0, 0, 0);
+        animateScale(grave, 1, 800 + index * 150);
+      });
+
+      updateGraveList(data);
+    }
+
+    function createGhost() {
+      const group = new THREE.Group();
+
+      // Core
+      const core = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(0.6, 1),
+        new THREE.MeshLambertMaterial({ color: Colors.darkGray, flatShading: true })
+      );
+      group.add(core);
+
+      // Glow
+      const glow = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(1.2, 2),
+        new THREE.MeshBasicMaterial({ color: Colors.midGray, transparent: true, opacity: 0.2 })
+      );
+      group.add(glow);
+
+      group.position.set(5, 8, 5);
+      ghost = group;
+      scene.add(ghost);
+    }
+
+    function createParticles() {
+      const count = 50;
+      const geometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(count * 3);
+
+      for (let i = 0; i < count; i++) {
+        positions[i * 3] = (Math.random() - 0.5) * 80;
+        positions[i * 3 + 1] = Math.random() * 40;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 80;
+      }
+
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+      const material = new THREE.PointsMaterial({
+        color: Colors.midGray,
+        size: 0.12,
+        transparent: true,
+        opacity: 0.4,
+      });
+
+      const particles = new THREE.Points(geometry, material);
+      scene.add(particles);
+    }
+
+    function animateScale(object, target, duration) {
+      const start = object.scale.x;
+      const startTime = Date.now();
+
+      function update() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 4);
+
+        const current = start + (target - start) * eased;
+        object.scale.set(current, current, current);
+
+        if (progress < 1) requestAnimationFrame(update);
+      }
+
+      update();
+    }
+
+    function onClick(event) {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+
+      const graveMeshes = graves.map(g => g.children[0]);
+      const intersects = raycaster.intersectObjects(graveMeshes);
+
+      if (intersects.length > 0) {
+        const graveGroup = intersects[0].object.parent;
+        selectGrave(graveGroup);
+        expandPanel();
+      }
+    }
+
+    function selectGrave(graveGroup) {
+      graves.forEach(g => {
+        const selector = g.children.find(c => c.name === 'selector');
+        if (selector) selector.material.opacity = 0;
+      });
+
+      const selector = graveGroup.children.find(c => c.name === 'selector');
+      if (selector) selector.material.opacity = 0.6;
+
+      selectedGrave = graveGroup;
+
+      // Ghost floats toward grave
+      const targetPos = graveGroup.position.clone().add(new THREE.Vector3(3, 3, 3));
+      moveGhostTo(targetPos);
+
+      updateSelectedGrave(graveGroup.userData);
+    }
+
+    function moveGhostTo(targetPos) {
+      const startPos = ghost.position.clone();
+      const duration = 1500;
+      const startTime = Date.now();
+
+      function update() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+
+        ghost.position.lerpVectors(startPos, targetPos, eased);
+
+        if (progress < 1) requestAnimationFrame(update);
+      }
+
+      update();
+    }
+
+    function onMouseMove(event) {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+
+      const graveMeshes = graves.map(g => g.children[0]);
+      const intersects = raycaster.intersectObjects(graveMeshes);
+
+      document.body.style.cursor = intersects.length > 0 ? 'pointer' : 'default';
+
+      const tooltip = document.getElementById('tooltip');
+      if (intersects.length > 0) {
+        const data = intersects[0].object.parent.userData;
+        tooltip.innerHTML = `<div style="font-family:Cormorant Garamond,serif;font-size:16px">${data.name}</div><div style="font-size:9px;opacity:0.6;margin-top:4px">${data.id}</div>`;
+        tooltip.style.left = (event.clientX + 15) + 'px';
+        tooltip.style.top = (event.clientY + 15) + 'px';
+        tooltip.classList.add('visible');
+      } else {
+        tooltip.classList.remove('visible');
+      }
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const time = Date.now() * 0.001;
+
+      if (ghost) {
+        ghost.position.y += Math.sin(time * 2) * 0.01;
+        ghost.rotation.y += 0.005;
+      }
+
+      // Floating geometry animation
+      scene.traverse(child => {
+        if (child.userData && child.userData.animate) {
+          child.userData.animate(time);
+        }
+      });
+
+      if (isAutoRotating) {
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 2;
+      } else {
+        controls.autoRotate = false;
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    // Panel functions
+    function togglePanel() {
+      document.getElementById('sheikahPanel').classList.toggle('expanded');
+    }
+
+    function expandPanel() {
+      document.getElementById('sheikahPanel').classList.add('expanded');
+    }
+
+    function updateGraveList(data) {
+      document.getElementById('graveList').innerHTML = data.map(grave => `
+        <div class="grave-item" data-id="${grave.id}" onclick="focusGrave('${grave.id}')">
+          <div class="grave-marker"></div>
+          <div class="grave-info">
+            <div class="grave-name">${grave.name}</div>
+            <div class="grave-id">${grave.id}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateSelectedGrave(data) {
+      document.getElementById('detailContainer').innerHTML = `
+        <div class="detail-card">
+          <div class="detail-id">${data.id}</div>
+          <div class="detail-name">${data.name}</div>
+          <div class="detail-epitaph">"${data.epitaph || 'No epitaph'}"</div>
+        </div>
+      `;
+
+      document.querySelectorAll('.grave-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.id === data.id);
+      });
+    }
+
+    function focusGrave(id) {
+      const grave = graves.find(g => g.userData.id === id);
+      if (grave) {
+        selectGrave(grave);
+
+        // Smooth camera movement
+        const targetPos = grave.position.clone();
+        const offset = new THREE.Vector3(15, 12, 15);
+
+        const startTarget = controls.target.clone();
+        const startPos = camera.position.clone();
+        const duration = 1200;
+        const startTime = Date.now();
+
+        function animateCamera() {
+          const elapsed = Date.now() - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+
+          controls.target.lerpVectors(startTarget, targetPos, eased);
+          camera.position.lerpVectors(startPos, targetPos.clone().add(offset), eased);
+
+          if (progress < 1) requestAnimationFrame(animateCamera);
+        }
+
+        animateCamera();
+      }
+    }
+
+    function uploadMemory() {
+      if (!selectedGrave) return alert(t('uploadPrompt'));
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.txt';
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('memory', file);
+
+        try {
+          const response = await fetch(`${API_BASE}/graves/${selectedGrave.userData.id}/memories`, {
+            method: 'POST',
+            body: formData,
+          });
+          const result = await response.json();
+          if (result.success) alert(t('uploadSuccess'));
+        } catch (error) {
+          alert(t('uploadFailed'));
+        }
+      };
+      input.click();
+    }
+
+    function summonSpirit() {
+      if (!selectedGrave) return alert(t('uploadPrompt'));
+      alert(`${t('summonPrompt')} ${selectedGrave.userData.name}...`);
+    }
+
+    function resetCamera() {
+      camera.position.set(40, 35, 40);
+      controls.target.set(0, 0, 0);
+    }
+
+    function autoRotate() {
+      isAutoRotating = !isAutoRotating;
+    }
+
+    // Global expose
+    window.togglePanel = togglePanel;
+    window.focusGrave = focusGrave;
+    window.uploadMemory = uploadMemory;
+    window.summonSpirit = summonSpirit;
+    window.resetCamera = resetCamera;
+    window.autoRotate = autoRotate;
+    window.switchLanguage = switchLanguage;
+    window.uploadMemory = uploadMemory;
+    window.summonSpirit = summonSpirit;
+    window.resetCamera = resetCamera;
+    window.autoRotate = autoRotate;
+
+    init();
+  </script>
+</body>
+</html>

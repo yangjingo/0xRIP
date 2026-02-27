@@ -14,23 +14,12 @@
 
 ---
 
-## 二、后端与数据
-
-| ID | 任务 | 优先级 | 状态 | 说明 |
-|:---|:---|:---|:---|:---|
-| B1 | 统一 AI 网关（OpenAI 兼容） | P1 | 待开始 | 封装 LLM/VLM/TTS/STT，对接引导仪式、墓志铭、招魂对话 |
-| B2 | 步骤 4：URL 抓取 + 模型生成独有 txt 入碑 | P1 | 待开始 | 见 [backend/ai-integration.md](./backend/ai-integration.md) 4.5 |
-| B3 | 时间线加工 API「此人一生」 | P1 | 待开始 | 输入墓碑 id，返回按时间线编排的段落/JSON |
-| B4 | 招魂对话 API（people/ 记忆注入） | P1 | 待开始 | 多轮对话，可选 TTS/STT |
-
----
-
-## 三、后续扩展
+## 二、后续扩展
 
 | ID | 任务 | 优先级 | 说明 |
 |:---|:---|:---|:---|
 | E1 | 自然语言指令解析（/bury xxx、召唤张三） | P2 | LLM 意图+槽位，映射到 BURY/SUMMON 等 |
-| E2 | 幽灵对话界面（招魂后弹出对话 UI） | P1 | 与 SUMMON 联动，调用 B4 |
+| E2 | 幽灵对话界面（招魂后弹出对话 UI） | P1 | 与 SUMMON 联动 |
 | E3 | people/ 目录与前端展示联动 | P2 | 从 people 读取 description/traits/memories 用于招魂与详情 |
 
 ---

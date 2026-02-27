@@ -2,9 +2,8 @@
 
 以下是 **0xRIP** 的完整交互系统规范，将"数字死亡"的体验渗透到每一个像素和每一次点击中。
 
-→ **叙事版**（探墓人从进入到离开的完整故事）：[Story](../story/README.md)  
-→ 前端交互**整体架构图**（入口、场景、流程）：[architecture.md](./architecture.md)  
-→ 引导仪式与各场景的 **LLM / VLM / Voice** 接入与模型选型见：[Backend - AI 接入](../backend/ai-integration.md)
+→ **叙事版**（探墓人从进入到离开的完整故事）：[Story](../story/README.md)
+→ 前端交互**整体架构图**（入口、场景、流程）：[architecture.md](./architecture.md)
 
 ---
 
