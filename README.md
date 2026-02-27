@@ -1,6 +1,6 @@
 # 0xRIP
 
-![0xRIP Logo](.assert/logo.svg)
+![0xRIP Logo](./assert/logo.svg)
 
 **0xRIP** — A digital graveyard where you can bury digital memories, summon deceased data souls, and mourn through a 3D memorial world.
 
