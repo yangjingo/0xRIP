@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Background -->
+  <rect width="120" height="120" rx="8" fill="#fafafa"/>
+
+  <!-- Sheikah Eye Logo -->
+  <g transform="translate(60, 60)">
+    <!-- Outer oval -->
+    <ellipse cx="0" cy="0" rx="40" ry="24" fill="none" stroke="#404040" stroke-width="3"/>
+
+    <!-- Inner oval -->
+    <ellipse cx="0" cy="0" rx="24" ry="14" fill="none" stroke="#404040" stroke-width="2"/>
+
+    <!-- Center dot (pupil) with Sheikah blue glow -->
+    <circle cx="0" cy="0" r="8" fill="#00d4ff">
+      <animate attributeName="opacity" values="0.8;1;0.8" dur="3s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Glow effect -->
+    <circle cx="0" cy="0" r="12" fill="#00d4ff" opacity="0.3">
+      <animate attributeName="r" values="12;14;12" dur="3s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Top accent line -->
+    <line x1="0" y1="-24" x2="0" y2="-36" stroke="#404040" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Bottom accent line -->
+    <line x1="0" y1="24" x2="0" y2="36" stroke="#404040" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Side accents -->
+    <line x1="-40" y1="0" x2="-48" y2="0" stroke="#404040" stroke-width="2" stroke-linecap="round"/>
+    <line x1="40" y1="0" x2="48" y2="0" stroke="#404040" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- 0xRIP text -->
+  <text x="60" y="102" font-family="'Space Mono', monospace" font-size="10" font-weight="500" fill="#404040" text-anchor="middle" letter-spacing="0.3em">0xRIP</text>
+</svg>

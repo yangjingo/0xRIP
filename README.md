@@ -1,8 +1,11 @@
 # 0xRIP
 
-![0xRIP Logo](assert/logo.svg)
+![0xRIP Logo](.assert/logo.svg)
 
 **0xRIP** — A digital graveyard where you can bury digital memories, summon deceased data souls, and mourn through a 3D memorial world.
+
+[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://github.com/yangjingo/0xRIP)
+[![Date](https://img.shields.io/badge/date-2026--02--27-lightgrey.svg)]()
 
 The aesthetic combines **Monument Valley's** minimalist geometric world with **Sheikah Slate's** sci-fi interface design — clean grayscales with cyan accents, glass morphism panels, and smooth spatial interactions.
 
