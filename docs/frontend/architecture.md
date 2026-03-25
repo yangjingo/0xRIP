@@ -42,10 +42,10 @@ flowchart TB
         A[探墓人 Tomb Visitor]
     end
 
-    subgraph Entry["入口层"]
-        B[终端式指令 BURY / SUMMON / MOURN / LIST / DECAY]
-        C[3D 墓地场景 Three.js]
-        D[2D UI 叠加 CRT / Glitch]
+    subgraph Entry["前端架构层 (V2)"]
+        B[DOM UI: React + Tailwind + Framer Motion]
+        C[3D Scene: React Three Fiber + Drei + Postprocessing]
+        D[State: Zustand (Store)]
     end
 
     subgraph Scenes["核心场景"]
@@ -174,45 +174,34 @@ flowchart TD
 
 ---
 
-## 六、前端技术栈与分层（实现视角）
+## 六、前端技术栈与分层（V2 现代工程化实现）
 
 ```mermaid
 flowchart TB
-    subgraph Presentation["表现层"]
-        HTML[index.html]
-        CSS[style.css · 赛博墓地视觉]
-        CRT[CRT 扫描线 / Glitch 2D 层]
+    subgraph Presentation["DOM 表现层 (UI)"]
+        React[React 18 + Vite]
+        Tailwind[TailwindCSS / 赛博排版]
+        Framer[Framer Motion / 物理阻尼动效]
     end
 
-    subgraph Scene3D["3D 场景层"]
-        Three[Three.js]
-        Tomb[墓碑 · 幽灵 · 地面网格]
+    subgraph Scene3D["3D 引擎层 (R3F)"]
+        R3F[React Three Fiber / Drei]
+        Post[Postprocessing / Bloom 辉光]
+        Tomb[场景实体: Grave / Ghost / Architecture]
     end
 
-    subgraph Interaction["交互层"]
-        Terminal[终端输入 / 指令解析]
-        Cursor[光标状态 下划线 / 0x / 棺材 / 骷髅]
-        Voice[音效 可选]
+    subgraph State["全局状态与流转 (Zustand)"]
+        Store[useStore: lang, selectedGrave, panelExpanded, messages]
     end
 
-    subgraph State["状态与路由"]
-        Route[当前场景: 埋葬 / 漫游 / 招魂 / 时间线]
-        TombID[当前墓碑 id]
+    subgraph API["后端通信 (Next Phase)"]
+        LLM[招魂会话 / 大模型 RAG]
+        Backend[埋葬 · 记忆持久化]
     end
 
-    subgraph API["与后端通信"]
-        BuryAPI[埋葬 · 上传 · URL 处理]
-        SummonAPI[招魂 · 幽灵对话]
-        TimelineAPI[时间线 此人一生]
-    end
-
-    HTML --> Three
-    CSS --> CRT
-    Terminal --> Route
-    Route --> BuryAPI
-    Route --> SummonAPI
-    Route --> TimelineAPI
-    Tomb --> TombID
+    Presentation <-->|订阅与更新| Store
+    Scene3D <-->|订阅与更新| Store
+    Presentation --> API
 ```
 
 ---

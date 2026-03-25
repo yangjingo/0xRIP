@@ -6,35 +6,37 @@
 
 The aesthetic combines **Monument Valley's** minimalist geometric world with **Sheikah Slate's** sci-fi interface design — clean grayscales with cyan accents, glass morphism panels, and smooth spatial interactions.
 
-- [2026.02.27] static html v1
+- [2026.03.25] Frontend V2 (React + R3F + Vite) released with Neural Link Chat!
 ![V1 0xRIP Preview](./assert/0xRIP-UI-V1.png)
 
 ---
 
 ## Quick Start
 
-No build step required! Open directly in your browser:
+0xRIP is now built with a modern React + Vite toolchain for high-performance 3D rendering and state management.
 
 ```bash
-# macOS
-open examples/memorial-world/index.html
+# Clone the repository
+git clone https://github.com/your-username/0xRIP.git
+cd 0xRIP/frontend-v2
 
-# Linux
-xdg-open examples/memorial-world/index.html
+# Install dependencies
+npm install
 
-# Or use any static server for better module support
-npx serve examples/memorial-world
+# Start the development server
+npm run dev
 ```
+Open `http://localhost:5173` in your browser.
 
 ---
 
 ## Features
 
-- **3D Memorial World** — Monument Valley-inspired geometric landscapes
-- **Sheikah Slate Panel** — Glass-morphism UI with slide-up animation
-- **Bilingual Support** — One-click switch between English and Chinese (语言切换)
-- **Interactive Ghost** — Entity that follows your cursor and flies to selected monuments
-- **Smooth Animations** — Cubic-bezier transitions for camera and UI
+- **Declarative 3D Memorial World** — Built with React Three Fiber (R3F) for Monument Valley-inspired geometric landscapes.
+- **Cyberpunk Aesthetics** — Real-time Bloom post-processing for neon cyan glowing effects.
+- **Sheikah Slate Panel** — Framer Motion-powered glass-morphism UI with spring physics animations.
+- **Neural Link Chat** — Embedded chat interface to communicate with "Ghost" data souls.
+- **Bilingual Support** — Global state managed by Zustand for seamless English/Chinese switching.
 
 ---
 
@@ -192,6 +194,19 @@ limitations under the License.
 ```
 
 详见 [LICENSE](LICENSE)。
+
+---
+
+## Acknowledgments
+
+- Built with [Three.js](https://threejs.org/) (via CDN)
+- Typography: [Cormorant Garamond](https://fonts.google.com/specimen/Cormorant+Garamond) & [Space Mono](https://fonts.google.com/specimen/Space+Mono)
+- Design inspired by Monument Valley game and Zelda: Breath of the Wild's Sheikah Slate
+
+---
+
+**"Data dies, but does not disappear." — 0xRIP**
+NSE)。
 
 ---
 
