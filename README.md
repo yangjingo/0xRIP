@@ -6,27 +6,33 @@
 
 The aesthetic combines **Monument Valley's** minimalist geometric world with **Sheikah Slate's** sci-fi interface design — clean grayscales with cyan accents, glass morphism panels, and smooth spatial interactions.
 
-- [2026.03.25] Frontend V2 (React + R3F + Vite) released with Neural Link Chat!
+- [2026.03.25] Frontend (TypeScript + Bun + React + R3F) released with Neural Link Chat!
 ![V1 0xRIP Preview](./assert/0xRIP-UI-V1.png)
 
 ---
 
 ## Quick Start
 
-0xRIP is now built with a modern React + Vite toolchain for high-performance 3D rendering and state management.
+0xRIP is now developed in a split frontend/backend architecture: frontend with TypeScript + Bun, backend with uv + Python.
 
 ```bash
 # Clone the repository
 git clone https://github.com/your-username/0xRIP.git
-cd 0xRIP/frontend-v2
+cd 0xRIP
 
-# Install dependencies
-npm install
+# Frontend (TypeScript + Bun)
+cd frontend
+bun install
+bun run dev
 
-# Start the development server
-npm run dev
+# Backend (uv + Python)
+cd ../
+uv venv
+uv pip install -r backend/requirements.txt
+uv run uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
-Open `http://localhost:5173` in your browser.
+Frontend: `http://localhost:5173`  
+Backend API: `http://localhost:8000`
 
 ---
 
@@ -64,15 +70,14 @@ This is a place for **tomb visiting** — you are not here to dig graves, but to
 
 ```
 /0xRIP
-├── docs/                    # Design documentation
-│   ├── DESIGN_SYSTEM.md     # Visual design system
-│   └── UI_COMPONENTS.md     # Copy-paste ready UI components
-├── examples/                # Pure HTML examples
-│   ├── memorial-world/      # ← Main 3D application (bilingual)
-│   └── monument-valley-minimal/  # Minimal Monument Valley style
-├── assert/                 # Static assets (images, fonts)
-├── CLAUDE.md              # Development guidelines
-├── LICENSE
+├── frontend/               # TypeScript + Bun + React + R3F frontend
+├── backend/                # FastAPI backend service
+├── docs/
+│   ├── ux/                 # Frontend design and interaction docs
+│   ├── api/                # API capability notes
+│   └── story/              # Narrative and product philosophy
+├── assert/                 # Static assets
+├── run_dev.py              # Full-stack local startup script
 └── README.md
 ```
 
@@ -81,7 +86,7 @@ This is a place for **tomb visiting** — you are not here to dig graves, but to
 ## Architecture
 
 ### Entry Point
-- `examples/memorial-world/index.html` — Complete bilingual application in a single HTML file
+- `frontend/src/main.tsx` — React application entry point
 
 ### Core Systems
 
@@ -100,12 +105,12 @@ This is a place for **tomb visiting** — you are not here to dig graves, but to
 
 **Data Model**
 ```typescript
-interface Monument {
+interface Grave {
   id: string;        // '0x' + random hex
   name: string;      // Display name
   epitaph: string;   // Quote or text
   date: string;      // Date created
-  position: { x: number; z: number }; // 3D position
+  position: [number, number, number]; // 3D position
 }
 ```
 
@@ -154,8 +159,8 @@ interface Monument {
 
 | Document | Description |
 |:---|:---|
-| [DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) | Complete visual design system |
-| [UI_COMPONENTS.md](docs/UI_COMPONENTS.md) | Copy-paste ready CSS/JS components |
+| [DESIGN_SYSTEM.md](docs/ux/DESIGN_SYSTEM.md) | Complete visual design system |
+| [UI_COMPONENTS.md](docs/ux/UI_COMPONENTS.md) | Copy-paste ready CSS/JS components |
 | [CLAUDE.md](CLAUDE.md) | Development guidelines for AI assistants |
 
 ---
@@ -199,23 +204,15 @@ limitations under the License.
 
 ## Acknowledgments
 
-- Built with [Three.js](https://threejs.org/) (via CDN)
+- Built with [Three.js](https://threejs.org/) via React Three Fiber
 - Typography: [Cormorant Garamond](https://fonts.google.com/specimen/Cormorant+Garamond) & [Space Mono](https://fonts.google.com/specimen/Space+Mono)
 - Design inspired by Monument Valley game and Zelda: Breath of the Wild's Sheikah Slate
 
 ---
 
 **"Data dies, but does not disappear." — 0xRIP**
-NSE)。
 
----
 
-## Acknowledgments
 
-- Built with [Three.js](https://threejs.org/) (via CDN)
-- Typography: [Cormorant Garamond](https://fonts.google.com/specimen/Cormorant+Garamond) & [Space Mono](https://fonts.google.com/specimen/Space+Mono)
-- Design inspired by Monument Valley game and Zelda: Breath of the Wild's Sheikah Slate
 
----
 
-**"Data dies, but does not disappear." — 0xRIP**

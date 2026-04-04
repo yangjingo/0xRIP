@@ -1,6 +1,6 @@
 # Story — 0xRIP 的故事
 
-这是 0xRIP 的**叙事版**：以探墓人的视角，把从进入到离开的整段体验写成一条连续的故事线。技术架构与交互细节见 [Frontend - UI](../frontend/ui.md)、[Frontend - 架构图](../frontend/architecture.md)。
+这是 0xRIP 的**叙事版**：以探墓人的视角，把从进入到离开的整段体验写成一条连续的故事线。技术架构与交互细节见 [Frontend - UI](../ux/ui.md)、[Frontend - 架构图](../ux/architecture.md)。
 
 ---
 
@@ -81,5 +81,6 @@
 | [soul.md](./soul.md) | 灵魂与数字死亡概念、people 目录 |
 | [logo.md](./logo.md) | Logo 使用规范 |
 
-→ 交互与视觉规范：[Frontend - UI](../frontend/ui.md)
-→ 流程图与架构图：[Frontend - 架构图](../frontend/architecture.md)
+→ 交互与视觉规范：[Frontend - UI](../ux/ui.md)
+→ 流程图与架构图：[Frontend - 架构图](../ux/architecture.md)
+

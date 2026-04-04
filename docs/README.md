@@ -1,6 +1,6 @@
 # 0xRIP 文档索引
 
-本目录按 **frontend**、**story** 组织文档。
+按 **story**（项目）、**api**（后端）、**ux**（前端）三类组织。
 
 ---
 
@@ -8,19 +8,14 @@
 
 | 目录 | 说明 | 主要文档 |
 |:---|:---|:---|
-| **[frontend/](./frontend/)** | 前端 | [ui.md](./frontend/ui.md) UI 交互规范；[architecture.md](./frontend/architecture.md) 架构图；[monument-valley-mode.md](./frontend/monument-valley-mode.md) 纪念碑谷模式 |
-| **[story/](./story/)** | 故事与品牌 | [README.md](./story/README.md) 叙事版故事；[soul.md](./story/soul.md) 灵魂概念；[logo.md](./story/logo.md) Logo 规范 |
+| **[story/](./story/)** | 项目文档 | [story.md](./story/story.md) 叙事；[soul.md](./story/soul.md) 灵魂概念；[taste.md](./story/taste.md) 设计哲学；[todo.md](./story/todo.md) 路线图 |
+| **[api/](./api/)** | 后端 API | [text.md](./api/text.md) 文本；[image.md](./api/image.md) 图像；[music.md](./api/music.md) 音乐；[skills.md](./api/skills.md) Skills 合集 |
+| **[ux/](./ux/)** | 前端 UX | [design-system.md](./ux/design-system.md) 设计系统；[ui.md](./ux/ui.md) 交互规范；[architecture.md](./ux/architecture.md) 架构图 |
 
 ---
 
 ## 快速跳转
 
-- **想先看整体故事** → [Story](./story/README.md)
-- **做 UI / 交互** → [Frontend - UI](./frontend/ui.md)、[Frontend - 架构图](./frontend/architecture.md)
-- **纪念碑谷模式** → [Monument Valley Mode](./frontend/monument-valley-mode.md)
-- **灵魂与 people 设定** → [Story - Soul](./story/soul.md)
-- **Logo 使用** → [Story - Logo](./story/logo.md)
-
----
-
-其他：开发日志见 [logs/command-log.md](./logs/command-log.md)。
+- **项目故事与世界观** → [Story](./story/)
+- **后端 API 接口** → [API](./api/)
+- **前端设计与交互** → [UX](./ux/)
