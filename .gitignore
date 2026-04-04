@@ -1,0 +1,21 @@
+# Runtime logs
+*.log
+*.out
+*.err
+*log*.txt
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+
+
+# Agent 
+.claude
+CLAUDE.md
+GEMINI.md
+AGENT.md 

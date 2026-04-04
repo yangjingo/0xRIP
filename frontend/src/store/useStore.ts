@@ -11,6 +11,8 @@ export interface Grave {
   name: string;
   epitaph: string;
   position: [number, number, number];
+  videoUrl?: string;
+  videoStatus?: 'none' | 'processing' | 'completed' | 'failed';
 }
 
 interface AppState {
@@ -20,6 +22,7 @@ interface AppState {
   selectGrave: (grave: Grave | null) => void;
   graves: Grave[];
   setGraves: (graves: Grave[]) => void;
+  updateGrave: (id: string, data: Partial<Grave>) => void;
   isAutoRotating: boolean;
   toggleAutoRotate: () => void;
   panelExpanded: boolean;
@@ -43,6 +46,10 @@ export const useStore = create<AppState>((set) => ({
   selectGrave: (grave) => set({ selectedGrave: grave, panelExpanded: !!grave }),
   graves: [],
   setGraves: (graves) => set({ graves }),
+  updateGrave: (id, data) => set((state) => ({
+    graves: state.graves.map(g => g.id === id ? { ...g, ...data } : g),
+    selectedGrave: state.selectedGrave?.id === id ? { ...state.selectedGrave, ...data } : state.selectedGrave
+  })),
   isAutoRotating: false,
   toggleAutoRotate: () => set((state) => ({ isAutoRotating: !state.isAutoRotating })),
   panelExpanded: false,

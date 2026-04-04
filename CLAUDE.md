@@ -8,27 +8,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Quick Start
 
-No build step required! Open directly in your browser:
+Run the frontend and backend separately during development:
 
 ```bash
-# Using any static file server
-npx serve examples/3d-world
+# Frontend
+cd frontend
+bun install
+bun run dev
 
-# Or simply open the file
-open examples/3d-world/index.html
+# Backend
+cd backend
+uv sync
+uv run uvicorn backend.main:app --reload --port 8000
 ```
 
 ## Architecture
 
 ### Entry Point
-- `examples/3d-world/index.html` — Complete single-file application
+- `frontend/src/main.tsx` — Frontend application entry point
   - Lines 9-420: CSS styles (design system, components, animations)
   - Lines 422-470: HTML structure
   - Lines 472+: JavaScript (Three.js setup, world generation, interactions)
 
 ### Core Systems
 
-**Three.js Scene** (`examples/3d-world/index.html`)
+**Three.js Scene** (`frontend/src/components/canvas/Scene.tsx`)
 - Scene with soft white fog (`Fog(0xffffff, 20, 180)`)
 - Ambient + directional lighting with shadows
 - Monument Valley-inspired geometric platforms at multiple elevations
@@ -80,11 +84,11 @@ All new assets and interactions must follow **Monument Valley + Sheikah Slate** 
 
 ## Key Files
 
-- `examples/3d-world/index.html` — Main application (all-in-one)
-- `docs/DESIGN_SYSTEM.md` — Complete design system documentation
-- `docs/UI_COMPONENTS.md` — Copy-paste ready components
-- `examples/2d-world/index.html` — 2D isometric prototype
-- `examples/monument-valley-minimal/index.html` — Minimal style demo
+- `frontend/src/App.tsx` — Main React application
+- `docs/ux/design-system.md` — Complete design system documentation
+- `docs/ux/ui-components.md` — Copy-paste ready components
+- `frontend/src/components/ui/SheikahPanel.tsx` — Main UI panel
+- `backend/main.py` — API entrypoint
 
 ## Design Principles
 
@@ -93,3 +97,6 @@ All new assets and interactions must follow **Monument Valley + Sheikah Slate** 
 3. **Immediate Feedback**: Every action has visual confirmation
 4. **Consistent Language**: Grayscale + cyan accent throughout
 5. **Minimalism**: Clean lines, generous whitespace, no visual noise
+
+
+
