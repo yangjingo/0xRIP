@@ -11,7 +11,19 @@ dependencies = [
     "pydantic>=2.10",
     "sqlalchemy>=2.0",
     "chromadb>=1.0",
+    "litellm>=1.55",
+    "dspy-ai>=2.6",
 ]
 
 [project.scripts]
 serve = "backend.__main__:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: tests that call real APIs (requires API keys, skipped by default)",
+]

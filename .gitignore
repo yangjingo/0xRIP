@@ -16,8 +16,11 @@ __pycache__/
 Thumbs.db
 
 
-# Agent 
+# Agent
 .claude/
 CLAUDE.md
 GEMINI.md
-AGENTS.md 
+AGENTS.md
+
+# 0xRIP local memory store
+.rip/
