@@ -8,13 +8,22 @@
 __pycache__/
 *.pyc
 .venv/
+
+# Node / Bun
+node_modules/
+bun.lock
+
+# Database
 *.db
+*.db-shm
+*.db-wal
+
+# Secrets
 .env
 
 # OS/editor
 .DS_Store
 Thumbs.db
-
 
 # Agent
 .claude/
