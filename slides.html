@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0xRIP</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    background: #000; color: #fff;
+    width: 100vw; height: 100vh; overflow: hidden;
+  }
+
+  /* ── Slide Container ────────────────────────────────── */
+
+  .slides { width: 100%; height: 100%; position: relative; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    opacity: 0; transition: opacity 0.35s;
+    pointer-events: none;
+  }
+  .slide.active { opacity: 1; pointer-events: auto; }
+
+  /* ── Regions (every slide has these) ────────────────── */
+
+  .slide-header {
+    height: 100px; display: flex; align-items: center; gap: 16px;
+    padding: 0 72px; border-bottom: 1px solid #222; flex-shrink: 0;
+  }
+  .slide-num {
+    font-size: 11px; color: #555; width: 48px; text-align: right; flex-shrink: 0;
+  }
+  .slide-title {
+    font-size: 24px; font-weight: 700; color: #fff;
+  }
+  .slide-subtitle {
+    font-size: 13px; color: #666; margin-left: auto;
+  }
+
+  .slide-body {
+    flex: 1; display: flex; align-items: stretch;
+    padding: 48px 72px; overflow: hidden;
+  }
+
+  .slide-footer {
+    height: 48px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 72px; border-top: 1px solid #222; flex-shrink: 0;
+    font-size: 11px; color: #444;
+  }
+
+  /* ── Body Layouts ───────────────────────────────────── */
+
+  .body-center { justify-content: center; align-items: center; text-align: center; flex-direction: column; }
+  .body-rows   { flex-direction: column; gap: 32px; }
+  .body-grid   { display: grid; gap: 32px; width: 100%; }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  /* ── Typography ──────────────────────────────────────── */
+
+  h1 { font-size: 72px; font-weight: 700; letter-spacing: -2px; line-height: 1.1; }
+  h2 { font-size: 20px; font-weight: 700; color: #aaa; margin-bottom: 24px; }
+  h3 { font-size: 14px; font-weight: 700; margin-bottom: 16px; color: #ddd; }
+
+  .hero-sub     { font-size: 18px; color: #666; margin-top: 16px; }
+  .hero-divider { color: #333; font-size: 13px; margin: 32px 0; letter-spacing: 4px; }
+  .hero-tag     { font-size: 14px; color: #888; font-style: italic; }
+
+  /* ── Cards ───────────────────────────────────────────── */
+
+  .card {
+    border: 1px solid #2a2a2a; padding: 32px;
+    display: flex; flex-direction: column;
+  }
+  .card h3 { margin-bottom: 16px; color: #fff; }
+  .card p  { font-size: 13px; color: #888; line-height: 1.7; }
+
+  /* ── Code ────────────────────────────────────────────── */
+
+  pre {
+    background: #0a0a0a; border: 1px solid #2a2a2a;
+    padding: 32px; font-size: 13px; line-height: 1.8; width: 100%;
+    overflow-x: auto; flex: 1;
+  }
+  .kw  { color: #888; }
+  .str { color: #ddd; }
+  .cmt { color: #555; }
+  .hl  { color: #fff; font-weight: 700; }
+
+  /* ── Tables ──────────────────────────────────────────── */
+
+  table { border-collapse: collapse; font-size: 13px; width: 100%; }
+  th {
+    text-align: left; color: #666; font-weight: 400;
+    padding: 10px 20px; border-bottom: 1px solid #333;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;
+  }
+  td { padding: 10px 20px; border-bottom: 1px solid #1a1a1a; }
+  td:first-child, th:first-child { padding-left: 0; }
+  td:last-child, th:last-child { padding-right: 0; }
+
+  /* ── Stat numbers ────────────────────────────────────── */
+
+  .stat-num  { font-size: 56px; font-weight: 700; line-height: 1; }
+  .stat-label { font-size: 13px; color: #888; margin-top: 8px; }
+
+  /* ── Flow diagram ────────────────────────────────────── */
+
+  .flow { font-size: 13px; line-height: 2.2; color: #888; }
+  .flow .hl { color: #fff; }
+  .flow .dim { color: #555; margin-left: 24px; }
+
+  /* ── Nav ─────────────────────────────────────────────── */
+
+  .nav {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 14px; align-items: center; z-index: 10;
+  }
+  .dot {
+    width: 5px; height: 5px; background: #333; transition: background 0.2s;
+    cursor: pointer;
+  }
+  .dot.active { background: #fff; }
+
+  @media (max-width: 900px) {
+    .slide-header, .slide-body, .slide-footer { padding-left: 32px; padding-right: 32px; }
+    .slide-title { font-size: 18px; }
+    h1 { font-size: 40px; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    pre { font-size: 11px; padding: 20px; }
+    .stat-num { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="slides">
+
+<!-- ════════════════════════════════════════════════════════
+     SLIDE 1: Title
+     ════════════════════════════════════════════════════════ -->
+
+<div class="slide active">
+  <div class="slide-header">
+    <span class="slide-num">01</span>
+    <span class="slide-title">0xRIP</span>
+    <span class="slide-subtitle">Digital Graveyard Terminal</span>
+  </div>
+  <div class="slide-body body-center">
+    <h1>0xRIP</h1>
+    <p class="hero-sub">Bury memories. Summon data souls. Mourn in 3D.</p>
+    <div class="hero-divider">══════════════════════════</div>
+    <p class="hero-tag">Built with deepseek-v4-pro · May 2026</p>
+  </div>
+  <div class="slide-footer">
+    <span>github.com/yangjingo/0xRIP</span>
+    <span>v0.3.0</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SLIDE 2: What & Why
+     ════════════════════════════════════════════════════════ -->
+
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-num">02</span>
+    <span class="slide-title">Problem & Solution</span>
+    <span class="slide-subtitle">PRD</span>
+  </div>
+  <div class="slide-body">
+    <div class="body-grid grid-2">
+      <div class="card">
+        <h3>Problem</h3>
+        <p>Data dies but does not disappear. Files accumulate. Conversations fade. AI models are deprecated. Past selves are abandoned. There is no ritual for digital endings — only the silent accumulation of ghosts in our drives.</p>
+      </div>
+      <div class="card">
+        <h3>Solution</h3>
+        <p>A digital graveyard where you bury what matters, summon the dead as data souls, and have one last conversation. Not cold storage, not a backup tool — a memorial space with ritual, memory, and closure.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>PRD</span>
+    <span>2 / 14</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SLIDE 3: Core Verbs
+     ════════════════════════════════════════════════════════ -->
+
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-num">03</span>
+    <span class="slide-title">Core Verbs</span>
+    <span class="slide-subtitle">PRD</span>
+  </div>
+  <div class="slide-body">
+    <div class="body-rows" style="justify-content:center;">
+      <table>
+        <tr><th>Action</th><th>Command</th><th>API</th><th>Meaning</th></tr>
+        <tr><td>BURY</td><td style="color:#fff;">/bury</td><td>POST /api/graves</td><td>Commit data to the graveyard</td></tr>
+        <tr><td>SUMMON</td><td style="color:#fff;">/summon &lt;id&gt;</td><td>POST /api/summon/:id/chat</td><td>Open channel to the dead</td></tr>
+        <tr><td>LIST</td><td style="color:#fff;">/list</td><td>GET /api/graves</td><td>Survey the graveyard</td></tr>
+        <tr><td>MOURN</td><td>(future)</td><td>POST /api/graves/:id/mourn</td><td>Acknowledge the soul</td></tr>
+        <tr><td>DECAY</td><td>(future)</td><td>DELETE /api/graves/:id</td><td>Let data weather away</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>PRD</span>
+    <span>3 / 14</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SLIDE 4: Soul Types
+     ════════════════════════════════════════════════════════ -->
+
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-num">04</span>
+    <span class="slide-title">Soul Types</span>
+    <span class="slide-subtitle">PRD</span>
+  </div>
+  <div class="slide-body">
+    <div class="body-grid grid-3">
+      <div class="card">
+        <h3>Human → Human</h3>
+        <p>Deceased loved ones, friends, mentors. Traditional memorial. WeChat logs, photos, shared memories distilled into persona.</p>
+      </div>
+      <div class="card">
+        <h3>Human → AI</h3>
+        <p>Retired AI models, meaningful conversations, co-creations. GPT-3.5, Claude 2, your first coding assistant — honored, not discarded.</p>
+      </div>
+      <div class="card">
+        <h3>Human → Self</h3>
+        <p>Past versions, old projects, former selves. Burial as a growth ritual. The you that wrote terrible code in 2021 deserves a tombstone.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>PRD</span>
+    <span>4 / 14</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SLIDE 5: Architecture
+     ════════════════════════════════════════════════════════ -->
+
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-num">05</span>
+    <span class="slide-title">Project Architecture</span>
+    <span class="slide-subtitle">Engineering</span>
+  </div>
+  <div class="slide-body">
+    <div class="body-grid grid-2">
+      <div class="card" style="padding:24px;">
+        <pre style="background:none;border:none;padding:0;flex:none;"><span class="cmt">src/server/</span>              <span class="cmt">Bun (no build)</span>
+<span class="cmt">├──</span> index.ts                <span class="cmt">Bun.serve() 19 routes</span>
+<span class="cmt">├──</span> types.ts               <span class="cmt">Zod schemas</span>
+<span class="cmt">├──</span> agent/
+<span class="cmt">│   ├──</span> loop.ts           <span class="cmt">GhostAgent · tool-use</span>
+<span class="cmt">│   ├──</span> context.ts       <span class="cmt">Memory injection</span>
+<span class="cmt">│   ├──</span> prompts/ghost.ts <span class="cmt">System prompt</span>
+<span class="cmt">│   └──</span> tools/           <span class="cmt">5 mmx wrappers</span>
+<span class="cmt">├──</span> db/                    <span class="cmt">SQLite + Drizzle</span>
+<span class="cmt">└──</span> services/              <span class="cmt">5 service modules</span></pre>
+      </div>
+      <div class="card" style="padding:24px;">
+        <pre style="background:none;border:none;padding:0;flex:none;"><span class="cmt">src/client/</span>              <span class="cmt">React + Vite</span>
+<span class="cmt">├──</span> app.tsx                <span class="cmt">Root · Canvas</span>
+<span class="cmt">├──</span> components/
+<span class="cmt">│   ├──</span> canvas/
+<span class="cmt">│   │   ├──</span> scene.tsx    <span class="cmt">R3F 3D world</span>
+<span class="cmt">│   │   ├──</span> grave.tsx    <span class="cmt">Tombstone</span>
+<span class="cmt">│   │   └──</span> ghost.tsx    <span class="cmt">Floating soul</span>
+<span class="cmt">│   └──</span> ui/
+<span class="cmt">│       └──</span> terminal.tsx <span class="cmt">Single CLI</span>
+<span class="cmt">├──</span> hooks/                 <span class="cmt">sound · suggestions</span>
+<span class="cmt">└──</span> store/store.ts         <span class="cmt">Zustand</span></pre>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>Engineering</span>
+    <span>5 / 14</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SLIDE 6: Summon Data Flow
+     ════════════════════════════════════════════════════════ -->
+
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-num">06</span>
+    <span class="slide-title">Summon Data Flow</span>
+    <span class="slide-subtitle">Engineering</span>
+  </div>
+  <div class="slide-body">
+    <div class="body-rows" style="justify-content:center;">
+      <div class="flow">
+        <p><span class="hl">/summon 0xDEADBEEF</span>  →  Terminal  →  POST /api/summon/:id/chat/stream</p>
+        <p class="dim">&#x251C;&#x2500; ContextManager.buildMessages()</p>
+        <p class="dim">&#x2502;  &#x251C;&#x2500; System prompt (ghost persona + skill injection)</p>
+        <p class="dim">&#x2502;  &#x251C;&#x2500; Short-term memory (.rip/ filesystem, last 10 turns)</p>
+        <p class="dim">&#x2502;  &#x2514;&#x2500; Long-term memory (SQLite, promoted)</p>
+        <p class="dim">&#x251C;&#x2500; GhostAgent.callClaude()</p>
+        <p class="dim">&#x2502;  &#x2514;&#x2500; POST api.minimaxi.com/anthropic/v1/messages</p>
+        <p class="dim">&#x2502;     &#x2514;&#x2500; MiniMax-M2.7 (Anthropic-compatible)</p>
+        <p class="dim">&#x251C;&#x2500; Tool-use loop (max 5 iterations)</p>
+        <p class="dim">&#x2502;  &#x2514;&#x2500; mmx image/music/video/speech/vision</p>
+        <p class="dim">&#x251C;&#x2500; SSE stream → Terminal (character-by-character)</p>
+        <p class="dim">&#x2514;&#x2500; TTS playback via mmx speech synthesize</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>Engineering</span>
+    <span>6 / 14</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SLIDE 7: API Endpoints
+     ════════════════════════════════════════════════════════ -->
+
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-num">07</span>
+    <span class="slide-title">API Endpoints</span>
+    <span class="slide-subtitle">Engineering</span>
+  </div>
+  <div class="slide-body">
+    <div class="body-rows" style="justify-content:center;">
+      <table>
+        <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+        <tr><td>GET / POST</td><td>/api/graves</td><td>List all / Create grave</td></tr>
+        <tr><td>GET / PUT / DELETE</td><td>/api/graves/:id</td><td>Read / Update / Cascade delete</td></tr>
+        <tr><td>GET</td><td>/api/graves/:id/memories</td><td>Long-term memory timeline</td></tr>
+        <tr><td>GET / PUT</td><td>/api/graves/:id/profile</td><td>Read / Write soul profile (.rip/)</td></tr>
+        <tr><td>POST</td><td>/api/summon/:id/chat</td><td>Ghost dialogue (tool-use loop)</td></tr>
+        <tr><td>POST</td><td>/api/summon/:id/chat/stream</td><td>Ghost dialogue (SSE streaming)</td></tr>
+        <tr><td>POST</td><td>/api/summon/:id/requiem</td><td>Generate music (mmx music generate)</td></tr>
+        <tr><td>POST</td><td>/api/generate/speech</td><td>TTS (mmx speech synthesize)</td></tr>
+        <tr><td>POST</td><td>/api/generate/image</td><td>Image (mmx image generate)</td></tr>
+        <tr><td>POST</td><td>/api/generate/video</td><td>Video (mmx video generate --async)</td></tr>
+        <tr><td>GET</td><td>/api/skills</td><td>List persona types (12 skills)</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>Engineering</span>
+    <span>7 / 14</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SLIDE 8: MiniMax Stack
+     ════════════════════════════════════════════════════════ -->
+
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-num">08</span>
+    <span class="slide-title">MiniMax Integration</span>
+    <span class="slide-subtitle">Engineering</span>
+  </div>
+  <div class="slide-body">
+    <div class="body-grid grid-2">
+      <div class="card">
+        <h3>Text — HTTP API</h3>
+        <p>MiniMax M2.7 via Anthropic-compatible endpoint (api.minimaxi.com/anthropic/v1/messages). Tool-use loop with streaming. Max 5 iterations, 4096 tokens per request. System prompt injected with skill persona from skills/ directory.</p>
+      </div>
+      <div class="card">
+        <h3>Media — mmx CLI</h3>
+        <table style="margin-top:12px;">
+          <tr><td style="padding:4px 8px;">image</td><td style="padding:4px 8px;color:#888;">mmx image generate</td></tr>
+          <tr><td style="padding:4px 8px;">music</td><td style="padding:4px 8px;color:#888;">mmx music generate</td></tr>
+          <tr><td style="padding:4px 8px;">speech</td><td style="padding:4px 8px;color:#888;">mmx speech synthesize</td></tr>
+          <tr><td style="padding:4px 8px;">video</td><td style="padding:4px 8px;color:#888;">mmx video generate --async</td></tr>
+          <tr><td style="padding:4px 8px;">vision</td><td style="padding:4px 8px;color:#888;">mmx vision describe</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>Engineering</span>
+    <span>8 / 14</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SLIDE 9: Memory System
+     ════════════════════════════════════════════════════════ -->
+
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-num">09</span>
+    <span class="slide-title">Dual Memory System</span>
+    <span class="slide-subtitle">Engineering</span>
+  </div>
+  <div class="slide-body">
+    <div class="body-grid grid-2">
+      <div class="card">
+        <h3>Short-term (.rip/)</h3>
+        <p>Filesystem: <span style="color:#fff;">.rip/&lt;id&gt;/sessions/&lt;sid&gt;/memories/*.md</span></p>
+        <p style="margin-top:16px;">Visitor/Ghost exchange pairs written per turn. Sliding window injects last 10 turns into context. Auto-pruned on promote.</p>
+      </div>
+      <div class="card">
+        <h3>Long-term (SQLite)</h3>
+        <p>Table: <span style="color:#fff;">memories</span> — promoted from .rip/</p>
+        <p style="margin-top:16px;">500 memory cap per grave with FIFO eviction. Auto-generated MEMORY.md index. Session summarization extracts key themes on promote.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>Engineering</span>
+    <span>9 / 14</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SLIDE 10: Design System
+     ════════════════════════════════════════════════════════ -->
+
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-num">10</span>
+    <span class="slide-title">Design System</span>
+    <span class="slide-subtitle">DESIGN.md</span>
+  </div>
+  <div class="slide-body">
+    <div class="body-grid grid-3">
+      <div class="card">
+        <h3>Colors</h3>
+        <table>
+          <tr><td style="color:#888;">Canvas</td><td>#000000</td></tr>
+          <tr><td style="color:#888;">Text</td><td>#ffffff</td></tr>
+          <tr><td style="color:#888;">Muted</td><td>#888888</td></tr>
+          <tr><td style="color:#888;">Border</td><td>#333333</td></tr>
+          <tr><td style="color:#888;">Error</td><td>#ff4444</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Typography</h3>
+        <p>JetBrains Mono everywhere. No serif. No sans-serif. Brand: 28px/700. Body: 13px/400. Ghost replies in italic. No letter-spacing manipulation needed — monospace is already even.</p>
+      </div>
+      <div class="card">
+        <h3>Rules</h3>
+        <p style="line-height:2.4;">No color accents<br>No shadows or blur<br>No rounded corners<br>No panels or modals<br>Single terminal UI<br>All monospace<br>Sharp corners only</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>Design</span>
+    <span>10 / 14</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SLIDE 11: Terminal Interaction
+     ════════════════════════════════════════════════════════ -->
+
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-num">11</span>
+    <span class="slide-title">Terminal Interaction</span>
+    <span class="slide-subtitle">UX</span>
+  </div>
+  <div class="slide-body">
+    <div class="body-rows" style="justify-content:center;">
+      <pre><span class="cmt"># Open command palette with arrow-key navigation</span>
+> <span class="kw">/</span>
+  <span class="hl">/bury</span>          Begin burial ritual
+  <span class="hl">/summon</span>        Open channel to a grave    /summon &lt;id&gt;
+  <span class="hl">/list</span>          List all graves
+  <span class="hl">/help</span>          Show all commands
+  <span class="hl">/clear</span>         Clear terminal
+  <span class="hl">/quit</span>          Close summon channel
+
+<span class="cmt"># Open channel — ghost streams via SSE + TTS playback</span>
+> <span class="kw">/summon 0xDEADBEEF</span>
+  Channel open: Satoshi [0xDEADBEEF]
+  <span class="str">"The genesis block remains eternal."</span>
+0xDEADBEEF> <span class="str">What remains when the chain ends?</span>
+  <span class="str">only the genesis block. and memory.</span>
+0xDEADBEEF> <span class="kw">/quit</span></pre>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>UX</span>
+    <span>11 / 14</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SLIDE 12: Tech Stack
+     ════════════════════════════════════════════════════════ -->
+
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-num">12</span>
+    <span class="slide-title">Tech Stack</span>
+    <span class="slide-subtitle">Engineering</span>
+  </div>
+  <div class="slide-body">
+    <div class="body-rows" style="justify-content:center;">
+      <table>
+        <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+        <tr><td>Runtime</td><td>Bun</td><td>Server + package manager</td></tr>
+        <tr><td>HTTP</td><td>Bun.serve()</td><td>Zero-framework API server</td></tr>
+        <tr><td>LLM</td><td>MiniMax M2.7</td><td>Anthropic-compatible endpoint</td></tr>
+        <tr><td>Media</td><td>mmx CLI</td><td>image / music / speech / video / vision</td></tr>
+        <tr><td>Database</td><td>SQLite + Drizzle ORM</td><td>Graves, sessions, memories</td></tr>
+        <tr><td>Validation</td><td>Zod</td><td>Runtime request schemas</td></tr>
+        <tr><td>Frontend</td><td>React 19 + R3F</td><td>3D scene + terminal UI</td></tr>
+        <tr><td>3D Engine</td><td>Three.js + drei</td><td>Canvas, camera, post-processing</td></tr>
+        <tr><td>State</td><td>Zustand</td><td>Global store (6 fields)</td></tr>
+        <tr><td>Audio</td><td>Web Audio API</td><td>Typing sounds, ambient drone</td></tr>
+        <tr><td>Build</td><td>Vite 8</td><td>Frontend dev server + bundler</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>Engineering</span>
+    <span>12 / 14</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SLIDE 13: By the Numbers
+     ════════════════════════════════════════════════════════ -->
+
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-num">13</span>
+    <span class="slide-title">By the Numbers</span>
+    <span class="slide-subtitle">Metrics</span>
+  </div>
+  <div class="slide-body">
+    <div class="body-grid grid-4">
+      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
+        <div class="stat-num">19</div>
+        <div class="stat-label">API Endpoints</div>
+      </div>
+      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
+        <div class="stat-num">10</div>
+        <div class="stat-label">Frontend Files</div>
+      </div>
+      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
+        <div class="stat-num">1</div>
+        <div class="stat-label">UI Component</div>
+      </div>
+      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
+        <div class="stat-num">12</div>
+        <div class="stat-label">Persona Skills</div>
+      </div>
+      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
+        <div class="stat-num">5</div>
+        <div class="stat-label">mmx Tools</div>
+      </div>
+      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
+        <div class="stat-num">500</div>
+        <div class="stat-label">Memory Cap / Grave</div>
+      </div>
+      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
+        <div class="stat-num">28</div>
+        <div class="stat-label">Source Files Total</div>
+      </div>
+      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
+        <div class="stat-num">2</div>
+        <div class="stat-label">Commands to Start</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span>Metrics</span>
+    <span>13 / 14</span>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SLIDE 14: End
+     ════════════════════════════════════════════════════════ -->
+
+<div class="slide">
+  <div class="slide-header">
+    <span class="slide-num">14</span>
+    <span class="slide-title">0xRIP</span>
+    <span class="slide-subtitle">github.com/yangjingo/0xRIP</span>
+  </div>
+  <div class="slide-body body-center">
+    <h1>0xRIP</h1>
+    <p class="hero-sub">Digital Graveyard Terminal</p>
+    <div class="hero-divider">══════════════════════════</div>
+    <p class="hero-tag">Data dies, but does not disappear.</p>
+  </div>
+  <div class="slide-footer">
+    <span>Built with deepseek-v4-pro</span>
+    <span>14 / 14</span>
+  </div>
+</div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     NAV
+     ════════════════════════════════════════════════════════ -->
+<div class="nav" id="nav"></div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const nav = document.getElementById('nav');
+  const total = slides.length;
+  let current = 0;
+
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.onclick = () => go(i);
+    nav.appendChild(d);
+  }
+
+  function go(n) {
+    slides[current].classList.remove('active');
+    nav.children[current].classList.remove('active');
+    current = (n + total) % total;
+    slides[current].classList.add('active');
+    nav.children[current].classList.add('active');
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); go(current + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); go(current - 1); }
+    if (e.key === 'Home') { e.preventDefault(); go(0); }
+    if (e.key === 'End') { e.preventDefault(); go(total - 1); }
+  });
+
+  go(0);
+</script>
+
+</body>
+</html>
