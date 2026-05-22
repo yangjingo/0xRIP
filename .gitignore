@@ -1,13 +1,5 @@
-# Runtime logs
+# Runtime
 *.log
-*.out
-*.err
-*log*.txt
-
-# Python
-__pycache__/
-*.pyc
-.venv/
 
 # Node / Bun
 node_modules/
@@ -21,15 +13,19 @@ bun.lock
 # Secrets
 .env
 
-# OS/editor
+# OS
 .DS_Store
 Thumbs.db
 
-# Agent
+# Agent (session-level, not project)
 .claude/
-CLAUDE.md
-GEMINI.md
-AGENTS.md
 
-# 0xRIP local memory store
+# 0xRIP local memory
 .rip/
+
+# Generated media (mmx output)
+speech_*.mp3
+music_*.mp3
+
+# Build output
+dist/

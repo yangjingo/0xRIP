@@ -4,9 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun run --watch src/index.ts",
-    "start": "bun run src/index.ts",
-    "test": "bun test",
-    "test:live": "MMX_LIVE=1 bun test"
+    "start": "bun run src/index.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.44.0",
