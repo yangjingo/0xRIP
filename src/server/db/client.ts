@@ -7,7 +7,7 @@ import { join } from 'node:path';
 
 // ── Connection ──────────────────────────────────────────────
 
-const DB_PATH = join(import.meta.dir, '..', '..', '..', '0xrip.db');
+const DB_PATH = join(import.meta.dir, '..', '..', '..', '.rip', '0xrip.db');
 
 export const sqlite = new Database(DB_PATH, { create: true });
 

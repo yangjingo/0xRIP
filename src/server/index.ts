@@ -411,7 +411,7 @@ async function handleRequest(req: Request): Promise<Response> {
       const parsed = GenerateSpeechRequestSchema.safeParse(body);
       if (!parsed.success) return error(parsed.error.message, 422);
 
-      const outFile = `speech_${Date.now()}.mp3`;
+      const outFile = `.rip/speech_${Date.now()}.mp3`;
       const args = [
         'speech', 'synthesize',
         '--text', parsed.data.text,
