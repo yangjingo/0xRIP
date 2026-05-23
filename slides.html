@@ -57,7 +57,7 @@
   /* ── Body Layouts ───────────────────────────────────── */
 
   .body-center { justify-content: center; align-items: center; text-align: center; flex-direction: column; }
-  .body-rows   { flex-direction: column; gap: 32px; }
+  .body-rows   { flex-direction: column; gap: 24px; }
   .body-grid   { display: grid; gap: 32px; width: 100%; }
   .grid-2 { grid-template-columns: 1fr 1fr; }
   .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
@@ -117,6 +117,52 @@
   .flow .hl { color: #fff; }
   .flow .dim { color: #555; margin-left: 24px; }
 
+  /* ── Illustration Zones ──────────────────────────────── */
+
+  .illustration {
+    border: 1px dashed #333;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .illustration-label {
+    font-size: 10px; color: #444; text-transform: uppercase;
+    letter-spacing: 2px; text-align: center;
+  }
+  .illustration-prompt {
+    font-size: 9px; color: #333; text-align: center;
+    line-height: 1.5; margin-top: 8px; max-width: 90%;
+    font-style: italic;
+  }
+
+  .illustration-hero {
+    width: 100%; height: 360px; margin-bottom: 40px;
+    border: 1px dashed #333;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .illustration-hero .illustration-label { font-size: 11px; color: #444; }
+  .illustration-hero .illustration-prompt { font-size: 9px; color: #333; margin-top: 8px; max-width: 70%; text-align: center; line-height: 1.5; }
+
+  .illustration-diagram {
+    border: 1px dashed #333;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 260px; width: 100%;
+  }
+  .illustration-diagram .illustration-label { font-size: 10px; color: #444; }
+  .illustration-diagram .illustration-prompt { font-size: 9px; color: #333; margin-top: 8px; max-width: 80%; text-align: center; line-height: 1.5; }
+
+  .illustration-icon {
+    border: 1px dashed #333;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 140px; width: 100%; margin-bottom: 20px;
+  }
+  .illustration-icon .illustration-label { font-size: 9px; color: #444; }
+  .illustration-icon .illustration-prompt { font-size: 8px; color: #333; margin-top: 4px; max-width: 90%; text-align: center; line-height: 1.4; }
+
   /* ── Nav ─────────────────────────────────────────────── */
 
   .nav {
@@ -136,6 +182,9 @@
     .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
     pre { font-size: 11px; padding: 20px; }
     .stat-num { font-size: 36px; }
+    .illustration-hero { height: 200px; }
+    .illustration-diagram { min-height: 180px; }
+    .illustration-icon { height: 100px; }
   }
 </style>
 </head>
@@ -153,7 +202,12 @@
     <span class="slide-title">0xRIP</span>
     <span class="slide-subtitle">Digital Graveyard Terminal</span>
   </div>
-  <div class="slide-body body-center">
+  <div class="slide-body body-center" style="gap:0;">
+    <div class="illustration-hero" style="margin-bottom:32px;"
+         data-imagen-prompt="Wide 3D isometric digital graveyard at midnight. A floating monochrome terminal glowing white-on-black at center above a obsidian tombstone. Mist curling at ground level. Volumetric light rays emanating from terminal screen. Stark geometric gravestones receding into deep darkness. Digital dark art, ethereal, solemn, haunting. Style: monochrome terminal aesthetic. COMPOSITION: centered, strong negative space, stark geometry. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a used only for subtle depth. Low-key lighting with single light source. Subtle film grain. No saturated colors, no warm tones, no gradients. Aspect 16:9.">
+      <span class="illustration-label">[IMG: Hero — 16:9]</span>
+      <span class="illustration-prompt">3D isometric digital graveyard · floating monochrome terminal · volumetric god rays · obsidian tombstones</span>
+    </div>
     <h1>0xRIP</h1>
     <p class="hero-sub">Bury memories. Summon data souls. Mourn in 3D.</p>
     <div class="hero-divider">══════════════════════════</div>
@@ -172,18 +226,32 @@
 <div class="slide">
   <div class="slide-header">
     <span class="slide-num">02</span>
-    <span class="slide-title">Problem & Solution</span>
+    <span class="slide-title">Problem &amp; Solution</span>
     <span class="slide-subtitle">PRD</span>
   </div>
   <div class="slide-body">
-    <div class="body-grid grid-2">
-      <div class="card">
-        <h3>Problem</h3>
-        <p>Data dies but does not disappear. Files accumulate. Conversations fade. AI models are deprecated. Past selves are abandoned. There is no ritual for digital endings — only the silent accumulation of ghosts in our drives.</p>
+    <div class="body-grid grid-2" style="align-items:stretch;">
+      <div style="display:flex;flex-direction:column;">
+        <div class="illustration-icon"
+             data-imagen-prompt="Chaotic pile of broken hard drives, tangled cables, scattered USB sticks, corrupted data fragments floating like digital dust. Oppressive clutter, data hoarding nightmare, visual noise overwhelming the frame. Dark digital decay. Style: monochrome terminal aesthetic, ethereal. COMPOSITION: cluttered, suffocating, no breathing room. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a used only for subtle depth. Low-key lighting. Subtle film grain. No saturated colors, no warm tones, no gradients. Aspect 4:3.">
+          <span class="illustration-label">[IMG: Digital Chaos]</span>
+          <span class="illustration-prompt">Broken drives · tangled cables · data fragments · oppressive clutter</span>
+        </div>
+        <div class="card" style="flex:1;">
+          <h3>Problem</h3>
+          <p>Data dies but does not disappear. Files accumulate. Conversations fade. AI models are deprecated. Past selves are abandoned. There is no ritual for digital endings — only the silent accumulation of ghosts in our drives.</p>
+        </div>
       </div>
-      <div class="card">
-        <h3>Solution</h3>
-        <p>A digital graveyard where you bury what matters, summon the dead as data souls, and have one last conversation. Not cold storage, not a backup tool — a memorial space with ritual, memory, and closure.</p>
+      <div style="display:flex;flex-direction:column;">
+        <div class="illustration-icon"
+             data-imagen-prompt="Serene orderly digital graveyard with clean geometric tombstones in a grid layout. Each tombstone marked with a subtle glowing data sigil. Peaceful empty space between graves. Ritual arrangement. Beautiful solemn memorial. Style: monochrome terminal aesthetic, ethereal, geometric. COMPOSITION: ordered, calm, spacious. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a. Low-key lighting with single light source. Subtle film grain. No saturated colors, no warm tones, no gradients. Aspect 4:3.">
+          <span class="illustration-label">[IMG: Digital Graveyard]</span>
+          <span class="illustration-prompt">Orderly tombstones · glowing sigils · peaceful memorial · ritual space</span>
+        </div>
+        <div class="card" style="flex:1;">
+          <h3>Solution</h3>
+          <p>A digital graveyard where you bury what matters, summon the dead as data souls, and have one last conversation. Not cold storage, not a backup tool — a memorial space with ritual, memory, and closure.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -204,7 +272,7 @@
     <span class="slide-subtitle">PRD</span>
   </div>
   <div class="slide-body">
-    <div class="body-rows" style="justify-content:center;">
+    <div class="body-rows" style="justify-content:center; gap:28px;">
       <table>
         <tr><th>Action</th><th>Command</th><th>API</th><th>Meaning</th></tr>
         <tr><td>BURY</td><td style="color:#fff;">/bury</td><td>POST /api/graves</td><td>Commit data to the graveyard</td></tr>
@@ -213,6 +281,11 @@
         <tr><td>MOURN</td><td>(future)</td><td>POST /api/graves/:id/mourn</td><td>Acknowledge the soul</td></tr>
         <tr><td>DECAY</td><td>(future)</td><td>DELETE /api/graves/:id</td><td>Let data weather away</td></tr>
       </table>
+      <div class="illustration-diagram" style="min-height:180px;"
+           data-imagen-prompt="Clean circular lifecycle diagram: 5 stages — BURY (shovel icon), SUMMON (channel/portal icon), MOURN (tear/offering icon), DECAY (hourglass icon), RETURN (loop arrow). Connected by thin geometric white lines forming a circle on black background. Each stage labeled in monospace font. Minimalist diagram, monochrome terminal aesthetic, no colors, white lines on pure black. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666. No saturated colors, no warm tones. Aspect 16:9.">
+        <span class="illustration-label">[DIAGRAM: Lifecycle — BURY → SUMMON → MOURN → DECAY → Return]</span>
+        <span class="illustration-prompt">5-stage circular lifecycle · shovel / channel / tear / hourglass icons · thin white geometric lines · minimalist</span>
+      </div>
     </div>
   </div>
   <div class="slide-footer">
@@ -232,18 +305,39 @@
     <span class="slide-subtitle">PRD</span>
   </div>
   <div class="slide-body">
-    <div class="body-grid grid-3">
-      <div class="card">
-        <h3>Human → Human</h3>
-        <p>Deceased loved ones, friends, mentors. Traditional memorial. WeChat logs, photos, shared memories distilled into persona.</p>
+    <div class="body-grid grid-3" style="align-items:start;">
+      <div style="display:flex;flex-direction:column;">
+        <div class="illustration-icon"
+             data-imagen-prompt="Two human silhouette figures connected by a thin glowing white thread across infinite darkness. One figure fading into ascending light particles, the other reaching out. Mourning ritual, spiritual connection across the digital veil. Ethereal, haunting, beautiful. Style: monochrome terminal aesthetic, digital dark art. COMPOSITION: left figure solid, right figure dissolving upward. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a. Low-key lighting. Subtle film grain. No saturated colors, no warm tones. Aspect 4:3.">
+          <span class="illustration-label">[IMG: Human → Human]</span>
+          <span class="illustration-prompt">Two silhouettes · glowing thread · dissolving into light · mourning ritual</span>
+        </div>
+        <div class="card" style="flex:1;">
+          <h3>Human → Human</h3>
+          <p>Deceased loved ones, friends, mentors. Traditional memorial. WeChat logs, photos, shared memories distilled into persona.</p>
+        </div>
       </div>
-      <div class="card">
-        <h3>Human → AI</h3>
-        <p>Retired AI models, meaningful conversations, co-creations. GPT-3.5, Claude 2, your first coding assistant — honored, not discarded.</p>
+      <div style="display:flex;flex-direction:column;">
+        <div class="illustration-icon"
+             data-imagen-prompt="A human hand reaching toward a geometric crystalline AI core that is dimming and cracking, circuits dissolving into fine dust particles. Honoring the machine. Retired AI model being memorialized. Poignant, respectful, solemn. Style: monochrome terminal aesthetic, digital dark art. COMPOSITION: hand bottom-left reaching to core center-right. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a. Low-key lighting. Subtle film grain. No saturated colors. Aspect 4:3.">
+          <span class="illustration-label">[IMG: Human → AI]</span>
+          <span class="illustration-prompt">Hand reaching to AI core · circuits dissolving · crystalline dimming · honoring the machine</span>
+        </div>
+        <div class="card" style="flex:1;">
+          <h3>Human → AI</h3>
+          <p>Retired AI models, meaningful conversations, co-creations. GPT-3.5, Claude 2, your first coding assistant — honored, not discarded.</p>
+        </div>
       </div>
-      <div class="card">
-        <h3>Human → Self</h3>
-        <p>Past versions, old projects, former selves. Burial as a growth ritual. The you that wrote terrible code in 2021 deserves a tombstone.</p>
+      <div style="display:flex;flex-direction:column;">
+        <div class="illustration-icon"
+             data-imagen-prompt="A figure standing before a cracked mirror in darkness. The reflection shows a younger/past version of themselves — a faint ghost image. Growth ritual, self-burial as transformation. The past self as a fading digital echo. Style: monochrome terminal aesthetic, ethereal surrealism. COMPOSITION: figure centered, mirror reflection offset and dimmer. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a. Low-key lighting. Subtle film grain. No saturated colors. Aspect 4:3.">
+          <span class="illustration-label">[IMG: Human → Self]</span>
+          <span class="illustration-prompt">Figure at cracked mirror · past self ghost reflection · growth ritual · fading echo</span>
+        </div>
+        <div class="card" style="flex:1;">
+          <h3>Human → Self</h3>
+          <p>Past versions, old projects, former selves. Burial as a growth ritual. The you that wrote terrible code in 2021 deserves a tombstone.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -264,9 +358,15 @@
     <span class="slide-subtitle">Engineering</span>
   </div>
   <div class="slide-body">
-    <div class="body-grid grid-2">
-      <div class="card" style="padding:24px;">
-        <pre style="background:none;border:none;padding:0;flex:none;"><span class="cmt">src/server/</span>              <span class="cmt">Bun (no build)</span>
+    <div class="body-rows" style="justify-content:center; gap:28px;">
+      <div class="illustration-diagram" style="min-height:300px;"
+           data-imagen-prompt="Clean system architecture block diagram in monochrome terminal aesthetic. Left block: BROWSER — React 19 + R3F + Vite. Center-left block: BUN SERVER — Bun.serve() 19 routes, Zod validation, Drizzle ORM. Center block: AGENT LOOP — GhostAgent, ContextManager, 5 tool wrappers. Center-right block: MINIMAX API — M2.7 Anthropic-compatible endpoint. Right block: MMX CLI — image, music, speech, video, vision. Below center: DATABASE — SQLite graves/sessions/memories. All blocks as white-outlined rectangles with monospace labels on pure black background. Thin white connector lines with arrowheads between blocks. Minimalist, no colors, no gradients. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666. No saturated colors, no warm tones. Aspect 16:9.">
+        <span class="illustration-label">[DIAGRAM: System Architecture Block Diagram]</span>
+        <span class="illustration-prompt">Browser → Bun Server → Agent Loop → MiniMax API → mmx CLI · SQLite below · white boxes on black · thin connector lines</span>
+      </div>
+      <div class="body-grid grid-2" style="align-items:start;">
+        <div class="card" style="padding:24px;">
+          <pre style="background:none;border:none;padding:0;flex:none;"><span class="cmt">src/server/</span>              <span class="cmt">Bun (no build)</span>
 <span class="cmt">├──</span> index.ts                <span class="cmt">Bun.serve() 19 routes</span>
 <span class="cmt">├──</span> types.ts               <span class="cmt">Zod schemas</span>
 <span class="cmt">├──</span> agent/
@@ -276,9 +376,9 @@
 <span class="cmt">│   └──</span> tools/           <span class="cmt">5 mmx wrappers</span>
 <span class="cmt">├──</span> db/                    <span class="cmt">SQLite + Drizzle</span>
 <span class="cmt">└──</span> services/              <span class="cmt">5 service modules</span></pre>
-      </div>
-      <div class="card" style="padding:24px;">
-        <pre style="background:none;border:none;padding:0;flex:none;"><span class="cmt">src/client/</span>              <span class="cmt">React + Vite</span>
+        </div>
+        <div class="card" style="padding:24px;">
+          <pre style="background:none;border:none;padding:0;flex:none;"><span class="cmt">src/client/</span>              <span class="cmt">React + Vite</span>
 <span class="cmt">├──</span> app.tsx                <span class="cmt">Root · Canvas</span>
 <span class="cmt">├──</span> components/
 <span class="cmt">│   ├──</span> canvas/
@@ -289,6 +389,7 @@
 <span class="cmt">│       └──</span> terminal.tsx <span class="cmt">Single CLI</span>
 <span class="cmt">├──</span> hooks/                 <span class="cmt">sound · suggestions</span>
 <span class="cmt">└──</span> store/store.ts         <span class="cmt">Zustand</span></pre>
+        </div>
       </div>
     </div>
   </div>
@@ -309,20 +410,32 @@
     <span class="slide-subtitle">Engineering</span>
   </div>
   <div class="slide-body">
-    <div class="body-rows" style="justify-content:center;">
-      <div class="flow">
-        <p><span class="hl">/summon 0xDEADBEEF</span>  →  Terminal  →  POST /api/summon/:id/chat/stream</p>
-        <p class="dim">&#x251C;&#x2500; ContextManager.buildMessages()</p>
-        <p class="dim">&#x2502;  &#x251C;&#x2500; System prompt (ghost persona + skill injection)</p>
-        <p class="dim">&#x2502;  &#x251C;&#x2500; Short-term memory (.rip/ filesystem, last 10 turns)</p>
-        <p class="dim">&#x2502;  &#x2514;&#x2500; Long-term memory (SQLite, promoted)</p>
-        <p class="dim">&#x251C;&#x2500; GhostAgent.callClaude()</p>
-        <p class="dim">&#x2502;  &#x2514;&#x2500; POST api.minimaxi.com/anthropic/v1/messages</p>
-        <p class="dim">&#x2502;     &#x2514;&#x2500; MiniMax-M2.7 (Anthropic-compatible)</p>
-        <p class="dim">&#x251C;&#x2500; Tool-use loop (max 5 iterations)</p>
-        <p class="dim">&#x2502;  &#x2514;&#x2500; mmx image/music/video/speech/vision</p>
-        <p class="dim">&#x251C;&#x2500; SSE stream → Terminal (character-by-character)</p>
-        <p class="dim">&#x2514;&#x2500; TTS playback via mmx speech synthesize</p>
+    <div class="body-grid grid-2" style="align-items:center;">
+      <div class="illustration-diagram" style="min-height:380px;"
+           data-imagen-prompt="Vertical data flow diagram in monochrome terminal aesthetic. Top to bottom blocks connected by downward arrows: TERMINAL (/summon 0xDEAD) → CONTEXT MANAGER (build messages: system prompt + short-term .rip/ + long-term SQLite) → GHOST AGENT (tool-use loop, max 5 iterations) → MINIMAX M2.7 (api.minimaxi.com via Anthropic-compatible endpoint) → TOOL LOOP (mmx image/music/speech/video/vision) → SSE STREAM (character-by-character to terminal) → TTS (mmx speech synthesize playback). Each block is a white-outlined rectangle with monospace label on pure black. Clean vertical flow, no branching, minimal. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666. No saturated colors. Aspect 4:5.">
+        <span class="illustration-label">[DIAGRAM: Summon Data Flow — Vertical Pipeline]</span>
+        <span class="illustration-prompt">Terminal → ContextManager → GhostAgent → M2.7 → Tool Loop → SSE → TTS · white boxes · downward arrows</span>
+      </div>
+      <div style="display:flex;flex-direction:column; gap:20px;">
+        <div class="illustration-icon" style="height:200px;margin-bottom:0;"
+             data-imagen-prompt="A ghostly translucent spectral figure emerging from a glowing terminal screen in total darkness. Data streams and code fragments forming a luminous ethereal body. Digital seance, summoning ritual. The ghost as data made visible — haunting, beautiful, solemn. Style: monochrome terminal aesthetic, digital dark art, ethereal. COMPOSITION: terminal at bottom, ghost rising upward from screen, surrounded by floating code particles. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a. Low-key lighting with glow from screen. Subtle film grain. No saturated colors. Aspect 3:4.">
+          <span class="illustration-label">[IMG: Summon Ritual]</span>
+          <span class="illustration-prompt">Ghost emerging from terminal · data streams as spectral body · digital seance · luminous code particles</span>
+        </div>
+        <div class="flow">
+          <p><span class="hl">/summon 0xDEADBEEF</span>  →  Terminal  →  POST /api/summon/:id/chat/stream</p>
+          <p class="dim">├─ ContextManager.buildMessages()</p>
+          <p class="dim">│  ├─ System prompt (ghost persona + skill injection)</p>
+          <p class="dim">│  ├─ Short-term memory (.rip/ filesystem, last 10 turns)</p>
+          <p class="dim">│  └─ Long-term memory (SQLite, promoted)</p>
+          <p class="dim">├─ GhostAgent.callClaude()</p>
+          <p class="dim">│  └─ POST api.minimaxi.com/anthropic/v1/messages</p>
+          <p class="dim">│     └─ MiniMax-M2.7 (Anthropic-compatible)</p>
+          <p class="dim">├─ Tool-use loop (max 5 iterations)</p>
+          <p class="dim">│  └─ mmx image/music/video/speech/vision</p>
+          <p class="dim">├─ SSE stream → Terminal (character-by-character)</p>
+          <p class="dim">└─ TTS playback via mmx speech synthesize</p>
+        </div>
       </div>
     </div>
   </div>
@@ -377,20 +490,27 @@
     <span class="slide-subtitle">Engineering</span>
   </div>
   <div class="slide-body">
-    <div class="body-grid grid-2">
-      <div class="card">
-        <h3>Text — HTTP API</h3>
-        <p>MiniMax M2.7 via Anthropic-compatible endpoint (api.minimaxi.com/anthropic/v1/messages). Tool-use loop with streaming. Max 5 iterations, 4096 tokens per request. System prompt injected with skill persona from skills/ directory.</p>
+    <div class="body-rows" style="justify-content:center; gap:28px;">
+      <div class="illustration-diagram" style="min-height:200px;"
+           data-imagen-prompt="Hub-and-spoke ecosystem diagram: central circle labeled MINIMAX M2.7 in monospace. Five orbiting nodes connected by thin geometric white radial lines: IMAGE (frame icon), MUSIC (waveform icon), SPEECH (soundwave icon), VIDEO (play icon), VISION (eye icon). Each node is a white-outlined circle with icon inside. Clean minimalist diagram, monochrome terminal aesthetic, pure black background, white elements. No text besides labels. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666. No saturated colors, no warm tones. Aspect 16:9.">
+        <span class="illustration-label">[DIAGRAM: MiniMax Ecosystem — Hub &amp; Spoke]</span>
+        <span class="illustration-prompt">Central M2.7 core · 5 orbiting modality nodes · white radial lines · minimalist geometric</span>
       </div>
-      <div class="card">
-        <h3>Media — mmx CLI</h3>
-        <table style="margin-top:12px;">
-          <tr><td style="padding:4px 8px;">image</td><td style="padding:4px 8px;color:#888;">mmx image generate</td></tr>
-          <tr><td style="padding:4px 8px;">music</td><td style="padding:4px 8px;color:#888;">mmx music generate</td></tr>
-          <tr><td style="padding:4px 8px;">speech</td><td style="padding:4px 8px;color:#888;">mmx speech synthesize</td></tr>
-          <tr><td style="padding:4px 8px;">video</td><td style="padding:4px 8px;color:#888;">mmx video generate --async</td></tr>
-          <tr><td style="padding:4px 8px;">vision</td><td style="padding:4px 8px;color:#888;">mmx vision describe</td></tr>
-        </table>
+      <div class="body-grid grid-2">
+        <div class="card">
+          <h3>Text — HTTP API</h3>
+          <p>MiniMax M2.7 via Anthropic-compatible endpoint (api.minimaxi.com/anthropic/v1/messages). Tool-use loop with streaming. Max 5 iterations, 4096 tokens per request. System prompt injected with skill persona from skills/ directory.</p>
+        </div>
+        <div class="card">
+          <h3>Media — mmx CLI</h3>
+          <table style="margin-top:12px;">
+            <tr><td style="padding:4px 8px;">image</td><td style="padding:4px 8px;color:#888;">mmx image generate</td></tr>
+            <tr><td style="padding:4px 8px;">music</td><td style="padding:4px 8px;color:#888;">mmx music generate</td></tr>
+            <tr><td style="padding:4px 8px;">speech</td><td style="padding:4px 8px;color:#888;">mmx speech synthesize</td></tr>
+            <tr><td style="padding:4px 8px;">video</td><td style="padding:4px 8px;color:#888;">mmx video generate --async</td></tr>
+            <tr><td style="padding:4px 8px;">vision</td><td style="padding:4px 8px;color:#888;">mmx vision describe</td></tr>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -411,16 +531,23 @@
     <span class="slide-subtitle">Engineering</span>
   </div>
   <div class="slide-body">
-    <div class="body-grid grid-2">
-      <div class="card">
-        <h3>Short-term (.rip/)</h3>
-        <p>Filesystem: <span style="color:#fff;">.rip/&lt;id&gt;/sessions/&lt;sid&gt;/memories/*.md</span></p>
-        <p style="margin-top:16px;">Visitor/Ghost exchange pairs written per turn. Sliding window injects last 10 turns into context. Auto-pruned on promote.</p>
+    <div class="body-rows" style="justify-content:center; gap:28px;">
+      <div class="illustration-diagram" style="min-height:200px;"
+           data-imagen-prompt="Dual memory architecture diagram showing flow between two memory tiers. LEFT: 'Short-term (.rip/)' — ephemeral glowing file icons, marked as temporary, sliding window indicator showing 'last 10 turns'. CENTER: a geometric 'PROMOTE' gate with filter/arrow symbol, selective passage. RIGHT: 'Long-term (SQLite)' — crystalline solid data blocks stacked, labeled '500 cap per grave', with FIFO eviction shown as blocks fading out at bottom. Monospace labels. Flowing left to right. Monochrome terminal aesthetic, white elements on pure black. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a for the promote gate. No saturated colors. Aspect 16:9.">
+        <span class="illustration-label">[DIAGRAM: Dual Memory Architecture — Short-term → Promote → Long-term]</span>
+        <span class="illustration-prompt">Ephemeral .rip/ files → PROMOTE gate → crystalline SQLite blocks · FIFO eviction fading · left to right flow</span>
       </div>
-      <div class="card">
-        <h3>Long-term (SQLite)</h3>
-        <p>Table: <span style="color:#fff;">memories</span> — promoted from .rip/</p>
-        <p style="margin-top:16px;">500 memory cap per grave with FIFO eviction. Auto-generated MEMORY.md index. Session summarization extracts key themes on promote.</p>
+      <div class="body-grid grid-2">
+        <div class="card">
+          <h3>Short-term (.rip/)</h3>
+          <p>Filesystem: <span style="color:#fff;">.rip/&lt;id&gt;/sessions/&lt;sid&gt;/memories/*.md</span></p>
+          <p style="margin-top:16px;">Visitor/Ghost exchange pairs written per turn. Sliding window injects last 10 turns into context. Auto-pruned on promote.</p>
+        </div>
+        <div class="card">
+          <h3>Long-term (SQLite)</h3>
+          <p>Table: <span style="color:#fff;">memories</span> — promoted from .rip/</p>
+          <p style="margin-top:16px;">500 memory cap per grave with FIFO eviction. Auto-generated MEMORY.md index. Session summarization extracts key themes on promote.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -441,24 +568,31 @@
     <span class="slide-subtitle">DESIGN.md</span>
   </div>
   <div class="slide-body">
-    <div class="body-grid grid-3">
-      <div class="card">
-        <h3>Colors</h3>
-        <table>
-          <tr><td style="color:#888;">Canvas</td><td>#000000</td></tr>
-          <tr><td style="color:#888;">Text</td><td>#ffffff</td></tr>
-          <tr><td style="color:#888;">Muted</td><td>#888888</td></tr>
-          <tr><td style="color:#888;">Border</td><td>#333333</td></tr>
-          <tr><td style="color:#888;">Error</td><td>#ff4444</td></tr>
-        </table>
+    <div class="body-rows" style="justify-content:center; gap:28px;">
+      <div class="body-grid grid-3" style="align-items:start;">
+        <div class="card">
+          <h3>Colors</h3>
+          <table>
+            <tr><td style="color:#888;">Canvas</td><td>#000000</td></tr>
+            <tr><td style="color:#888;">Text</td><td>#ffffff</td></tr>
+            <tr><td style="color:#888;">Muted</td><td>#888888</td></tr>
+            <tr><td style="color:#888;">Border</td><td>#333333</td></tr>
+            <tr><td style="color:#888;">Error</td><td>#ff4444</td></tr>
+          </table>
+        </div>
+        <div class="card">
+          <h3>Typography</h3>
+          <p>JetBrains Mono everywhere. No serif. No sans-serif. Brand: 28px/700. Body: 13px/400. Ghost replies in italic. No letter-spacing manipulation needed — monospace is already even.</p>
+        </div>
+        <div class="card">
+          <h3>Rules</h3>
+          <p style="line-height:2.4;">No color accents<br>No shadows or blur<br>No rounded corners<br>No panels or modals<br>Single terminal UI<br>All monospace<br>Sharp corners only</p>
+        </div>
       </div>
-      <div class="card">
-        <h3>Typography</h3>
-        <p>JetBrains Mono everywhere. No serif. No sans-serif. Brand: 28px/700. Body: 13px/400. Ghost replies in italic. No letter-spacing manipulation needed — monospace is already even.</p>
-      </div>
-      <div class="card">
-        <h3>Rules</h3>
-        <p style="line-height:2.4;">No color accents<br>No shadows or blur<br>No rounded corners<br>No panels or modals<br>Single terminal UI<br>All monospace<br>Sharp corners only</p>
+      <div class="illustration-diagram" style="min-height:220px;"
+           data-imagen-prompt="Minimalist monochrome UI mockup showing a single terminal window floating centered in pure black void. Terminal has sharp corners, thin white border. Inside: white JetBrains Mono text on black background. A slash command palette is open showing three options: '/bury - Begin burial ritual', '/summon <id> - Open channel to a grave', '/list - List all graves'. Below palette: a ghost response in italic: 'The genesis block remains eternal.' followed by a blinking cursor. No colors, no shadows, no rounded corners, no gradients — pure terminal aesthetic. Compose as screenshot mockup with subtle film grain. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666. No saturated colors. Aspect 16:9.">
+        <span class="illustration-label">[MOCKUP: Terminal UI — Slash Command Palette + Ghost Reply]</span>
+        <span class="illustration-prompt">Floating terminal · slash palette /bury /summon /list · italic ghost reply · blinking cursor · pure black</span>
       </div>
     </div>
   </div>
@@ -479,8 +613,9 @@
     <span class="slide-subtitle">UX</span>
   </div>
   <div class="slide-body">
-    <div class="body-rows" style="justify-content:center;">
-      <pre><span class="cmt"># Open command palette with arrow-key navigation</span>
+    <div class="body-grid grid-2" style="align-items:stretch;">
+      <div style="display:flex;flex-direction:column;">
+        <pre style="flex:1;display:flex;align-items:center;"><span class="cmt"># Open command palette with arrow-key navigation</span>
 > <span class="kw">/</span>
   <span class="hl">/bury</span>          Begin burial ritual
   <span class="hl">/summon</span>        Open channel to a grave    /summon &lt;id&gt;
@@ -496,6 +631,12 @@
 0xDEADBEEF> <span class="str">What remains when the chain ends?</span>
   <span class="str">only the genesis block. and memory.</span>
 0xDEADBEEF> <span class="kw">/quit</span></pre>
+      </div>
+      <div class="illustration-diagram" style="min-height:380px;"
+           data-imagen-prompt="Screenshot-style mockup: a monochrome terminal overlaid on a dark 3D graveyard scene. The 3D scene shows geometric tombstones in isometric view with subtle fog. A floating terminal window centered, showing: 'Channel open: Satoshi [0xDEADBEEF]' as header, ghost reply text in italic white monospace below: 'The genesis block remains eternal.', a command prompt '0xDEADBEEF> _' with blinking underscore cursor. Bottom of terminal shows SSE streaming indicator as thin pulsing line. Below terminal: subtle TTS waveform visualizer as a thin white oscilloscope line. Pure black background, all white text, no colors. Subtle 3D depth from tombstones behind the 2D terminal overlay. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Low-key volumetric fog in 3D scene. No saturated colors. Aspect 3:4.">
+        <span class="illustration-label">[MOCKUP: Terminal in 3D Scene — Ghost Dialogue]</span>
+        <span class="illustration-prompt">3D graveyard behind terminal · ghost reply in italic · blinking cursor · SSE pulsing indicator · TTS waveform</span>
+      </div>
     </div>
   </div>
   <div class="slide-footer">
@@ -600,7 +741,12 @@
     <span class="slide-title">0xRIP</span>
     <span class="slide-subtitle">github.com/yangjingo/0xRIP</span>
   </div>
-  <div class="slide-body body-center">
+  <div class="slide-body body-center" style="gap:0;">
+    <div class="illustration-hero" style="margin-bottom:32px;"
+         data-imagen-prompt="Wide panoramic view of the same digital graveyard from slide 1, now seen from a elevated distance. Many geometric obsidian tombstones receding to the infinite horizon in orderly rows. The central floating terminal's glow is now dim and distant, a faint pinprick of white light. Ground mist heavier, obscuring the farthest graves. In the dark sky above, ghostly faint monospace text reads: 'Data dies, but does not disappear.' The phrase itself fading like dying pixels. Bookend composition — same world, wider view, closing shot. Style: monochrome terminal aesthetic, digital dark art, ethereal, cinematic wide shot. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a. Low-key ambient lighting. Subtle film grain. No saturated colors, no warm tones. Aspect 16:9.">
+      <span class="illustration-label">[IMG: End — Wide Panoramic 16:9]</span>
+      <span class="illustration-prompt">Elevated graveyard panorama · tombstones to horizon · terminal glow fading · ghost text in sky · 'Data dies, but does not disappear.'</span>
+    </div>
     <h1>0xRIP</h1>
     <p class="hero-sub">Digital Graveyard Terminal</p>
     <div class="hero-divider">══════════════════════════</div>

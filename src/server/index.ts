@@ -30,6 +30,7 @@ import {
 import type { ChatResponse } from './types';
 import { db, eq, and, isNull } from './db/client';
 import { desc } from 'drizzle-orm';
+import { mkdir } from 'node:fs/promises';
 import { graves, sessions, memories } from './db/schema';
 import { runMmx } from './services/mmx';
 
@@ -300,17 +301,22 @@ async function handleRequest(req: Request): Promise<Response> {
       const epitaph = grave.epitaph;
       const lyrics = `[Intro]\nIn the void of 0xRIP...\n[Verse]\n${name} remains, ${epitaph}.\n[Chorus]\nData souls never die, they just fade away.`;
 
+      // Ensure .rip/ exists for mmx output
+      await mkdir('.rip', { recursive: true });
+      const outFile = `.rip/requiem_${graveId}_${Date.now()}.mp3`;
       const result = await runMmx([
         'music', 'generate',
         '--prompt', 'ambient, ethereal, cyber graveyard',
         '--lyrics', lyrics,
+        '--out', outFile,
+        '--output', 'json',
       ], { timeout: 120000 });
 
-      // Try to parse as JSON, otherwise return raw
       try {
-        return json(JSON.parse(result));
+        const parsed = JSON.parse(result.trim());
+        return json({ audio_url: parsed.saved || parsed.url || outFile });
       } catch {
-        return json({ data: { audio: result } });
+        return json({ audio_url: result.trim() || outFile });
       }
     }
 
@@ -476,6 +482,7 @@ const PORT = parseInt(process.env.PORT || '8000', 10);
 Bun.serve({
   port: PORT,
   fetch: handleRequest,
+  idleTimeout: 120, // music generation can take 40-60s
 });
 
 console.log(`0xRIP backend running on http://localhost:${PORT}`);
