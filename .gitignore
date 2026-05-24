@@ -19,6 +19,7 @@ Thumbs.db
 
 # Agent (session-level, not project)
 .claude/
+.playwright-cli/
 
 # 0xRIP local memory
 .rip/
@@ -29,3 +30,4 @@ music_*.mp3
 
 # Build output
 dist/
+.gstack/

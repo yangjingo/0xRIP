@@ -38,6 +38,7 @@ export async function createGrave(data: {
   epitaph: string;
   date: string;
   skill_type?: string;
+  voice_id?: string;
 }): Promise<GraveRow> {
   const id = generateGraveId();
   const pos = randomPosition();
@@ -48,6 +49,7 @@ export async function createGrave(data: {
     epitaph: data.epitaph,
     date: data.date,
     skill_type: data.skill_type ?? null,
+    voice_id: data.voice_id ?? null,
     position_x: pos.x,
     position_y: pos.y,
     position_z: pos.z,

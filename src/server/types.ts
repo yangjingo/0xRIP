@@ -13,6 +13,10 @@ export interface GraveRow {
   position_z: number;
   video_task_id: string | null;
   video_url: string | null;
+  voice_id: string | null;
+  requiem_url: string | null;
+  memorial_image_url: string | null;
+  photos_json: string | null;
   created_at: number; // Unix timestamp (ms)
 }
 
@@ -49,6 +53,10 @@ export interface Grave {
   position: [number, number, number];
   videoUrl?: string;
   videoStatus?: 'none' | 'processing' | 'completed' | 'failed';
+  voiceId?: string;
+  requiemUrl?: string;
+  memorialImageUrl?: string;
+  photos?: { url: string; description: string }[];
 }
 
 export interface Message {
@@ -82,6 +90,10 @@ export interface CreateGraveRequest {
   name: string;
   epitaph: string;
   date: string;
+  skill_type?: string;
+  voice_id?: string;
+  generate_requiem?: boolean;
+  generate_memorial_image?: boolean;
 }
 
 export interface PromoteRequest {
@@ -114,6 +126,9 @@ export const CreateGraveRequestSchema = z.object({
   epitaph: z.string().min(1, 'Epitaph is required').max(500),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD'),
   skill_type: z.string().optional(),
+  voice_id: z.string().optional(),
+  generate_requiem: z.boolean().optional(),
+  generate_memorial_image: z.boolean().optional(),
 });
 
 export const UpdateGraveRequestSchema = z.object({
@@ -162,7 +177,11 @@ export function nowMs(): number {
 }
 
 /** Convert a DB row (from Drizzle) to the frontend-facing Grave type. */
-export function rowToGrave(row: { id: string; name: string; epitaph: string; date: string; skill_type: string | null; position_x: number; position_y: number; position_z: number; video_task_id: string | null; video_url: string | null }): Grave {
+export function rowToGrave(row: { id: string; name: string; epitaph: string; date: string; skill_type: string | null; position_x: number; position_y: number; position_z: number; video_task_id: string | null; video_url: string | null; voice_id?: string | null; requiem_url?: string | null; memorial_image_url?: string | null; photos_json?: string | null }): Grave {
+  let photos: { url: string; description: string }[] | undefined;
+  if (row.photos_json) {
+    try { photos = JSON.parse(row.photos_json); } catch { /* ignore malformed JSON */ }
+  }
   return {
     id: row.id,
     name: row.name,
@@ -176,5 +195,9 @@ export function rowToGrave(row: { id: string; name: string; epitaph: string; dat
         ? 'completed'
         : 'processing'
       : 'none',
+    voiceId: row.voice_id ?? undefined,
+    requiemUrl: row.requiem_url ?? undefined,
+    memorialImageUrl: row.memorial_image_url ?? undefined,
+    photos,
   };
 }

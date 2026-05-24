@@ -35,7 +35,7 @@ function App() {
       {/* 3D Canvas */}
       <Canvas
         shadows
-        camera={{ position: [80, 60, 80], fov: 25 }}
+        camera={{ position: [50, 70, 50], fov: 35 }}
         gl={{
           antialias: true,
           toneMapping: THREE.ACESFilmicToneMapping,

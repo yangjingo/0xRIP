@@ -9,6 +9,10 @@ export interface Grave {
   position: [number, number, number];
   videoUrl?: string;
   videoStatus?: 'none' | 'processing' | 'completed' | 'failed';
+  voiceId?: string;
+  requiemUrl?: string;
+  memorialImageUrl?: string;
+  photos?: { url: string; description: string }[];
 }
 
 interface AppState {

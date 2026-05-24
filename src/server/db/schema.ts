@@ -13,6 +13,10 @@ export const graves = sqliteTable('graves', {
   position_z: real('position_z').notNull().default(0),
   video_task_id: text('video_task_id'),
   video_url: text('video_url'),
+  voice_id: text('voice_id'),
+  requiem_url: text('requiem_url'),
+  memorial_image_url: text('memorial_image_url'),
+  photos_json: text('photos_json'),
   created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
 
@@ -33,5 +37,18 @@ export const memories = sqliteTable('memories', {
   session_id: text('session_id').references(() => sessions.id),
   content: text('content').notNull(),
   source_type: text('source_type').notNull(), // 'promoted' | 'manual' | 'image'
+  created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+});
+
+// ── dreams ──────────────────────────────────────────────────
+
+export const dreams = sqliteTable('dreams', {
+  id: text('id').primaryKey(),
+  grave_id: text('grave_id').notNull().references(() => graves.id),
+  prompt: text('prompt').notNull(),
+  video_task_id: text('video_task_id'),
+  video_url: text('video_url'),
+  status: text('status').notNull().default('generating'), // 'generating' | 'completed' | 'failed'
+  memory_sources: text('memory_sources'), // JSON array of source memory IDs
   created_at: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });

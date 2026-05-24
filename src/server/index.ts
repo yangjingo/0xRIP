@@ -26,12 +26,13 @@ import {
   GenerateSpeechRequestSchema,
   GenerateVideoRequestSchema,
   rowToGrave,
+  generateHexId,
 } from './types';
 import type { ChatResponse } from './types';
 import { db, eq, and, isNull } from './db/client';
 import { desc } from 'drizzle-orm';
 import { mkdir } from 'node:fs/promises';
-import { graves, sessions, memories } from './db/schema';
+import { graves, sessions, memories, dreams } from './db/schema';
 import { runMmx } from './services/mmx';
 
 // ── Init ────────────────────────────────────────────────────
@@ -111,6 +112,40 @@ async function handleRequest(req: Request): Promise<Response> {
 
       const row = await createGrave(parsed.data);
       await writeProfile(row.id, `# ${row.name}\n\n${row.epitaph}`);
+
+      const tasks: Promise<void>[] = [];
+
+      // Fire requiem generation if requested
+      if (parsed.data.generate_requiem) {
+        tasks.push((async () => {
+          try {
+            const lyrics = `[Intro]\nIn the void of 0xRIP...\n[Verse]\n${row.name} remains, ${row.epitaph}.\n[Chorus]\nData souls never die, they just fade away.`;
+            await mkdir('.rip', { recursive: true });
+            const outFile = `.rip/requiem_${row.id}_${Date.now()}.mp3`;
+            await runMmx(['music', 'generate', '--prompt', 'ambient, ethereal, cyber graveyard', '--lyrics', lyrics, '--out', outFile, '--output', 'json'], { timeout: 120000 });
+            await db.update(graves).set({ requiem_url: outFile }).where(eq(graves.id, row.id));
+          } catch { /* non-blocking */ }
+        })());
+      }
+
+      // Fire memorial image generation if requested
+      if (parsed.data.generate_memorial_image) {
+        tasks.push((async () => {
+          try {
+            const prompt = `monochrome memorial portrait of ${row.name}, dark ethereal atmosphere, ASCII terminal aesthetic, black and white`;
+            const result = await runMmx(['image', 'generate', '--prompt', prompt, '--aspect-ratio', '1:1', '--output', 'json'], { timeout: 120000 });
+            try {
+              const parsed = JSON.parse(result.trim());
+              const url = parsed.saved?.[0] || parsed.image_urls?.[0] || parsed.url || '';
+              if (url) await db.update(graves).set({ memorial_image_url: url }).where(eq(graves.id, row.id));
+            } catch { /* ignore parse errors */ }
+          } catch { /* non-blocking */ }
+        })());
+      }
+
+      // Don't block response on media generation — fire and forget
+      Promise.all(tasks).catch(() => {});
+
       return json(rowToGrave(row));
     }
 
@@ -119,6 +154,18 @@ async function handleRequest(req: Request): Promise<Response> {
     if (path === '/api/skills' && method === 'GET') {
       const skills = await listSkills();
       return json(skills);
+    }
+
+    // ── Voices ───────────────────────────────────────────
+
+    if (path === '/api/voices' && method === 'GET') {
+      try {
+        const result = await runMmx(['speech', 'voices'], { timeout: 15000 });
+        const voices = JSON.parse(result.trim());
+        return json(voices);
+      } catch {
+        return json([]);
+      }
     }
 
     // ── Single Grave ──────────────────────────────────────
@@ -168,6 +215,73 @@ async function handleRequest(req: Request): Promise<Response> {
         sourceType: r.source_type,
         createdAt: r.created_at ? (r.created_at instanceof Date ? r.created_at.toISOString() : new Date(r.created_at).toISOString()) : null,
       })));
+    }
+
+    // ── Grave Photos ─────────────────────────────────────
+
+    const gravePhotosMatch = path.match(/^\/api\/graves\/([^/]+)\/photos$/);
+    if (gravePhotosMatch && method === 'POST') {
+      const graveId = gravePhotosMatch[1];
+      const grave = await getGrave(graveId);
+      if (!grave) return error('Soul not found.', 404);
+
+      let photoFile: File | null = null;
+      try {
+        const fd = await req.formData();
+        photoFile = fd.get('photo') as File | null;
+      } catch { /* not form data */ }
+
+      if (!photoFile) return error('Photo file is required. Use multipart/form-data with field "photo".', 422);
+
+      const ext = photoFile.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const fileName = `${crypto.randomUUID().replace(/-/g, '')}.${ext}`;
+      const dir = `.rip/${graveId}/photos`;
+      await mkdir(dir, { recursive: true });
+      const filePath = `${dir}/${fileName}`;
+
+      await Bun.write(filePath, photoFile);
+
+      let description = '';
+      try {
+        const result = await runMmx(['vision', 'describe', '--image', filePath, '--output', 'json'], { timeout: 30000 });
+        const parsed = JSON.parse(result.trim());
+        description = parsed.description || parsed.caption || parsed.text || '';
+      } catch { /* vision failed, store without description */ }
+
+      // Store as memory
+      const memId = generateHexId();
+      await db.insert(memories).values({
+        id: memId,
+        grave_id: graveId,
+        content: description || `Photo uploaded: ${fileName}`,
+        source_type: 'image',
+      });
+
+      // Update photos_json
+      let photos: { url: string; description: string }[] = [];
+      if (grave.photos_json) {
+        try { photos = JSON.parse(grave.photos_json); } catch { /* reset */ }
+      }
+      photos.push({ url: filePath, description });
+      await db.update(graves).set({ photos_json: JSON.stringify(photos) }).where(eq(graves.id, graveId));
+
+      return json({ url: filePath, description, memory_id: memId });
+    }
+
+    // ── Grave Voice ───────────────────────────────────────
+
+    const graveVoiceMatch = path.match(/^\/api\/graves\/([^/]+)\/voice$/);
+    if (graveVoiceMatch && method === 'POST') {
+      const graveId = graveVoiceMatch[1];
+      const grave = await getGrave(graveId);
+      if (!grave) return error('Soul not found.', 404);
+
+      const body = await req.json();
+      const voiceId = body.voice_id as string;
+      if (!voiceId) return error('voice_id is required', 422);
+
+      await db.update(graves).set({ voice_id: voiceId }).where(eq(graves.id, graveId));
+      return json({ grave_id: graveId, voice_id: voiceId });
     }
 
     // ── Sessions ─────────────────────────────────────────
@@ -463,6 +577,116 @@ async function handleRequest(req: Request): Promise<Response> {
       ], { json: true });
 
       return json(result);
+    }
+
+    // ── Dreams ───────────────────────────────────────────
+
+    const dreamGenerateMatch = path.match(/^\/api\/summon\/([^/]+)\/dream$/);
+    if (dreamGenerateMatch && method === 'POST') {
+      const graveId = dreamGenerateMatch[1];
+      const grave = await getGrave(graveId);
+      if (!grave) return error('Soul not found.', 404);
+
+      // Collect memory fragments for the dream prompt
+      const memRows = await db.select().from(memories).where(eq(memories.grave_id, graveId)).orderBy(desc(memories.created_at)).limit(20).all();
+      const fragments: string[] = [];
+      for (const m of memRows) {
+        const words = m.content.split(/\s+/).slice(0, 15);
+        if (words.length > 0) fragments.push(words.join(' '));
+      }
+
+      // Add photo descriptions
+      if (grave.photos_json) {
+        try {
+          const photos = JSON.parse(grave.photos_json);
+          for (const p of photos) {
+            if (p.description) fragments.push(p.description.split(/\s+/).slice(0, 15).join(' '));
+          }
+        } catch {}
+      }
+
+      const sample = fragments.sort(() => Math.random() - 0.5).slice(0, 4);
+      const prompt = [
+        'Surreal dreamscape, ethereal, dark ambient, monochrome, digital afterlife aesthetic, slow camera drift through fog, particles, liminal space',
+        `${grave.name}'s dream. ${grave.epitaph}`,
+        sample.length > 0 ? `Fragments of memory: ${sample.join('; ')}` : 'A blank dream, waiting for memories to fill it.',
+        'Mood: melancholy longing, quiet peace, digital soul dissolving into static then reforming',
+      ].join('\n');
+
+      try {
+        const result = await runMmx([
+          'video', 'generate',
+          '--prompt', prompt,
+          '--async',
+        ], { json: true, timeout: 60000 });
+
+        const taskId = result.task_id || result.taskId || '';
+        const dreamId = generateHexId();
+
+        await db.insert(dreams).values({
+          id: dreamId,
+          grave_id: graveId,
+          prompt,
+          video_task_id: taskId || null,
+          status: taskId ? 'generating' : 'failed',
+          memory_sources: JSON.stringify(memRows.slice(0, 5).map(m => m.id)),
+        });
+
+        return json({ dream_id: dreamId, task_id: taskId, status: 'generating', prompt });
+      } catch (e) {
+        return error(`Dream generation failed: ${e instanceof Error ? e.message : String(e)}`, 500);
+      }
+    }
+
+    const dreamListMatch = path.match(/^\/api\/summon\/([^/]+)\/dreams$/);
+    if (dreamListMatch && method === 'GET') {
+      const graveId = dreamListMatch[1];
+      const rows = await db.select().from(dreams).where(eq(dreams.grave_id, graveId)).orderBy(desc(dreams.created_at)).all();
+      return json(rows.map(r => ({
+        id: r.id,
+        prompt: r.prompt,
+        videoUrl: r.video_url,
+        status: r.status,
+        createdAt: r.created_at ? new Date(r.created_at).toISOString() : null,
+      })));
+    }
+
+    const dreamDetailMatch = path.match(/^\/api\/summon\/([^/]+)\/dreams\/([^/]+)$/);
+    if (dreamDetailMatch && method === 'GET') {
+      const [_, graveId, dreamId] = dreamDetailMatch;
+      const row = await db.select().from(dreams).where(eq(dreams.id, dreamId)).all();
+      if (!row[0]) return error('Dream not found.', 404);
+      const d = row[0];
+
+      // If still generating, poll video task
+      if (d.status === 'generating' && d.video_task_id) {
+        try {
+          const taskResult = await runMmx([
+            'video', 'task', 'get',
+            '--task-id', d.video_task_id,
+            '--output', 'json',
+          ], { json: true, timeout: 15000 });
+
+          const status = taskResult.status || 'processing';
+          if (status === 'completed' || status === 'succeeded') {
+            const url = taskResult.video_url || taskResult.url || '';
+            await db.update(dreams).set({ status: 'completed', video_url: url }).where(eq(dreams.id, dreamId));
+            return json({ id: d.id, prompt: d.prompt, videoUrl: url, status: 'completed' });
+          }
+          if (status === 'failed') {
+            await db.update(dreams).set({ status: 'failed' }).where(eq(dreams.id, dreamId));
+            return json({ id: d.id, prompt: d.prompt, status: 'failed' });
+          }
+        } catch {}
+      }
+
+      return json({
+        id: d.id,
+        prompt: d.prompt,
+        videoUrl: d.video_url,
+        status: d.status,
+        createdAt: d.created_at ? new Date(d.created_at as unknown as number).toISOString() : null,
+      });
     }
 
     // ── 404 ──────────────────────────────────────────────

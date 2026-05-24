@@ -55,6 +55,32 @@ sqlite.exec(`
   );
 `);
 
+sqlite.exec(`
+  CREATE TABLE IF NOT EXISTS dreams (
+    id             TEXT PRIMARY KEY,
+    grave_id       TEXT NOT NULL REFERENCES graves(id),
+    prompt         TEXT NOT NULL,
+    video_task_id  TEXT,
+    video_url      TEXT,
+    status         TEXT NOT NULL DEFAULT 'generating',
+    memory_sources TEXT,
+    created_at     INTEGER NOT NULL DEFAULT (unixepoch())
+  );
+`);
+
 // ── Re-export query helpers for convenience ─────────────────
 
 export { eq, and, isNull };
+
+// ── Migrations (safe to re-run, catches duplicate column errors) ──
+
+const migrations = [
+  'ALTER TABLE graves ADD COLUMN voice_id TEXT',
+  'ALTER TABLE graves ADD COLUMN requiem_url TEXT',
+  'ALTER TABLE graves ADD COLUMN memorial_image_url TEXT',
+  'ALTER TABLE graves ADD COLUMN photos_json TEXT',
+];
+
+for (const sql of migrations) {
+  try { sqlite.exec(sql); } catch { /* column already exists */ }
+}

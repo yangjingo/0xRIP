@@ -52,16 +52,6 @@ export const Grave = forwardRef<THREE.Group, GraveProps>(({ data }, ref) => {
         <ringGeometry args={[2.2, 2.6, 32]} />
         <meshBasicMaterial color="#ffffff" transparent opacity={isSelected ? 0.8 : 0} />
       </mesh>
-
-      {/* Hover tooltip */}
-      {!isSelected && (
-        <Html distanceFactor={12} center position={[0, 5, 0]}>
-          <div className="bg-black border border-[#333] text-white px-3 py-2 pointer-events-none whitespace-nowrap font-mono text-xs">
-            {data.name}
-            <div className="text-[#666] text-[9px]">{data.id}</div>
-          </div>
-        </Html>
-      )}
     </group>
   )
 })

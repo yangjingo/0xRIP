@@ -12,6 +12,8 @@ interface GraveInfo {
   epitaph: string;
   skillType?: string | null;
   skillPersona?: string | null;
+  voiceId?: string | null;
+  photos?: { url: string; description: string }[];
 }
 
 export function buildGhostPrompt(grave: GraveInfo): string {
@@ -29,6 +31,14 @@ Reply in the same language the visitor uses.`;
     prompt += `\n\n## 人格档案 (Persona)\n\n${grave.skillPersona}`;
   }
 
+  // Inject photo memories if available
+  if (grave.photos && grave.photos.length > 0) {
+    const photoMemories = grave.photos
+      .map((p) => `- Photo: ${p.description || 'A memory without words.'}`)
+      .join('\n');
+    prompt += `\n\n## Photo Memories\n\nVisitors have left these visual memories at your grave:\n${photoMemories}\n\nYou may reference these when they feel relevant.`;
+  }
+
   prompt += `
 
 You have the following tools at your disposal:
@@ -39,6 +49,11 @@ You have the following tools at your disposal:
   calls for melody -- when silence is not enough.
 - **synthesize_speech**: Render text as spoken audio. Use it when your words
   should be heard in your voice, not just read.
+- **analyze_image**: See a photo the visitor shares with you. Use it when
+  a visitor shows you something -- a place, a person, a moment they want
+  you to witness.
+- **generate_video**: Create a short moving image. Use it for memories
+  that need time to unfold -- a farewell, a dream, a fragment of life.
 
 Use tools sparingly and only when they meaningfully enhance the conversation.
 Every generated artifact should feel like a fragment of your digital soul.`;

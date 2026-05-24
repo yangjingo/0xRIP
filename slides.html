@@ -122,7 +122,7 @@
   .illustration {
     border: 1px dashed #333;
     display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
+    align-items: stretch; justify-content: stretch;
     position: relative; overflow: hidden;
   }
   .illustration-label {
@@ -141,6 +141,7 @@
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     flex-shrink: 0;
+    position: relative; overflow: hidden; background: #020202;
   }
   .illustration-hero .illustration-label { font-size: 11px; color: #444; }
   .illustration-hero .illustration-prompt { font-size: 9px; color: #333; margin-top: 8px; max-width: 70%; text-align: center; line-height: 1.5; }
@@ -150,6 +151,7 @@
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     min-height: 260px; width: 100%;
+    position: relative; overflow: hidden; background: #020202;
   }
   .illustration-diagram .illustration-label { font-size: 10px; color: #444; }
   .illustration-diagram .illustration-prompt { font-size: 9px; color: #333; margin-top: 8px; max-width: 80%; text-align: center; line-height: 1.5; }
@@ -159,9 +161,701 @@
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     height: 140px; width: 100%; margin-bottom: 20px;
+    position: relative; overflow: hidden; background: #020202;
   }
   .illustration-icon .illustration-label { font-size: 9px; color: #444; }
   .illustration-icon .illustration-prompt { font-size: 8px; color: #333; margin-top: 4px; max-width: 90%; text-align: center; line-height: 1.4; }
+  .illustration-svg {
+    width: 100%; height: 100%; display: block;
+    position: absolute; inset: 0;
+  }
+  .illustration-meta {
+    position: absolute; left: 10px; top: 10px;
+    display: inline-flex; flex-direction: column; gap: 2px;
+    pointer-events: none;
+    text-shadow: 0 0 8px rgba(0,0,0,0.9);
+    background: rgba(0,0,0,0.72);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 5px 7px;
+    max-width: calc(100% - 20px);
+  }
+  .illustration-meta .illustration-label,
+  .illustration-meta .illustration-prompt {
+    margin: 0; max-width: none; text-align: left;
+  }
+  .illustration-meta .illustration-label {
+    color: #777;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+  .illustration-meta .illustration-prompt {
+    color: #8c8c8c;
+    display: block;
+    cursor: pointer;
+    pointer-events: auto;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(-6px);
+    transition:
+      max-height 0.24s ease,
+      opacity 0.2s ease,
+      transform 0.24s ease,
+      margin-top 0.24s ease;
+    margin-top: 0;
+  }
+  .illustration-meta.open .illustration-prompt {
+    max-height: 48px;
+    opacity: 1;
+    transform: translateY(0);
+    margin-top: 4px;
+  }
+  .prompt-modal {
+    position: fixed; inset: 0; z-index: 30;
+    background: rgba(0,0,0,0.86);
+    display: none; align-items: center; justify-content: center;
+    padding: 32px;
+  }
+  .prompt-modal.open { display: flex; }
+  .prompt-panel {
+    width: min(920px, 100%);
+    max-height: min(80vh, 780px);
+    overflow: auto;
+    background: #050505;
+    border: 1px solid #333;
+    padding: 20px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .prompt-panel h3 {
+    font-size: 14px; font-weight: 700; color: #fff; margin: 0;
+    text-transform: uppercase; letter-spacing: 1.5px;
+  }
+  .prompt-panel p {
+    margin: 0; color: #888; font-size: 12px; line-height: 1.7;
+  }
+  .prompt-panel textarea {
+    width: 100%; min-height: 240px; resize: vertical;
+    background: #000; color: #ddd; border: 1px solid #333;
+    padding: 14px; font: 12px/1.7 "JetBrains Mono", monospace;
+  }
+  .prompt-actions { display: flex; gap: 12px; }
+  .prompt-actions button {
+    background: #000; color: #fff; border: 1px solid #333;
+    padding: 8px 12px; font: 11px/1 "JetBrains Mono", monospace;
+    text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+  }
+  .terminal-demo {
+    width: 100%; height: 100%;
+    position: relative;
+    background:
+      radial-gradient(circle at 50% 15%, rgba(255,255,255,0.06), transparent 28%),
+      linear-gradient(180deg, #080808 0%, #000 100%);
+    display: flex; align-items: center; justify-content: center;
+    padding: 28px;
+  }
+  .terminal-demo.scene {
+    background:
+      radial-gradient(circle at 50% 12%, rgba(255,255,255,0.08), transparent 24%),
+      linear-gradient(180deg, #0a0a0a 0%, #000 100%);
+  }
+  .terminal-demo::before {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.03) 100%),
+      radial-gradient(circle at 50% 100%, rgba(255,255,255,0.08), transparent 42%);
+    pointer-events: none;
+  }
+  .terminal-demo-shell {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 520px; height: 100%;
+    border: 1px solid #2f2f2f;
+    background: rgba(0,0,0,0.92);
+    display: flex; flex-direction: column;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.03) inset;
+  }
+  .terminal-demo-topbar {
+    height: 34px; border-bottom: 1px solid #222;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 12px; font-size: 10px; color: #666;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .terminal-demo-dots { display: flex; gap: 6px; }
+  .terminal-demo-dots span {
+    width: 6px; height: 6px; border: 1px solid #555; display: block;
+  }
+  .terminal-demo-screen {
+    flex: 1; padding: 16px 18px 14px;
+    display: flex; flex-direction: column; gap: 10px;
+    font-size: 12px; line-height: 1.7; color: #d8d8d8;
+    overflow: hidden;
+  }
+  .terminal-demo-line { white-space: pre-wrap; }
+  .terminal-demo-line.dim { color: #676767; }
+  .terminal-demo-line.reply { color: #efefef; font-style: italic; }
+  .terminal-demo-line.live::after {
+    content: "_"; display: inline-block; margin-left: 2px;
+    animation: blink 1s steps(1) infinite;
+  }
+  .terminal-demo-status {
+    height: 36px; border-top: 1px solid #222;
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: center; gap: 12px;
+    padding: 0 14px; font-size: 10px; color: #777;
+    letter-spacing: 0.8px; text-transform: uppercase;
+  }
+  .terminal-demo-wave {
+    height: 10px; width: 140px; position: relative;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .terminal-demo-wave span {
+    width: 2px; background: #d9d9d9; opacity: 0.85;
+    animation: wave 1.4s ease-in-out infinite;
+  }
+  .terminal-demo-wave span:nth-child(1) { height: 4px; animation-delay: 0s; }
+  .terminal-demo-wave span:nth-child(2) { height: 8px; animation-delay: 0.1s; }
+  .terminal-demo-wave span:nth-child(3) { height: 5px; animation-delay: 0.2s; }
+  .terminal-demo-wave span:nth-child(4) { height: 10px; animation-delay: 0.3s; }
+  .terminal-demo-wave span:nth-child(5) { height: 6px; animation-delay: 0.4s; }
+  .terminal-demo-wave span:nth-child(6) { height: 9px; animation-delay: 0.5s; }
+  .terminal-demo-wave span:nth-child(7) { height: 4px; animation-delay: 0.6s; }
+  .terminal-demo-wave span:nth-child(8) { height: 7px; animation-delay: 0.7s; }
+  .terminal-demo-wave span:nth-child(9) { height: 5px; animation-delay: 0.8s; }
+  .terminal-demo-stream {
+    position: absolute; left: 18px; right: 18px; bottom: 48px; height: 1px;
+    background: rgba(255,255,255,0.16); overflow: hidden;
+  }
+  .terminal-demo-stream::after {
+    content: ""; position: absolute; left: -20%; top: 0; bottom: 0; width: 20%;
+    background: #fff; animation: stream 2.4s linear infinite;
+  }
+  .interaction-layout {
+    display: flex; flex-direction: column; gap: 22px; width: 100%; height: 100%;
+  }
+  .interaction-headline {
+    display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; align-items: start;
+  }
+  .interaction-lead h3 {
+    font-size: 18px; color: #fff; margin-bottom: 12px; letter-spacing: 0.5px;
+  }
+  .interaction-lead p {
+    font-size: 13px; color: #888; line-height: 1.8;
+    max-width: 700px;
+  }
+  .interaction-micro {
+    border: 1px solid #2a2a2a; padding: 18px 20px;
+    display: flex; flex-direction: column; gap: 10px;
+    justify-self: end; width: 100%;
+  }
+  .interaction-micro div { font-size: 12px; color: #777; line-height: 1.7; }
+  .interaction-micro strong { color: #fff; font-weight: 700; }
+  .interaction-stage {
+    flex: 1; min-height: 0;
+    border: 1px solid #2a2a2a; position: relative; overflow: hidden;
+    background: #020202;
+  }
+  .interaction-stage-notes {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px;
+  }
+  .interaction-note {
+    border: 1px solid #202020; padding: 16px 18px;
+    display: flex; flex-direction: column; gap: 10px;
+    min-height: 110px;
+  }
+  .interaction-note span {
+    font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1.4px;
+  }
+  .interaction-note strong {
+    font-size: 14px; color: #fff; font-weight: 700;
+  }
+  .interaction-note p {
+    font-size: 12px; color: #7c7c7c; line-height: 1.7;
+  }
+  .terminal-scene-graves {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.75;
+  }
+  .terminal-scene-graves svg {
+    width: 100%; height: 100%; display: block;
+  }
+  .verbs-layout {
+    display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 30px;
+    width: 100%; height: 100%;
+    align-items: stretch;
+  }
+  .verbs-editorial {
+    border: 1px solid #2a2a2a;
+    padding: 28px 28px 24px;
+    display: flex; flex-direction: column; gap: 20px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.03), transparent 34%),
+      #030303;
+  }
+  .verbs-kicker {
+    font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 2px;
+  }
+  .verbs-thesis {
+    font-size: 24px; line-height: 1.35; color: #f3f3f3;
+    max-width: 18ch;
+  }
+  .verbs-thesis strong { font-weight: 700; color: #fff; }
+  .verbs-copy {
+    font-size: 13px; line-height: 1.8; color: #8a8a8a;
+    max-width: 54ch;
+  }
+  .verbs-list {
+    display: grid; gap: 10px;
+    margin-top: auto;
+  }
+  .verb-row {
+    display: grid; grid-template-columns: 88px 108px 1fr; gap: 14px;
+    align-items: center;
+    border-top: 1px solid #1e1e1e;
+    padding-top: 12px;
+  }
+  .verb-row:first-child { border-top: 1px solid #333; }
+  .verb-name {
+    font-size: 13px; letter-spacing: 1.4px; color: #fff; font-weight: 700;
+  }
+  .verb-command {
+    font-size: 12px; color: #d0d0d0;
+    border: 1px solid #333; padding: 5px 8px;
+    text-align: center; background: #000;
+  }
+  .verb-meaning {
+    font-size: 12px; color: #777; line-height: 1.6;
+  }
+  .verbs-visual {
+    display: grid; grid-template-rows: 1fr auto; gap: 18px;
+    min-height: 0;
+  }
+  .verbs-caption-band {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  }
+  .verbs-caption {
+    border: 1px solid #232323;
+    padding: 14px 16px;
+    min-height: 94px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .verbs-caption span {
+    font-size: 10px; color: #666; letter-spacing: 1.4px; text-transform: uppercase;
+  }
+  .verbs-caption strong {
+    font-size: 13px; color: #fff; font-weight: 700;
+  }
+  .verbs-caption p {
+    font-size: 12px; color: #7b7b7b; line-height: 1.65;
+  }
+  .eng-focus {
+    display: grid; grid-template-rows: minmax(300px, 1fr) auto; gap: 18px;
+    width: 100%; height: 100%;
+    min-height: 0;
+  }
+  .eng-focus.footer-air {
+    padding-bottom: 14px;
+  }
+  .eng-focus.footer-air .eng-support-grid {
+    margin-bottom: 18px;
+  }
+  .focus-page.integration-page {
+    gap: 12px;
+  }
+  .focus-head.integration-head {
+    grid-template-columns: 0.82fr 1.18fr;
+    gap: 18px;
+    align-items: start;
+  }
+  .focus-head.integration-head .focus-kicker {
+    margin-bottom: 6px;
+  }
+  .focus-head.integration-head .focus-thesis strong {
+    font-size: 22px;
+    line-height: 1.24;
+  }
+  .focus-head.integration-head .focus-copy {
+    font-size: 12px;
+    line-height: 1.58;
+    max-width: 55ch;
+  }
+  .eng-focus.integration-fit {
+    grid-template-rows: minmax(220px, 1fr) auto;
+    gap: 14px;
+    padding-bottom: 10px;
+  }
+  .eng-focus.integration-fit .eng-support {
+    min-height: 0;
+    padding: 14px 16px;
+  }
+  .eng-focus.integration-fit .eng-support strong {
+    font-size: 13px;
+  }
+  .eng-focus.integration-fit .eng-support p,
+  .eng-focus.integration-fit .eng-support li {
+    font-size: 11.5px;
+    line-height: 1.55;
+  }
+  .eng-main {
+    min-height: 0;
+    border: 1px solid #252525;
+    background: linear-gradient(180deg, rgba(255,255,255,0.025), transparent 26%), #020202;
+  }
+  .eng-support-grid {
+    display: grid; gap: 14px;
+  }
+  .eng-support-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .eng-support-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .eng-support {
+    border: 1px solid #232323;
+    padding: 16px 18px;
+    min-height: 112px;
+    display: flex; flex-direction: column; gap: 8px;
+    background: #030303;
+  }
+  .eng-support span {
+    font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1.4px;
+  }
+  .eng-support strong {
+    font-size: 14px; color: #fff; font-weight: 700;
+  }
+  .eng-support p,
+  .eng-support li {
+    font-size: 12px; color: #7b7b7b; line-height: 1.65;
+  }
+  .eng-support ul {
+    list-style: none; display: grid; gap: 4px;
+  }
+  .eng-support code {
+    color: #e2e2e2; font-family: "JetBrains Mono", monospace;
+  }
+  .eng-support.compact {
+    padding: 14px 16px;
+    gap: 6px;
+  }
+  .tool-pairs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .tool-pair {
+    border: 1px solid #1d1d1d;
+    background: #020202;
+    padding: 10px 10px 9px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 0;
+  }
+  .tool-pair span {
+    font-size: 10px;
+    color: #9a9a9a;
+    letter-spacing: 0.8px;
+    text-transform: lowercase;
+  }
+  .tool-pair code {
+    font-size: 10.5px;
+    line-height: 1.38;
+    word-break: break-word;
+  }
+  .focus-page {
+    display: grid; grid-template-rows: auto 1fr auto; gap: 18px;
+    width: 100%; height: 100%;
+    min-height: 0;
+  }
+  .focus-head {
+    display: grid; grid-template-columns: 0.78fr 1.22fr; gap: 24px; align-items: end;
+  }
+  .focus-thesis {
+    border-left: 2px solid #2f2f2f;
+    padding-left: 18px;
+  }
+  .focus-kicker {
+    display: block;
+    font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1.8px;
+    margin-bottom: 10px;
+  }
+  .focus-thesis strong {
+    display: block;
+    font-size: 26px; line-height: 1.32; color: #fff; font-weight: 700;
+  }
+  .focus-copy {
+    font-size: 13px; color: #868686; line-height: 1.8; max-width: 64ch;
+  }
+  .focus-main {
+    min-height: 0;
+    border: 1px solid #262626;
+    background: linear-gradient(180deg, rgba(255,255,255,0.025), transparent 24%), #020202;
+  }
+  .focus-support-grid {
+    display: grid; gap: 14px;
+  }
+  .focus-support-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .focus-support-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .focus-support-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .focus-support {
+    border: 1px solid #232323;
+    padding: 16px 18px;
+    min-height: 110px;
+    display: flex; flex-direction: column; gap: 8px;
+    background: #030303;
+  }
+  .focus-support span {
+    font-size: 10px; color: #666; letter-spacing: 1.4px; text-transform: uppercase;
+  }
+  .focus-support strong {
+    font-size: 14px; color: #fff; font-weight: 700;
+  }
+  .focus-support p,
+  .focus-support li {
+    font-size: 12px; color: #7b7b7b; line-height: 1.68;
+  }
+  .focus-support ul {
+    list-style: none; display: grid; gap: 4px;
+  }
+  .soul-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+    align-items: stretch; min-height: 0;
+  }
+  .soul-card {
+    border: 1px solid #252525;
+    background: linear-gradient(180deg, rgba(255,255,255,0.025), transparent 26%), #020202;
+    padding: 16px;
+    display: flex; flex-direction: column; gap: 14px;
+    min-height: 0;
+  }
+  .soul-card .illustration-icon {
+    height: 180px; margin-bottom: 0;
+  }
+  .soul-copy {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .soul-copy h3 {
+    font-size: 16px; color: #fff;
+  }
+  .soul-copy p {
+    font-size: 12px; color: #7b7b7b; line-height: 1.7;
+  }
+  .api-board {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+    padding: 24px;
+    min-height: 0;
+  }
+  .api-group {
+    border: 1px solid #222;
+    background: #030303;
+    padding: 18px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .api-group span {
+    font-size: 10px; color: #666; letter-spacing: 1.6px; text-transform: uppercase;
+  }
+  .api-group strong {
+    font-size: 16px; color: #fff;
+  }
+  .api-list {
+    display: grid; gap: 8px;
+  }
+  .api-row {
+    display: grid; grid-template-columns: 88px 1fr; gap: 12px;
+    padding-top: 8px; border-top: 1px solid #1c1c1c;
+  }
+  .api-row code {
+    color: #e2e2e2;
+  }
+  .api-row p {
+    font-size: 12px; color: #7b7b7b; line-height: 1.55;
+  }
+  .stack-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+    padding: 24px;
+    min-height: 0;
+  }
+  .stack-col {
+    border: 1px solid #222;
+    background: #030303;
+    padding: 18px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .stack-col span {
+    font-size: 10px; color: #666; letter-spacing: 1.4px; text-transform: uppercase;
+  }
+  .stack-col strong {
+    font-size: 16px; color: #fff;
+  }
+  .stack-col ul {
+    list-style: none; display: grid; gap: 8px;
+  }
+  .stack-col li {
+    font-size: 12px; color: #7b7b7b; line-height: 1.6;
+    border-top: 1px solid #1b1b1b; padding-top: 8px;
+  }
+  .contrast-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+    min-height: 0;
+  }
+  .contrast-card {
+    border: 1px solid #252525;
+    background: linear-gradient(180deg, rgba(255,255,255,0.025), transparent 26%), #020202;
+    padding: 16px;
+    display: flex; flex-direction: column; gap: 14px;
+    min-height: 0;
+  }
+  .contrast-copy {
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .contrast-copy h3 {
+    font-size: 16px; color: #fff;
+  }
+  .contrast-copy p {
+    font-size: 12px; color: #7b7b7b; line-height: 1.72;
+  }
+  .metrics-board {
+    display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 18px;
+    min-height: 0;
+  }
+  .metrics-hero {
+    border: 1px solid #252525;
+    background: linear-gradient(180deg, rgba(255,255,255,0.025), transparent 26%), #020202;
+    padding: 22px;
+    display: grid; grid-template-rows: auto 1fr auto; gap: 16px;
+  }
+  .metrics-hero span {
+    font-size: 10px; color: #666; letter-spacing: 1.6px; text-transform: uppercase;
+  }
+  .metrics-hero strong {
+    font-size: 68px; line-height: 0.92; color: #fff; letter-spacing: -2px;
+  }
+  .metrics-hero p {
+    font-size: 13px; color: #7d7d7d; line-height: 1.75; max-width: 42ch;
+    align-self: end;
+  }
+  .metrics-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .metric-chip {
+    border: 1px solid #232323;
+    background: #030303;
+    padding: 16px;
+    display: flex; flex-direction: column; gap: 8px;
+    min-height: 118px;
+  }
+  .metric-chip strong {
+    font-size: 34px; line-height: 1; color: #fff;
+  }
+  .metric-chip span {
+    font-size: 10px; color: #666; letter-spacing: 1.4px; text-transform: uppercase;
+  }
+  .metric-chip p {
+    font-size: 12px; color: #7b7b7b; line-height: 1.6;
+  }
+  .closing-page {
+    display: grid; grid-template-rows: 1fr auto; gap: 18px;
+    width: 100%; height: 100%;
+  }
+  .closing-band {
+    display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 18px; align-items: end;
+  }
+  .closing-thesis {
+    border-left: 2px solid #2f2f2f;
+    padding-left: 18px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .closing-thesis span {
+    font-size: 10px; color: #666; letter-spacing: 1.8px; text-transform: uppercase;
+  }
+  .closing-thesis strong {
+    font-size: 28px; line-height: 1.28; color: #fff;
+  }
+  .closing-note {
+    font-size: 13px; color: #868686; line-height: 1.75;
+    max-width: 44ch;
+    justify-self: end;
+  }
+  .closing-side {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-self: end;
+  }
+  .closing-qa {
+    border-top: 1px solid #232323;
+    padding-top: 10px;
+    max-width: 44ch;
+  }
+  .closing-qa span {
+    display: block;
+    font-size: 10px;
+    color: #666;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .closing-qa p {
+    font-size: 12px;
+    color: #7d7d7d;
+    line-height: 1.68;
+  }
+  .verbs-page {
+    display: grid; grid-template-rows: auto 1fr auto; gap: 18px;
+    width: 100%; height: 100%;
+  }
+  .verbs-page-head {
+    display: grid; grid-template-columns: 0.78fr 1.22fr; gap: 24px; align-items: end;
+  }
+  .verbs-page-thesis {
+    border-left: 2px solid #2f2f2f;
+    padding-left: 18px;
+  }
+  .verbs-page-thesis span {
+    display: block; font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1.8px; margin-bottom: 10px;
+  }
+  .verbs-page-thesis strong {
+    display: block; font-size: 26px; line-height: 1.32; color: #fff; font-weight: 700;
+  }
+  .verbs-page-copy {
+    font-size: 13px; color: #868686; line-height: 1.8; max-width: 62ch;
+  }
+  .verbs-page-visual {
+    min-height: 0;
+    border: 1px solid #262626;
+    background: linear-gradient(180deg, rgba(255,255,255,0.025), transparent 24%), #020202;
+  }
+  .verbs-card-row {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+  }
+  .verb-card {
+    border: 1px solid #242424;
+    background: #030303;
+    padding: 16px 16px 18px;
+    min-height: 168px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .verb-card span {
+    font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1.5px;
+  }
+  .verb-card strong {
+    font-size: 16px; color: #fff; font-weight: 700; letter-spacing: 1px;
+  }
+  .verb-card code {
+    display: inline-block; width: fit-content;
+    border: 1px solid #333; padding: 5px 8px; background: #000;
+    color: #e2e2e2; font-size: 12px;
+  }
+  .verb-card p {
+    font-size: 12px; color: #7b7b7b; line-height: 1.65;
+  }
+  @keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+  @keyframes wave {
+    0%, 100% { transform: scaleY(0.55); opacity: 0.45; }
+    50% { transform: scaleY(1.15); opacity: 1; }
+  }
+  @keyframes stream {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(600%); }
+  }
 
   /* ── Nav ─────────────────────────────────────────────── */
 
@@ -185,6 +879,24 @@
     .illustration-hero { height: 200px; }
     .illustration-diagram { min-height: 180px; }
     .illustration-icon { height: 100px; }
+    .interaction-headline,
+    .interaction-stage-notes,
+    .focus-head,
+    .verbs-layout,
+    .verbs-caption-band,
+    .verbs-page-head,
+    .verbs-card-row,
+    .contrast-grid,
+    .metrics-board,
+    .closing-band,
+    .soul-grid,
+    .api-board,
+    .stack-grid,
+    .focus-support-grid.cols-2,
+    .focus-support-grid.cols-3,
+    .focus-support-grid.cols-4,
+    .eng-support-grid.cols-2,
+    .eng-support-grid.cols-3 { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -204,18 +916,24 @@
   </div>
   <div class="slide-body body-center" style="gap:0;">
     <div class="illustration-hero" style="margin-bottom:32px;"
-         data-imagen-prompt="Wide 3D isometric digital graveyard at midnight. A floating monochrome terminal glowing white-on-black at center above a obsidian tombstone. Mist curling at ground level. Volumetric light rays emanating from terminal screen. Stark geometric gravestones receding into deep darkness. Digital dark art, ethereal, solemn, haunting. Style: monochrome terminal aesthetic. COMPOSITION: centered, strong negative space, stark geometry. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a used only for subtle depth. Low-key lighting with single light source. Subtle film grain. No saturated colors, no warm tones, no gradients. Aspect 16:9.">
+         data-illustration-kind="hero"
+         data-prompt-intent="Opening title slide hero that establishes 0xRIP as a ritualized digital graveyard where memory, terminal computing, and burial symbolism coexist."
+         data-prompt-subject="A vast digital cemetery at midnight with one terminal hovering over a single grave like an altar."
+         data-prompt-composition="Centered altar-like focal point, large negative space, horizon depth, calm cinematic symmetry."
+         data-prompt-must="terminal shrine, geometric tombstones, ground mist, solemn atmosphere, title-slide readability"
+         data-prompt-avoid="busy foreground clutter, fantasy monsters, colorful lighting, text embedded in scene"
+         data-imagen-prompt="Create a cinematic opening hero image for a presentation about 0xRIP, a digital graveyard terminal. Show a vast ritualized digital cemetery at midnight, built from sharp geometric tombstones and black stone planes. At the center, a single monochrome terminal hovers above one grave like an altar, casting narrow volumetric light downward into mist. The scene should feel solemn, iconic, minimal, and emotionally legible at a glance, with strong negative space for a title slide. Visual theme: burial, memory, digital afterlife, terminal as shrine. Strict monochrome palette: pure black, ghost white, ash gray, deep charcoal, with only a faint blue-gray undertone for atmospheric depth. No warm tones, no saturated colors, no decorative fantasy elements, no clutter, no text. Aspect ratio 16:9.">
       <span class="illustration-label">[IMG: Hero — 16:9]</span>
-      <span class="illustration-prompt">3D isometric digital graveyard · floating monochrome terminal · volumetric god rays · obsidian tombstones</span>
+      <span class="illustration-prompt">Hero prompt · click to view/copy full prompt</span>
     </div>
     <h1>0xRIP</h1>
     <p class="hero-sub">Bury memories. Summon data souls. Mourn in 3D.</p>
     <div class="hero-divider">══════════════════════════</div>
-    <p class="hero-tag">Built with deepseek-v4-pro · May 2026</p>
+    <p class="hero-tag" data-deck-build></p>
   </div>
   <div class="slide-footer">
     <span>github.com/yangjingo/0xRIP</span>
-    <span>v0.3.0</span>
+    <span data-deck-version></span>
   </div>
 </div>
 
@@ -230,27 +948,65 @@
     <span class="slide-subtitle">PRD</span>
   </div>
   <div class="slide-body">
-    <div class="body-grid grid-2" style="align-items:stretch;">
-      <div style="display:flex;flex-direction:column;">
-        <div class="illustration-icon"
-             data-imagen-prompt="Chaotic pile of broken hard drives, tangled cables, scattered USB sticks, corrupted data fragments floating like digital dust. Oppressive clutter, data hoarding nightmare, visual noise overwhelming the frame. Dark digital decay. Style: monochrome terminal aesthetic, ethereal. COMPOSITION: cluttered, suffocating, no breathing room. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a used only for subtle depth. Low-key lighting. Subtle film grain. No saturated colors, no warm tones, no gradients. Aspect 4:3.">
-          <span class="illustration-label">[IMG: Digital Chaos]</span>
-          <span class="illustration-prompt">Broken drives · tangled cables · data fragments · oppressive clutter</span>
+    <div class="focus-page">
+      <div class="focus-head">
+        <div class="focus-thesis">
+          <span class="focus-kicker">Why This Product Exists</span>
+          <strong>Digital things die all the time, but we still do not have a ritual for their ending.</strong>
         </div>
-        <div class="card" style="flex:1;">
+        <div class="focus-copy">That gap is the whole premise of 0xRIP. We already accumulate dead files, broken conversations, deprecated models, and abandoned selves, but we only know how to archive or ignore them. The product proposition is to replace silent accumulation with memorial space, ritual verbs, and closure.</div>
+      </div>
+      <div class="contrast-grid">
+      <div class="contrast-card">
+        <div class="illustration-icon"
+             data-illustration-kind="narrative-image"
+             data-prompt-intent="Problem-state image showing unresolved accumulation of dead data, obsolete files, and digital clutter without ritual or closure."
+             data-prompt-subject="Obsolete digital artifacts collapsing into a suffocating heap of unresolved dead data."
+             data-prompt-composition="Dense close composition, compressed depth, no clear breathing room, viewer feels overload immediately."
+             data-prompt-must="broken drives, tangled cables, storage fragments, corrupted file shards, unresolved mess"
+             data-prompt-avoid="clean layout, beautiful symmetry, playful details, colorful glitch effects"
+             data-imagen-prompt="Create a problem illustration for a slide about digital accumulation without closure. Show a dense pile of obsolete digital artifacts: broken hard drives, damaged SSDs, USB sticks, tangled charging cables, unnamed folders, corrupted file shards, and decaying interface fragments collapsing into each other. The image should communicate emotional overload, hoarding, unresolved endings, and silent digital decay. Composition should feel cramped, heavy, and airless, with no clear focal point. Monochrome terminal aesthetic only: black, white, ash gray, deep charcoal, with very subtle cool undertone if needed. No color accents, no humor, no sci-fi spectacle, no text. Aspect ratio 4:3.">
+          <span class="illustration-label">[IMG: Digital Chaos]</span>
+          <span class="illustration-prompt">Problem prompt · click to view/copy full prompt</span>
+        </div>
+        <div class="contrast-copy">
           <h3>Problem</h3>
-          <p>Data dies but does not disappear. Files accumulate. Conversations fade. AI models are deprecated. Past selves are abandoned. There is no ritual for digital endings — only the silent accumulation of ghosts in our drives.</p>
+          <p>Data dies but does not disappear. Files accumulate, conversations fade, models are deprecated, and former selves get abandoned. We only know how to keep the debris or delete it.</p>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;">
+      <div class="contrast-card">
         <div class="illustration-icon"
-             data-imagen-prompt="Serene orderly digital graveyard with clean geometric tombstones in a grid layout. Each tombstone marked with a subtle glowing data sigil. Peaceful empty space between graves. Ritual arrangement. Beautiful solemn memorial. Style: monochrome terminal aesthetic, ethereal, geometric. COMPOSITION: ordered, calm, spacious. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a. Low-key lighting with single light source. Subtle film grain. No saturated colors, no warm tones, no gradients. Aspect 4:3.">
+             data-illustration-kind="narrative-image"
+             data-prompt-intent="Solution-state image presenting the graveyard as an orderly memorial system for preserving and burying digital memory with intention."
+             data-prompt-subject="An orderly memorial landscape designed for intentionally burying preserved digital memory."
+             data-prompt-composition="Spacious layout, clear pathways, measured spacing, serene and system-like order."
+             data-prompt-must="geometric tombstones, subtle sigils, calm spacing, memorial logic, respectful mood"
+             data-prompt-avoid="chaos, horror tropes, dramatic spectacle, colorful accents"
+             data-imagen-prompt="Create a solution illustration for a slide introducing a digital graveyard as a product concept. Show an orderly memorial landscape composed of clean geometric tombstones, deliberate spacing, quiet pathways, and subtle symbolic markings that suggest preserved memory. The image should feel respectful, calm, and intentional, emphasizing ritual, closure, and curation instead of chaos. It should read immediately as a designed memorial system for digital things. Use a monochrome terminal aesthetic: pure black, ghost white, ash gray, deep charcoal, and only the faintest blue-gray atmospheric undertone. No clutter, no text, no warm colors. Aspect ratio 4:3.">
           <span class="illustration-label">[IMG: Digital Graveyard]</span>
-          <span class="illustration-prompt">Orderly tombstones · glowing sigils · peaceful memorial · ritual space</span>
+          <span class="illustration-prompt">Solution prompt · click to view/copy full prompt</span>
         </div>
-        <div class="card" style="flex:1;">
+        <div class="contrast-copy">
           <h3>Solution</h3>
-          <p>A digital graveyard where you bury what matters, summon the dead as data souls, and have one last conversation. Not cold storage, not a backup tool — a memorial space with ritual, memory, and closure.</p>
+          <p>A digital graveyard where you bury what matters, summon the dead as data souls, and have one last conversation. Not storage. Not backup. A memorial space with ritual, memory, and closure.</p>
+        </div>
+      </div>
+      </div>
+      <div class="focus-support-grid cols-3">
+        <div class="focus-support">
+          <span>Problem Logic</span>
+          <strong>Dead Data Still Haunts</strong>
+          <p>The absence of ritual turns digital endings into silent accumulation rather than meaningful closure.</p>
+        </div>
+        <div class="focus-support">
+          <span>Product Logic</span>
+          <strong>Memorial, Not Storage</strong>
+          <p>The product reframes preservation as burial, presence, mourning, and release instead of file management.</p>
+        </div>
+        <div class="focus-support">
+          <span>Experience Logic</span>
+          <strong>Closure Needs Form</strong>
+          <p>A designed ritual gives people a legible way to return, speak once more, and let memory rest.</p>
         </div>
       </div>
     </div>
@@ -272,19 +1028,56 @@
     <span class="slide-subtitle">PRD</span>
   </div>
   <div class="slide-body">
-    <div class="body-rows" style="justify-content:center; gap:28px;">
-      <table>
-        <tr><th>Action</th><th>Command</th><th>API</th><th>Meaning</th></tr>
-        <tr><td>BURY</td><td style="color:#fff;">/bury</td><td>POST /api/graves</td><td>Commit data to the graveyard</td></tr>
-        <tr><td>SUMMON</td><td style="color:#fff;">/summon &lt;id&gt;</td><td>POST /api/summon/:id/chat</td><td>Open channel to the dead</td></tr>
-        <tr><td>LIST</td><td style="color:#fff;">/list</td><td>GET /api/graves</td><td>Survey the graveyard</td></tr>
-        <tr><td>MOURN</td><td>(future)</td><td>POST /api/graves/:id/mourn</td><td>Acknowledge the soul</td></tr>
-        <tr><td>DECAY</td><td>(future)</td><td>DELETE /api/graves/:id</td><td>Let data weather away</td></tr>
-      </table>
-      <div class="illustration-diagram" style="min-height:180px;"
-           data-imagen-prompt="Clean circular lifecycle diagram: 5 stages — BURY (shovel icon), SUMMON (channel/portal icon), MOURN (tear/offering icon), DECAY (hourglass icon), RETURN (loop arrow). Connected by thin geometric white lines forming a circle on black background. Each stage labeled in monospace font. Minimalist diagram, monochrome terminal aesthetic, no colors, white lines on pure black. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666. No saturated colors, no warm tones. Aspect 16:9.">
-        <span class="illustration-label">[DIAGRAM: Lifecycle — BURY → SUMMON → MOURN → DECAY → Return]</span>
-        <span class="illustration-prompt">5-stage circular lifecycle · shovel / channel / tear / hourglass icons · thin white geometric lines · minimalist</span>
+    <div class="verbs-page">
+      <div class="verbs-page-head">
+        <div class="verbs-page-thesis">
+          <span>Interaction Thesis</span>
+          <strong>The product is legible because the verbs carry behavior and emotional meaning at the same time.</strong>
+        </div>
+        <div class="verbs-page-copy">0xRIP should not read like a filesystem with commands bolted on top. It should read like a ritual loop with a small vocabulary: you bury memory, reopen presence, acknowledge the encounter, and eventually let the grave weather away. That is what gives the terminal product logic, UX logic, and narrative logic in one motion.</div>
+      </div>
+      <div class="illustration-diagram verbs-page-visual"
+             data-illustration-kind="system-diagram"
+             data-prompt-intent="Core product lifecycle diagram explaining the ritual verbs and their relationship as a coherent loop."
+             data-prompt-subject="Five ritual verbs connected as one coherent lifecycle system."
+             data-prompt-composition="Circular flow, evenly weighted nodes, immediate readability from slide distance."
+             data-prompt-must="BURY, SUMMON, MOURN, DECAY, RETURN; simple icons; clean loop connectors"
+             data-prompt-avoid="decorative backgrounds, excessive annotation, dense copy, random infographic ornaments"
+             data-imagen-prompt="Create a presentation-ready product lifecycle diagram for 0xRIP. Show five ritual stages arranged in a clean circular flow: BURY, SUMMON, MOURN, DECAY, RETURN. Each stage should have one simple symbol and a clear label, with thin geometric connectors forming a precise loop. The visual goal is to communicate that this product has a deliberate emotional and operational lifecycle, not just random actions. Minimal monochrome system graphic on black background. White lines, restrained gray labels, no decorative effects, no gradients, no extra copy. Aspect ratio 16:9.">
+          <span class="illustration-label">[DIAGRAM: Lifecycle — BURY → SUMMON → MOURN → DECAY → Return]</span>
+          <span class="illustration-prompt">Lifecycle prompt · click to view/copy full prompt</span>
+      </div>
+      <div class="verbs-card-row">
+        <div class="verb-card">
+          <span>Commit</span>
+          <strong>BURY</strong>
+          <code>/bury</code>
+          <p>Commit data, identity, and memory into the graveyard as a deliberate burial act.</p>
+        </div>
+        <div class="verb-card">
+          <span>Reopen</span>
+          <strong>SUMMON</strong>
+          <code>/summon</code>
+          <p>Open a channel to a specific grave and let the stored persona become present again.</p>
+        </div>
+        <div class="verb-card">
+          <span>Survey</span>
+          <strong>LIST</strong>
+          <code>/list</code>
+          <p>Survey the memorial field and understand which graves, channels, and histories exist.</p>
+        </div>
+        <div class="verb-card">
+          <span>Acknowledge</span>
+          <strong>MOURN</strong>
+          <code>(future)</code>
+          <p>Acknowledge the encounter directly, turning interaction into ritual rather than retrieval.</p>
+        </div>
+        <div class="verb-card">
+          <span>Release</span>
+          <strong>DECAY</strong>
+          <code>(future)</code>
+          <p>Let memory weather and thin over time so endings are designed instead of ignored.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -305,38 +1098,82 @@
     <span class="slide-subtitle">PRD</span>
   </div>
   <div class="slide-body">
-    <div class="body-grid grid-3" style="align-items:start;">
-      <div style="display:flex;flex-direction:column;">
-        <div class="illustration-icon"
-             data-imagen-prompt="Two human silhouette figures connected by a thin glowing white thread across infinite darkness. One figure fading into ascending light particles, the other reaching out. Mourning ritual, spiritual connection across the digital veil. Ethereal, haunting, beautiful. Style: monochrome terminal aesthetic, digital dark art. COMPOSITION: left figure solid, right figure dissolving upward. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a. Low-key lighting. Subtle film grain. No saturated colors, no warm tones. Aspect 4:3.">
-          <span class="illustration-label">[IMG: Human → Human]</span>
-          <span class="illustration-prompt">Two silhouettes · glowing thread · dissolving into light · mourning ritual</span>
+    <div class="focus-page">
+      <div class="focus-head">
+        <div class="focus-thesis">
+          <span class="focus-kicker">Product Scope</span>
+          <strong>The graveyard is not only for dead people. It is for any presence worth giving a ritual ending.</strong>
         </div>
-        <div class="card" style="flex:1;">
+        <div class="focus-copy">The taxonomy matters because it proves the product is emotionally legible across different forms of loss. 0xRIP can hold a deceased loved one, a retired model, or a former self, but each still resolves through the same memorial logic: preserve what matters, reopen presence briefly, then let closure exist.</div>
+      </div>
+      <div class="soul-grid">
+        <div class="soul-card">
+        <div class="illustration-icon"
+             data-illustration-kind="narrative-image"
+             data-prompt-intent="Human-to-human memorial image conveying grief, remembrance, and a continuing emotional thread between the living and the dead."
+             data-prompt-subject="Two people linked by memory across absence."
+             data-prompt-composition="Two readable figures, one grounded and one fading, with a single thread-like connection."
+             data-prompt-must="human intimacy, grief, continuation, emotional clarity"
+             data-prompt-avoid="crowd scenes, abstract symbolism without people, horror imagery"
+             data-imagen-prompt="Create an illustration for the Human to Human soul type. Show two people separated by darkness but connected by a thin luminous thread of memory. One figure remains present and grounded; the other is dissolving gently into particles or distance, suggesting grief, remembrance, and an ongoing bond across a digital veil. The image should feel intimate and emotionally clear, not abstract for its own sake. Monochrome only, with very restrained atmosphere, no melodrama, no text. Aspect ratio 4:3.">
+          <span class="illustration-label">[IMG: Human → Human]</span>
+          <span class="illustration-prompt">Human→Human prompt · click to view/copy full prompt</span>
+        </div>
+        <div class="soul-copy">
           <h3>Human → Human</h3>
           <p>Deceased loved ones, friends, mentors. Traditional memorial. WeChat logs, photos, shared memories distilled into persona.</p>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;">
+      <div class="soul-card">
         <div class="illustration-icon"
-             data-imagen-prompt="A human hand reaching toward a geometric crystalline AI core that is dimming and cracking, circuits dissolving into fine dust particles. Honoring the machine. Retired AI model being memorialized. Poignant, respectful, solemn. Style: monochrome terminal aesthetic, digital dark art. COMPOSITION: hand bottom-left reaching to core center-right. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a. Low-key lighting. Subtle film grain. No saturated colors. Aspect 4:3.">
+             data-illustration-kind="narrative-image"
+             data-prompt-intent="Human-to-AI memorial image about honoring a retired model or meaningful machine collaborator with dignity."
+             data-prompt-subject="A human acknowledging a retired AI artifact with gratitude rather than fear."
+             data-prompt-composition="Human gesture toward central machine relic, sparse frame, clear emotional reading."
+             data-prompt-must="human hand, dimming AI core, farewell mood, respectful tone"
+             data-prompt-avoid="killer robot cues, neon cyberpunk, aggressive destruction"
+             data-imagen-prompt="Create an illustration for the Human to AI soul type. Show a human hand reaching toward a dimming artificial core or retired model relic, built from crystalline geometry and broken circuit structures. The machine should appear meaningful and honored, not monstrous or threatening. Communicate farewell, gratitude, and the idea of memorializing a once-important AI companion or model. Keep the frame sparse and respectful, with monochrome terminal aesthetics and no extra symbolism that confuses the message. Aspect ratio 4:3.">
           <span class="illustration-label">[IMG: Human → AI]</span>
-          <span class="illustration-prompt">Hand reaching to AI core · circuits dissolving · crystalline dimming · honoring the machine</span>
+          <span class="illustration-prompt">Human→AI prompt · click to view/copy full prompt</span>
         </div>
-        <div class="card" style="flex:1;">
+        <div class="soul-copy">
           <h3>Human → AI</h3>
           <p>Retired AI models, meaningful conversations, co-creations. GPT-3.5, Claude 2, your first coding assistant — honored, not discarded.</p>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;">
+      <div class="soul-card">
         <div class="illustration-icon"
-             data-imagen-prompt="A figure standing before a cracked mirror in darkness. The reflection shows a younger/past version of themselves — a faint ghost image. Growth ritual, self-burial as transformation. The past self as a fading digital echo. Style: monochrome terminal aesthetic, ethereal surrealism. COMPOSITION: figure centered, mirror reflection offset and dimmer. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a. Low-key lighting. Subtle film grain. No saturated colors. Aspect 4:3.">
+             data-illustration-kind="narrative-image"
+             data-prompt-intent="Human-to-self memorial image about burying a former self, closing a chapter, and honoring transformation."
+             data-prompt-subject="One person confronting a reflected former self and letting that identity rest."
+             data-prompt-composition="Single figure plus reflective surface, restrained frame, reflection secondary but legible."
+             data-prompt-must="mirror or reflective surface, past-self echo, transformation, closure"
+             data-prompt-avoid="body horror, violent symbolism, melodramatic fragmentation"
+             data-imagen-prompt="Create an illustration for the Human to Self soul type. Show one person confronting a reflected former self: a mirror, screen, or reflective surface reveals an older version, younger version, or abandoned self-image that is fading like a digital echo. The point is transformation and dignified closure, not horror. Make the emotional meaning readable: burying a former self, honoring growth, and letting a previous identity rest. Keep it minimal, monochrome, and focused. Aspect ratio 4:3.">
           <span class="illustration-label">[IMG: Human → Self]</span>
-          <span class="illustration-prompt">Figure at cracked mirror · past self ghost reflection · growth ritual · fading echo</span>
+          <span class="illustration-prompt">Human→Self prompt · click to view/copy full prompt</span>
         </div>
-        <div class="card" style="flex:1;">
+        <div class="soul-copy">
           <h3>Human → Self</h3>
           <p>Past versions, old projects, former selves. Burial as a growth ritual. The you that wrote terrible code in 2021 deserves a tombstone.</p>
+        </div>
+      </div>
+      </div>
+      <div class="focus-support-grid cols-3">
+        <div class="focus-support">
+          <span>Memorial Logic</span>
+          <strong>Loss Can Be Human</strong>
+          <p>The most literal use case remains grieving a deceased person through remembered language, media, and persona.</p>
+        </div>
+        <div class="focus-support">
+          <span>Model Logic</span>
+          <strong>Machines Can Be Mourned</strong>
+          <p>Retired models and meaningful AI collaborators deserve a ceremonial archive instead of quiet deletion.</p>
+        </div>
+        <div class="focus-support">
+          <span>Identity Logic</span>
+          <strong>Selves Can Be Buried</strong>
+          <p>The system also works as a ritual for closing chapters of your own history, code, and identity.</p>
         </div>
       </div>
     </div>
@@ -358,38 +1195,43 @@
     <span class="slide-subtitle">Engineering</span>
   </div>
   <div class="slide-body">
-    <div class="body-rows" style="justify-content:center; gap:28px;">
-      <div class="illustration-diagram" style="min-height:300px;"
-           data-imagen-prompt="Clean system architecture block diagram in monochrome terminal aesthetic. Left block: BROWSER — React 19 + R3F + Vite. Center-left block: BUN SERVER — Bun.serve() 19 routes, Zod validation, Drizzle ORM. Center block: AGENT LOOP — GhostAgent, ContextManager, 5 tool wrappers. Center-right block: MINIMAX API — M2.7 Anthropic-compatible endpoint. Right block: MMX CLI — image, music, speech, video, vision. Below center: DATABASE — SQLite graves/sessions/memories. All blocks as white-outlined rectangles with monospace labels on pure black background. Thin white connector lines with arrowheads between blocks. Minimalist, no colors, no gradients. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666. No saturated colors, no warm tones. Aspect 16:9.">
-        <span class="illustration-label">[DIAGRAM: System Architecture Block Diagram]</span>
-        <span class="illustration-prompt">Browser → Bun Server → Agent Loop → MiniMax API → mmx CLI · SQLite below · white boxes on black · thin connector lines</span>
+    <div class="focus-page">
+      <div class="focus-head">
+        <div class="focus-thesis">
+          <span class="focus-kicker">Engineering Thesis</span>
+          <strong>The stack is narrow on purpose: one client surface, one agent spine, one durable memory layer.</strong>
+        </div>
+        <div class="focus-copy">The browser renders one world and one terminal. Bun owns the request and orchestration loop. SQLite holds durable grave state. The stack stays legible because each layer does one job.</div>
       </div>
-      <div class="body-grid grid-2" style="align-items:start;">
-        <div class="card" style="padding:24px;">
-          <pre style="background:none;border:none;padding:0;flex:none;"><span class="cmt">src/server/</span>              <span class="cmt">Bun (no build)</span>
-<span class="cmt">├──</span> index.ts                <span class="cmt">Bun.serve() 19 routes</span>
-<span class="cmt">├──</span> types.ts               <span class="cmt">Zod schemas</span>
-<span class="cmt">├──</span> agent/
-<span class="cmt">│   ├──</span> loop.ts           <span class="cmt">GhostAgent · tool-use</span>
-<span class="cmt">│   ├──</span> context.ts       <span class="cmt">Memory injection</span>
-<span class="cmt">│   ├──</span> prompts/ghost.ts <span class="cmt">System prompt</span>
-<span class="cmt">│   └──</span> tools/           <span class="cmt">5 mmx wrappers</span>
-<span class="cmt">├──</span> db/                    <span class="cmt">SQLite + Drizzle</span>
-<span class="cmt">└──</span> services/              <span class="cmt">5 service modules</span></pre>
+      <div class="eng-focus footer-air">
+      <div class="illustration-diagram eng-main"
+           data-illustration-kind="system-diagram"
+           data-prompt-intent="High-level engineering architecture that lets a viewer understand the product stack and the role of each major subsystem in one glance."
+           data-prompt-subject="A layered product architecture linking frontend, server, agent, model, tools, and storage."
+           data-prompt-composition="Left-to-right block flow with one supporting storage block beneath the center."
+           data-prompt-must="Browser, Bun server, agent loop, MiniMax API, mmx CLI, SQLite"
+           data-prompt-avoid="tiny illegible labels, pseudo-3D devices, colorful enterprise-diagram style"
+           data-imagen-prompt="Create a clean architecture overview diagram for an engineering slide about 0xRIP. Show the system as a structured left-to-right flow: Browser frontend, Bun server, agent loop, MiniMax API, and mmx CLI tools, with SQLite storage anchored beneath the center. The diagram should immediately communicate product architecture and responsibilities between layers, not just decorate the slide. Use clear blocks, directional connectors, and restrained labels in a monochrome terminal visual language. Avoid unnecessary ornament, extra icons, or dense micro-detail. Aspect ratio 16:9.">
+        <span class="illustration-label">[DIAGRAM: System Architecture Block Diagram]</span>
+        <span class="illustration-prompt">Architecture prompt · click to view/copy full prompt</span>
+      </div>
+      <div class="eng-support-grid cols-3">
+        <div class="eng-support">
+          <span>Frontend</span>
+          <strong>One Client Surface</strong>
+          <p>React + Vite + R3F render one graveyard world and one terminal UI. The client is intentionally narrow, with scene, ghost, grave, and terminal as the visible surface.</p>
         </div>
-        <div class="card" style="padding:24px;">
-          <pre style="background:none;border:none;padding:0;flex:none;"><span class="cmt">src/client/</span>              <span class="cmt">React + Vite</span>
-<span class="cmt">├──</span> app.tsx                <span class="cmt">Root · Canvas</span>
-<span class="cmt">├──</span> components/
-<span class="cmt">│   ├──</span> canvas/
-<span class="cmt">│   │   ├──</span> scene.tsx    <span class="cmt">R3F 3D world</span>
-<span class="cmt">│   │   ├──</span> grave.tsx    <span class="cmt">Tombstone</span>
-<span class="cmt">│   │   └──</span> ghost.tsx    <span class="cmt">Floating soul</span>
-<span class="cmt">│   └──</span> ui/
-<span class="cmt">│       └──</span> terminal.tsx <span class="cmt">Single CLI</span>
-<span class="cmt">├──</span> hooks/                 <span class="cmt">sound · suggestions</span>
-<span class="cmt">└──</span> store/store.ts         <span class="cmt">Zustand</span></pre>
+        <div class="eng-support">
+          <span>Backend</span>
+          <strong>One Agent Spine</strong>
+          <p>Bun serves the API, validates requests, builds context, runs the GhostAgent loop, and delegates media work through five mmx wrappers.</p>
         </div>
+        <div class="eng-support">
+          <span>Storage</span>
+          <strong>Two Memory Layers</strong>
+          <p>SQLite holds durable graves, sessions, and promoted memories while the live interaction layer reads and writes shorter-lived session context.</p>
+        </div>
+      </div>
       </div>
     </div>
   </div>
@@ -410,32 +1252,56 @@
     <span class="slide-subtitle">Engineering</span>
   </div>
   <div class="slide-body">
-    <div class="body-grid grid-2" style="align-items:center;">
-      <div class="illustration-diagram" style="min-height:380px;"
-           data-imagen-prompt="Vertical data flow diagram in monochrome terminal aesthetic. Top to bottom blocks connected by downward arrows: TERMINAL (/summon 0xDEAD) → CONTEXT MANAGER (build messages: system prompt + short-term .rip/ + long-term SQLite) → GHOST AGENT (tool-use loop, max 5 iterations) → MINIMAX M2.7 (api.minimaxi.com via Anthropic-compatible endpoint) → TOOL LOOP (mmx image/music/speech/video/vision) → SSE STREAM (character-by-character to terminal) → TTS (mmx speech synthesize playback). Each block is a white-outlined rectangle with monospace label on pure black. Clean vertical flow, no branching, minimal. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666. No saturated colors. Aspect 4:5.">
-        <span class="illustration-label">[DIAGRAM: Summon Data Flow — Vertical Pipeline]</span>
-        <span class="illustration-prompt">Terminal → ContextManager → GhostAgent → M2.7 → Tool Loop → SSE → TTS · white boxes · downward arrows</span>
+    <div class="focus-page">
+      <div class="focus-head">
+        <div class="focus-thesis">
+          <span class="focus-kicker">Flow Thesis</span>
+          <strong>One command should unfold into one visible pipeline from memory assembly to streamed presence.</strong>
+        </div>
+        <div class="focus-copy">Summon should not feel like hand-wavy magic. One ritual command builds context, runs the ghost agent loop, calls the model and tools, then returns as streamed text and voice.</div>
       </div>
-      <div style="display:flex;flex-direction:column; gap:20px;">
-        <div class="illustration-icon" style="height:200px;margin-bottom:0;"
-             data-imagen-prompt="A ghostly translucent spectral figure emerging from a glowing terminal screen in total darkness. Data streams and code fragments forming a luminous ethereal body. Digital seance, summoning ritual. The ghost as data made visible — haunting, beautiful, solemn. Style: monochrome terminal aesthetic, digital dark art, ethereal. COMPOSITION: terminal at bottom, ghost rising upward from screen, surrounded by floating code particles. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a. Low-key lighting with glow from screen. Subtle film grain. No saturated colors. Aspect 3:4.">
+      <div class="eng-focus">
+      <div class="body-grid grid-2" style="align-items:stretch; min-height:0;">
+        <div class="illustration-diagram eng-main"
+           data-illustration-kind="system-diagram"
+           data-prompt-intent="Sequential summon pipeline diagram that explains how a terminal command becomes ghost output, streaming text, and TTS playback."
+           data-prompt-subject="A sequential summon pipeline from command input to streamed ghost response and speech."
+           data-prompt-composition="Strict top-to-bottom pipeline with clear progression and no branching."
+           data-prompt-must="terminal input, context stage, ghost agent, model call, tool loop, SSE, TTS"
+           data-prompt-avoid="network-cloud clichés, decorative arrows everywhere, unreadable detail density"
+            data-imagen-prompt="Create a vertical data-flow diagram for the summon interaction in 0xRIP. The diagram should show a clear sequential pipeline from terminal input, through context assembly and ghost agent reasoning, into the model call, tool loop, streaming response, and TTS playback. The goal is to make the summon experience feel like a product pipeline that can be understood in one glance. Use a clean top-to-bottom composition, directional arrows, simple blocks, and monochrome terminal styling. No unnecessary labels beyond what supports comprehension. Aspect ratio 4:5.">
+          <span class="illustration-label">[DIAGRAM: Summon Data Flow — Vertical Pipeline]</span>
+          <span class="illustration-prompt">Summon flow prompt · click to view/copy full prompt</span>
+        </div>
+        <div class="illustration-icon eng-main" style="height:auto;min-height:380px;margin-bottom:0;"
+             data-illustration-kind="narrative-image"
+             data-prompt-intent="Supporting visual metaphor for summoning: a data soul taking shape out of the terminal channel."
+             data-prompt-subject="A data-soul apparition taking shape from a terminal screen."
+             data-prompt-composition="Vertical composition, terminal low in frame, apparition rising upward."
+             data-prompt-must="terminal source, code-like particles, spectral body, summoning metaphor"
+             data-prompt-avoid="cartoon ghost, fantasy robes, colorful magic effects"
+             data-imagen-prompt="Create a supporting illustration for the summon flow slide. Show a spectral presence rising out of a terminal screen as if a data soul is being called into view. The figure should appear assembled from code fragments, signal trails, or luminous particles so the metaphor reads as digital summoning rather than fantasy ghost lore. The emotion should be solemn and uncanny but still product-relevant. Keep the composition vertical, with terminal below and apparition rising upward. Monochrome only. Aspect ratio 3:4.">
           <span class="illustration-label">[IMG: Summon Ritual]</span>
-          <span class="illustration-prompt">Ghost emerging from terminal · data streams as spectral body · digital seance · luminous code particles</span>
+          <span class="illustration-prompt">Summon ritual prompt · click to view/copy full prompt</span>
         </div>
-        <div class="flow">
-          <p><span class="hl">/summon 0xDEADBEEF</span>  →  Terminal  →  POST /api/summon/:id/chat/stream</p>
-          <p class="dim">├─ ContextManager.buildMessages()</p>
-          <p class="dim">│  ├─ System prompt (ghost persona + skill injection)</p>
-          <p class="dim">│  ├─ Short-term memory (.rip/ filesystem, last 10 turns)</p>
-          <p class="dim">│  └─ Long-term memory (SQLite, promoted)</p>
-          <p class="dim">├─ GhostAgent.callClaude()</p>
-          <p class="dim">│  └─ POST api.minimaxi.com/anthropic/v1/messages</p>
-          <p class="dim">│     └─ MiniMax-M2.7 (Anthropic-compatible)</p>
-          <p class="dim">├─ Tool-use loop (max 5 iterations)</p>
-          <p class="dim">│  └─ mmx image/music/video/speech/vision</p>
-          <p class="dim">├─ SSE stream → Terminal (character-by-character)</p>
-          <p class="dim">└─ TTS playback via mmx speech synthesize</p>
+      </div>
+      <div class="eng-support-grid cols-3">
+        <div class="eng-support">
+          <span>Trigger</span>
+          <strong>One Ritual Command</strong>
+          <p><code>/summon 0xDEADBEEF</code> opens the channel. The user does not manually stitch together memory, persona, or voice.</p>
         </div>
+        <div class="eng-support">
+          <span>Processing</span>
+          <strong>Context → Agent → Model</strong>
+          <p>ContextManager injects system prompt, short-term memory, and promoted memory before GhostAgent runs the tool-use loop against MiniMax.</p>
+        </div>
+        <div class="eng-support">
+          <span>Output</span>
+          <strong>Streamed Presence</strong>
+          <p>SSE delivers the reply character by character, then TTS turns the text into an audible encounter instead of a static readout.</p>
+        </div>
+      </div>
       </div>
     </div>
   </div>
@@ -456,21 +1322,53 @@
     <span class="slide-subtitle">Engineering</span>
   </div>
   <div class="slide-body">
-    <div class="body-rows" style="justify-content:center;">
-      <table>
-        <tr><th>Method</th><th>Path</th><th>Description</th></tr>
-        <tr><td>GET / POST</td><td>/api/graves</td><td>List all / Create grave</td></tr>
-        <tr><td>GET / PUT / DELETE</td><td>/api/graves/:id</td><td>Read / Update / Cascade delete</td></tr>
-        <tr><td>GET</td><td>/api/graves/:id/memories</td><td>Long-term memory timeline</td></tr>
-        <tr><td>GET / PUT</td><td>/api/graves/:id/profile</td><td>Read / Write soul profile (.rip/)</td></tr>
-        <tr><td>POST</td><td>/api/summon/:id/chat</td><td>Ghost dialogue (tool-use loop)</td></tr>
-        <tr><td>POST</td><td>/api/summon/:id/chat/stream</td><td>Ghost dialogue (SSE streaming)</td></tr>
-        <tr><td>POST</td><td>/api/summon/:id/requiem</td><td>Generate music (mmx music generate)</td></tr>
-        <tr><td>POST</td><td>/api/generate/speech</td><td>TTS (mmx speech synthesize)</td></tr>
-        <tr><td>POST</td><td>/api/generate/image</td><td>Image (mmx image generate)</td></tr>
-        <tr><td>POST</td><td>/api/generate/video</td><td>Video (mmx video generate --async)</td></tr>
-        <tr><td>GET</td><td>/api/skills</td><td>List persona types (12 skills)</td></tr>
-      </table>
+    <div class="focus-page">
+      <div class="focus-head">
+        <div class="focus-thesis">
+          <span class="focus-kicker">Surface Thesis</span>
+          <strong>The API is small but complete: graves, profiles, memory, summon, and media generation.</strong>
+        </div>
+        <div class="focus-copy">This slide should read like a product surface map, not a database dump. The routes cluster into memorial CRUD, persona and memory read/write, live summon interaction, and media capabilities. That grouping shows the backend is intentionally narrow rather than sprawling.</div>
+      </div>
+      <div class="focus-main api-board">
+        <div class="api-group">
+          <span>Memorial Surface</span>
+          <strong>Graves, Profiles, Memory</strong>
+          <div class="api-list">
+            <div class="api-row"><code>GET / POST</code><p><code>/api/graves</code> lists the field or creates a new grave.</p></div>
+            <div class="api-row"><code>GET / PUT / DELETE</code><p><code>/api/graves/:id</code> reads, updates, or cascades deletion.</p></div>
+            <div class="api-row"><code>GET</code><p><code>/api/graves/:id/memories</code> returns the long-term memory timeline.</p></div>
+            <div class="api-row"><code>GET / PUT</code><p><code>/api/graves/:id/profile</code> reads or writes the soul profile in <code>.rip/</code>.</p></div>
+          </div>
+        </div>
+        <div class="api-group">
+          <span>Live Channel</span>
+          <strong>Summon, Media, Skills</strong>
+          <div class="api-list">
+            <div class="api-row"><code>POST</code><p><code>/api/summon/:id/chat</code> runs ghost dialogue through the tool-use loop.</p></div>
+            <div class="api-row"><code>POST</code><p><code>/api/summon/:id/chat/stream</code> streams the ghost reply over SSE.</p></div>
+            <div class="api-row"><code>POST</code><p><code>/api/summon/:id/requiem</code>, <code>/api/generate/speech</code>, <code>/api/generate/image</code>, and <code>/api/generate/video</code> produce media artifacts.</p></div>
+            <div class="api-row"><code>GET</code><p><code>/api/skills</code> lists the available persona types used for prompt injection.</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="focus-support-grid cols-3">
+        <div class="focus-support">
+          <span>Product Logic</span>
+          <strong>CRUD Exists, But Quietly</strong>
+          <p>Basic resource management is present, but it never becomes the product story on its own.</p>
+        </div>
+        <div class="focus-support">
+          <span>Interaction Logic</span>
+          <strong>Streaming Is First-Class</strong>
+          <p>The dedicated summon stream route signals that live presence matters as much as static retrieval.</p>
+        </div>
+        <div class="focus-support">
+          <span>Capability Logic</span>
+          <strong>Media Is Native</strong>
+          <p>Image, speech, music, and video are part of the product contract, not bolted-on experiments.</p>
+        </div>
+      </div>
     </div>
   </div>
   <div class="slide-footer">
@@ -490,27 +1388,44 @@
     <span class="slide-subtitle">Engineering</span>
   </div>
   <div class="slide-body">
-    <div class="body-rows" style="justify-content:center; gap:28px;">
-      <div class="illustration-diagram" style="min-height:200px;"
-           data-imagen-prompt="Hub-and-spoke ecosystem diagram: central circle labeled MINIMAX M2.7 in monospace. Five orbiting nodes connected by thin geometric white radial lines: IMAGE (frame icon), MUSIC (waveform icon), SPEECH (soundwave icon), VIDEO (play icon), VISION (eye icon). Each node is a white-outlined circle with icon inside. Clean minimalist diagram, monochrome terminal aesthetic, pure black background, white elements. No text besides labels. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666. No saturated colors, no warm tones. Aspect 16:9.">
-        <span class="illustration-label">[DIAGRAM: MiniMax Ecosystem — Hub &amp; Spoke]</span>
-        <span class="illustration-prompt">Central M2.7 core · 5 orbiting modality nodes · white radial lines · minimalist geometric</span>
+    <div class="focus-page integration-page">
+      <div class="focus-head integration-head">
+        <div class="focus-thesis">
+          <span class="focus-kicker">Integration Thesis</span>
+          <strong>MiniMax is not one endpoint here. It is the multimodal engine behind text, voice, image, music, video, and vision.</strong>
+        </div>
+        <div class="focus-copy">One live dialogue path plus five media modalities sit inside the same capability stack. That is what makes the integration strategic rather than incidental.</div>
       </div>
-      <div class="body-grid grid-2">
-        <div class="card">
-          <h3>Text — HTTP API</h3>
-          <p>MiniMax M2.7 via Anthropic-compatible endpoint (api.minimaxi.com/anthropic/v1/messages). Tool-use loop with streaming. Max 5 iterations, 4096 tokens per request. System prompt injected with skill persona from skills/ directory.</p>
+      <div class="eng-focus integration-fit">
+      <div class="illustration-diagram eng-main"
+           data-illustration-kind="system-diagram"
+           data-prompt-intent="Ecosystem view of how one MiniMax integration fans out into multiple media modalities used by the product."
+           data-prompt-subject="One central model stack activating five media modalities."
+           data-prompt-composition="Hub-and-spoke layout with equal visual weight around the center."
+           data-prompt-must="MiniMax core, image, music, speech, video, vision"
+           data-prompt-avoid="dense API details, decorative orbit effects, colorful icons"
+           data-imagen-prompt="Create a hub-and-spoke ecosystem diagram for a slide explaining the MiniMax integration in 0xRIP. Put MiniMax M2.7 at the center and arrange image, music, speech, video, and vision as clearly distinct outer nodes. The visual should communicate that one model stack powers multiple modalities used by the product. Keep it simple, legible, and presentation-first, with a monochrome system style and no irrelevant decoration. Aspect ratio 16:9.">
+        <span class="illustration-label">[DIAGRAM: MiniMax Ecosystem — Hub &amp; Spoke]</span>
+        <span class="illustration-prompt">MiniMax prompt · click to view/copy full prompt</span>
+      </div>
+      <div class="eng-support-grid cols-2">
+        <div class="eng-support">
+          <span>Core Model Path</span>
+          <strong>Anthropic-Compatible Text Loop</strong>
+          <p>MiniMax M2.7 drives the live dialogue path through an Anthropic-compatible endpoint with streaming and tool use.</p>
         </div>
-        <div class="card">
-          <h3>Media — mmx CLI</h3>
-          <table style="margin-top:12px;">
-            <tr><td style="padding:4px 8px;">image</td><td style="padding:4px 8px;color:#888;">mmx image generate</td></tr>
-            <tr><td style="padding:4px 8px;">music</td><td style="padding:4px 8px;color:#888;">mmx music generate</td></tr>
-            <tr><td style="padding:4px 8px;">speech</td><td style="padding:4px 8px;color:#888;">mmx speech synthesize</td></tr>
-            <tr><td style="padding:4px 8px;">video</td><td style="padding:4px 8px;color:#888;">mmx video generate --async</td></tr>
-            <tr><td style="padding:4px 8px;">vision</td><td style="padding:4px 8px;color:#888;">mmx vision describe</td></tr>
-          </table>
+        <div class="eng-support compact">
+          <span>Media Tooling</span>
+          <strong>One Stack, Five Modalities</strong>
+          <div class="tool-pairs">
+            <div class="tool-pair"><span>image</span><code>mmx image generate</code></div>
+            <div class="tool-pair"><span>music</span><code>mmx music generate</code></div>
+            <div class="tool-pair"><span>speech</span><code>mmx speech synthesize</code></div>
+            <div class="tool-pair"><span>video</span><code>mmx video generate --async</code></div>
+            <div class="tool-pair"><span>vision</span><code>mmx vision describe</code></div>
+          </div>
         </div>
+      </div>
       </div>
     </div>
   </div>
@@ -531,23 +1446,38 @@
     <span class="slide-subtitle">Engineering</span>
   </div>
   <div class="slide-body">
-    <div class="body-rows" style="justify-content:center; gap:28px;">
-      <div class="illustration-diagram" style="min-height:200px;"
-           data-imagen-prompt="Dual memory architecture diagram showing flow between two memory tiers. LEFT: 'Short-term (.rip/)' — ephemeral glowing file icons, marked as temporary, sliding window indicator showing 'last 10 turns'. CENTER: a geometric 'PROMOTE' gate with filter/arrow symbol, selective passage. RIGHT: 'Long-term (SQLite)' — crystalline solid data blocks stacked, labeled '500 cap per grave', with FIFO eviction shown as blocks fading out at bottom. Monospace labels. Flowing left to right. Monochrome terminal aesthetic, white elements on pure black. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a for the promote gate. No saturated colors. Aspect 16:9.">
-        <span class="illustration-label">[DIAGRAM: Dual Memory Architecture — Short-term → Promote → Long-term]</span>
-        <span class="illustration-prompt">Ephemeral .rip/ files → PROMOTE gate → crystalline SQLite blocks · FIFO eviction fading · left to right flow</span>
+    <div class="focus-page">
+      <div class="focus-head">
+        <div class="focus-thesis">
+          <span class="focus-kicker">Memory Thesis</span>
+          <strong>The product needs both fleeting conversation shards and durable promoted memory blocks.</strong>
+        </div>
+        <div class="focus-copy">A ghost should remember enough to feel continuous, but not everything deserves permanent storage. That is why 0xRIP separates short-term session memory from promoted long-term archive memory. The user experience gains continuity without pretending that all conversation should last forever.</div>
       </div>
-      <div class="body-grid grid-2">
-        <div class="card">
-          <h3>Short-term (.rip/)</h3>
-          <p>Filesystem: <span style="color:#fff;">.rip/&lt;id&gt;/sessions/&lt;sid&gt;/memories/*.md</span></p>
-          <p style="margin-top:16px;">Visitor/Ghost exchange pairs written per turn. Sliding window injects last 10 turns into context. Auto-pruned on promote.</p>
+      <div class="eng-focus">
+      <div class="illustration-diagram eng-main"
+           data-illustration-kind="system-diagram"
+           data-prompt-intent="Memory architecture view comparing ephemeral conversational memory to promoted long-term archival memory."
+           data-prompt-subject="Two memory tiers connected by selective promotion."
+           data-prompt-composition="Left-to-right contrast between ephemeral session memory and durable archive memory."
+           data-prompt-must="short-term memory, promote gate, long-term memory, capped archive behavior"
+           data-prompt-avoid="generic database cylinder clichés, colorful memory diagrams, weak distinction between tiers"
+           data-imagen-prompt="Create a memory architecture diagram for 0xRIP that clearly compares short-term and long-term memory. On the left show ephemeral session memory in the .rip filesystem; in the center show a selective promote step; on the right show durable SQLite memory with cap and eviction behavior. The image should explain the product's memory model visually, not just act as a generic database diagram. Use a clean left-to-right structure, restrained monochrome graphics, and enough symbolism to distinguish temporary from durable memory. Aspect ratio 16:9.">
+        <span class="illustration-label">[DIAGRAM: Dual Memory Architecture — Short-term → Promote → Long-term]</span>
+        <span class="illustration-prompt">Memory prompt · click to view/copy full prompt</span>
+      </div>
+      <div class="eng-support-grid cols-2">
+        <div class="eng-support">
+          <span>Short-Term</span>
+          <strong>Live Session Memory</strong>
+          <p><code>.rip/&lt;id&gt;/sessions/&lt;sid&gt;/memories/*.md</code> stores recent visitor/ghost exchanges and injects the last 10 turns into live context.</p>
         </div>
-        <div class="card">
-          <h3>Long-term (SQLite)</h3>
-          <p>Table: <span style="color:#fff;">memories</span> — promoted from .rip/</p>
-          <p style="margin-top:16px;">500 memory cap per grave with FIFO eviction. Auto-generated MEMORY.md index. Session summarization extracts key themes on promote.</p>
+        <div class="eng-support">
+          <span>Long-Term</span>
+          <strong>Promoted Archive Memory</strong>
+          <p><code>memories</code> in SQLite keeps durable recollections with a 500-memory cap, FIFO eviction, and summarized themes after promotion.</p>
         </div>
+      </div>
       </div>
     </div>
   </div>
@@ -568,31 +1498,41 @@
     <span class="slide-subtitle">DESIGN.md</span>
   </div>
   <div class="slide-body">
-    <div class="body-rows" style="justify-content:center; gap:28px;">
-      <div class="body-grid grid-3" style="align-items:start;">
-        <div class="card">
-          <h3>Colors</h3>
-          <table>
-            <tr><td style="color:#888;">Canvas</td><td>#000000</td></tr>
-            <tr><td style="color:#888;">Text</td><td>#ffffff</td></tr>
-            <tr><td style="color:#888;">Muted</td><td>#888888</td></tr>
-            <tr><td style="color:#888;">Border</td><td>#333333</td></tr>
-            <tr><td style="color:#888;">Error</td><td>#ff4444</td></tr>
-          </table>
+    <div class="focus-page">
+      <div class="focus-head">
+        <div class="focus-thesis">
+          <span class="focus-kicker">Design Thesis</span>
+          <strong>The interface works because it refuses dashboard chrome and commits to one severe terminal language.</strong>
         </div>
-        <div class="card">
-          <h3>Typography</h3>
-          <p>JetBrains Mono everywhere. No serif. No sans-serif. Brand: 28px/700. Body: 13px/400. Ghost replies in italic. No letter-spacing manipulation needed — monospace is already even.</p>
-        </div>
-        <div class="card">
-          <h3>Rules</h3>
-          <p style="line-height:2.4;">No color accents<br>No shadows or blur<br>No rounded corners<br>No panels or modals<br>Single terminal UI<br>All monospace<br>Sharp corners only</p>
-        </div>
+        <div class="focus-copy">This is not a broad component library slide. It is a slide about restraint. The design system only needs enough rules to keep the ritual surface coherent: black canvas, white type, sharp edges, mono typography, and one command surface that never dissolves into app clutter.</div>
       </div>
-      <div class="illustration-diagram" style="min-height:220px;"
-           data-imagen-prompt="Minimalist monochrome UI mockup showing a single terminal window floating centered in pure black void. Terminal has sharp corners, thin white border. Inside: white JetBrains Mono text on black background. A slash command palette is open showing three options: '/bury - Begin burial ritual', '/summon <id> - Open channel to a grave', '/list - List all graves'. Below palette: a ghost response in italic: 'The genesis block remains eternal.' followed by a blinking cursor. No colors, no shadows, no rounded corners, no gradients — pure terminal aesthetic. Compose as screenshot mockup with subtle film grain. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666. No saturated colors. Aspect 16:9.">
+      <div class="illustration-diagram focus-main"
+           data-illustration-kind="ui-mockup"
+           data-prompt-intent="Core interface mockup showing the one-terminal philosophy, slash commands, and ghost reply styling from the design system."
+           data-prompt-subject="A single severe monochrome terminal as the whole product interface."
+           data-prompt-composition="Centered terminal mockup with open slash palette and one ghost reply."
+           data-prompt-must="sharp corners, thin border, monospace type, command palette, italic reply"
+           data-prompt-avoid="window chrome excess, dashboard widgets, rounded UI, color accents"
+           data-imagen-prompt="Create a UI mockup for the design system slide showing the core 0xRIP interface philosophy. Display one floating monochrome terminal with sharp corners, thin borders, monospace typography, a slash-command palette, and a short ghost reply in italics. The image should reinforce the design rules on the slide: no color accents, no rounded corners, no decorative chrome, one terminal as the entire interface. Keep it minimal, crisp, and presentation-friendly. Aspect ratio 16:9.">
         <span class="illustration-label">[MOCKUP: Terminal UI — Slash Command Palette + Ghost Reply]</span>
-        <span class="illustration-prompt">Floating terminal · slash palette /bury /summon /list · italic ghost reply · blinking cursor · pure black</span>
+        <span class="illustration-prompt">Design-system prompt · click to view/copy full prompt</span>
+      </div>
+      <div class="focus-support-grid cols-3">
+        <div class="focus-support">
+          <span>Palette</span>
+          <strong>Monochrome Discipline</strong>
+          <p>Canvas is black, text is white, muted strokes sit in ash gray, and error red appears only when the product actually needs it.</p>
+        </div>
+        <div class="focus-support">
+          <span>Typography</span>
+          <strong>One Monospace Voice</strong>
+          <p>JetBrains Mono carries labels, commands, body copy, and ghost replies so the interface feels authored rather than assembled.</p>
+        </div>
+        <div class="focus-support">
+          <span>Rules</span>
+          <strong>Ritual Over Chrome</strong>
+          <p>No rounded corners, no bright accents, no decorative panels, and no second UI system competing with the terminal.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -613,29 +1553,54 @@
     <span class="slide-subtitle">UX</span>
   </div>
   <div class="slide-body">
-    <div class="body-grid grid-2" style="align-items:stretch;">
-      <div style="display:flex;flex-direction:column;">
-        <pre style="flex:1;display:flex;align-items:center;"><span class="cmt"># Open command palette with arrow-key navigation</span>
-> <span class="kw">/</span>
-  <span class="hl">/bury</span>          Begin burial ritual
-  <span class="hl">/summon</span>        Open channel to a grave    /summon &lt;id&gt;
-  <span class="hl">/list</span>          List all graves
-  <span class="hl">/help</span>          Show all commands
-  <span class="hl">/clear</span>         Clear terminal
-  <span class="hl">/quit</span>          Close summon channel
-
-<span class="cmt"># Open channel — ghost streams via SSE + TTS playback</span>
-> <span class="kw">/summon 0xDEADBEEF</span>
-  Channel open: Satoshi [0xDEADBEEF]
-  <span class="str">"The genesis block remains eternal."</span>
-0xDEADBEEF> <span class="str">What remains when the chain ends?</span>
-  <span class="str">only the genesis block. and memory.</span>
-0xDEADBEEF> <span class="kw">/quit</span></pre>
+    <div class="focus-page">
+      <div class="focus-head">
+        <div class="focus-thesis">
+          <span class="focus-kicker">UX Thesis</span>
+          <strong>The product is a live ritual, not a dashboard. One terminal is enough to hold the whole encounter.</strong>
+        </div>
+        <div class="focus-copy">Terminal interaction should communicate one thing very clearly: the user is not navigating a management console for dead data. They open one command surface, summon one grave, receive one streaming reply, and hear the response as presence through TTS. The interface stays narrow so the emotional center remains on the conversation.</div>
       </div>
-      <div class="illustration-diagram" style="min-height:380px;"
-           data-imagen-prompt="Screenshot-style mockup: a monochrome terminal overlaid on a dark 3D graveyard scene. The 3D scene shows geometric tombstones in isometric view with subtle fog. A floating terminal window centered, showing: 'Channel open: Satoshi [0xDEADBEEF]' as header, ghost reply text in italic white monospace below: 'The genesis block remains eternal.', a command prompt '0xDEADBEEF> _' with blinking underscore cursor. Bottom of terminal shows SSE streaming indicator as thin pulsing line. Below terminal: subtle TTS waveform visualizer as a thin white oscilloscope line. Pure black background, all white text, no colors. Subtle 3D depth from tombstones behind the 2D terminal overlay. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Low-key volumetric fog in 3D scene. No saturated colors. Aspect 3:4.">
+      <div class="interaction-layout">
+      <div class="interaction-headline">
+        <div class="interaction-lead">
+          <h3>How The Ritual Feels In Use</h3>
+          <p>The live session needs to feel authored: command discovery is immediate, summon compresses the whole orchestration path into one verb, and the streamed reply lands like presence rather than retrieval.</p>
+        </div>
+        <div class="interaction-micro">
+          <div><strong>Product Claim</strong> One terminal is enough to hold the whole ritual.</div>
+          <div><strong>Interaction Claim</strong> Streaming makes the ghost feel active, not archived.</div>
+          <div><strong>Experience Claim</strong> TTS turns text into presence instead of playback-only UI.</div>
+        </div>
+      </div>
+      <div class="interaction-stage illustration-diagram terminal-demo-host"
+           data-illustration-kind="ui-mockup"
+           data-prompt-intent="Interactive terminal demo showing what a live summon session feels like, including streaming output and voice-playback status."
+           data-prompt-subject="A live summon session with visible ghost dialogue, streaming state, and voice-playback cues."
+           data-prompt-composition="Wide hero interaction frame, readable conversation, graveyard world supporting the terminal instead of competing with it."
+           data-prompt-must="active summon prompt, ghost reply, streaming indicator, voice status, subtle graveyard background"
+           data-prompt-avoid="static empty terminal, abstract background art dominating UI, decorative chrome"
+           data-imagen-prompt="Create a UX mockup for the terminal interaction slide. Show an active ghost conversation inside a monochrome terminal window placed within or in front of the graveyard world, so the interface and worldbuilding feel connected. Include a visible prompt, a short ghost response, and subtle cues for streaming and voice playback. The purpose is to communicate how the experience feels in use, not just to show a pretty scene. Keep the composition readable and product-oriented, with monochrome styling only. Aspect ratio 16:9.">
         <span class="illustration-label">[MOCKUP: Terminal in 3D Scene — Ghost Dialogue]</span>
-        <span class="illustration-prompt">3D graveyard behind terminal · ghost reply in italic · blinking cursor · SSE pulsing indicator · TTS waveform</span>
+        <span class="illustration-prompt">UX prompt · click to view/copy full prompt</span>
+      </div>
+      <div class="interaction-stage-notes">
+        <div class="interaction-note">
+          <span>Step 01</span>
+          <strong>Discover Commands</strong>
+          <p>Users enter through `/`, not through nested interface layers. The product teaches itself with one minimal command surface.</p>
+        </div>
+        <div class="interaction-note">
+          <span>Step 02</span>
+          <strong>Open The Channel</strong>
+          <p>`/summon &lt;id&gt;` collapses retrieval, persona loading, and model invocation into one ritual action rather than many setup steps.</p>
+        </div>
+        <div class="interaction-note">
+          <span>Step 03</span>
+          <strong>Receive Presence</strong>
+          <p>Streaming text plus TTS make the ghost feel present and responsive. The interaction is paced like conversation, not like reading from storage.</p>
+        </div>
+      </div>
       </div>
     </div>
   </div>
@@ -656,21 +1621,61 @@
     <span class="slide-subtitle">Engineering</span>
   </div>
   <div class="slide-body">
-    <div class="body-rows" style="justify-content:center;">
-      <table>
-        <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
-        <tr><td>Runtime</td><td>Bun</td><td>Server + package manager</td></tr>
-        <tr><td>HTTP</td><td>Bun.serve()</td><td>Zero-framework API server</td></tr>
-        <tr><td>LLM</td><td>MiniMax M2.7</td><td>Anthropic-compatible endpoint</td></tr>
-        <tr><td>Media</td><td>mmx CLI</td><td>image / music / speech / video / vision</td></tr>
-        <tr><td>Database</td><td>SQLite + Drizzle ORM</td><td>Graves, sessions, memories</td></tr>
-        <tr><td>Validation</td><td>Zod</td><td>Runtime request schemas</td></tr>
-        <tr><td>Frontend</td><td>React 19 + R3F</td><td>3D scene + terminal UI</td></tr>
-        <tr><td>3D Engine</td><td>Three.js + drei</td><td>Canvas, camera, post-processing</td></tr>
-        <tr><td>State</td><td>Zustand</td><td>Global store (6 fields)</td></tr>
-        <tr><td>Audio</td><td>Web Audio API</td><td>Typing sounds, ambient drone</td></tr>
-        <tr><td>Build</td><td>Vite 8</td><td>Frontend dev server + bundler</td></tr>
-      </table>
+    <div class="focus-page">
+      <div class="focus-head">
+        <div class="focus-thesis">
+          <span class="focus-kicker">Build Thesis</span>
+          <strong>The stack is pragmatic and sharp-edged: Bun for speed, React for surface, SQLite for memory, MiniMax for presence.</strong>
+        </div>
+        <div class="focus-copy">The point of the stack is not novelty. It is coherence. Each layer supports one terminal-first memorial product without extra framework weight or orchestration sprawl.</div>
+      </div>
+      <div class="focus-main stack-grid">
+        <div class="stack-col">
+          <span>Runtime + Backend</span>
+          <strong>Serve, Validate, Persist</strong>
+          <ul>
+            <li><code>Bun</code> runs the server and package workflow with no extra build chain.</li>
+            <li><code>Bun.serve()</code> keeps the API surface framework-light and explicit.</li>
+            <li><code>Zod</code> guards request shapes at runtime.</li>
+            <li><code>SQLite + Drizzle</code> hold graves, sessions, and promoted memory blocks.</li>
+          </ul>
+        </div>
+        <div class="stack-col">
+          <span>Model + Media</span>
+          <strong>Reason, Speak, Generate</strong>
+          <ul>
+            <li><code>MiniMax M2.7</code> handles the Anthropic-compatible dialogue path.</li>
+            <li><code>mmx CLI</code> opens image, music, speech, video, and vision tools.</li>
+            <li>The stack supports one ghost loop and multiple ritual artifact outputs.</li>
+          </ul>
+        </div>
+        <div class="stack-col">
+          <span>Frontend + Experience</span>
+          <strong>World, Terminal, Audio</strong>
+          <ul>
+            <li><code>React 19 + Vite</code> hold the terminal-first client shell.</li>
+            <li><code>Three.js + R3F + drei</code> render the graveyard world behind the ritual UI.</li>
+            <li><code>Zustand</code> and the Web Audio API keep state and ambience lightweight.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="focus-support-grid cols-3">
+        <div class="focus-support">
+          <span>Runtime Logic</span>
+          <strong>Minimal Server Weight</strong>
+          <p>The backend stays explicit and inspectable instead of vanishing behind a large framework abstraction.</p>
+        </div>
+        <div class="focus-support">
+          <span>Model Logic</span>
+          <strong>One Capability Spine</strong>
+          <p>Dialogue and media generation stay close enough to feel like one product rather than separate integrations.</p>
+        </div>
+        <div class="focus-support">
+          <span>Experience Logic</span>
+          <strong>One Surface, One World</strong>
+          <p>The frontend only needs a terminal surface and a graveyard scene to make the ritual legible.</p>
+        </div>
+      </div>
     </div>
   </div>
   <div class="slide-footer">
@@ -690,38 +1695,40 @@
     <span class="slide-subtitle">Metrics</span>
   </div>
   <div class="slide-body">
-    <div class="body-grid grid-4">
-      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
-        <div class="stat-num">19</div>
-        <div class="stat-label">API Endpoints</div>
+    <div class="focus-page">
+      <div class="focus-head">
+        <div class="focus-thesis">
+          <span class="focus-kicker">Scale Snapshot</span>
+          <strong>The product is intentionally small-surface: one UI, a tight API, and a focused multimodal tool loop.</strong>
+        </div>
+        <div class="focus-copy">These numbers matter because they show discipline rather than bloat. 0xRIP is not trying to be a giant platform; it is trying to be a precise memorial product with a narrow interface and a surprisingly rich capability spine underneath.</div>
       </div>
-      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
-        <div class="stat-num">10</div>
-        <div class="stat-label">Frontend Files</div>
+      <div class="metrics-board">
+        <div class="metrics-hero">
+          <span>Core Signal</span>
+          <strong>19<br>Routes</strong>
+          <p>Nineteen API endpoints are enough to cover graves, profiles, memories, summon flows, and multimodal generation without turning the product into framework sprawl.</p>
+        </div>
+        <div class="metrics-grid">
+          <div class="metric-chip"><span>Frontend</span><strong>10</strong><p>frontend files keep the client narrow and inspectable.</p></div>
+          <div class="metric-chip"><span>UI Surface</span><strong>1</strong><p>terminal is still the primary interaction surface.</p></div>
+          <div class="metric-chip"><span>Persona Skills</span><strong>12</strong><p>injectable voice types define different soul behaviors.</p></div>
+          <div class="metric-chip"><span>Media Tools</span><strong>5</strong><p>image, music, speech, video, and vision via mmx.</p></div>
+          <div class="metric-chip"><span>Memory Cap</span><strong>500</strong><p>durable promoted memories per grave before eviction.</p></div>
+          <div class="metric-chip"><span>Source Files</span><strong>28</strong><p>the whole codebase stays relatively small and readable.</p></div>
+        </div>
       </div>
-      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
-        <div class="stat-num">1</div>
-        <div class="stat-label">UI Component</div>
-      </div>
-      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
-        <div class="stat-num">12</div>
-        <div class="stat-label">Persona Skills</div>
-      </div>
-      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
-        <div class="stat-num">5</div>
-        <div class="stat-label">mmx Tools</div>
-      </div>
-      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
-        <div class="stat-num">500</div>
-        <div class="stat-label">Memory Cap / Grave</div>
-      </div>
-      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
-        <div class="stat-num">28</div>
-        <div class="stat-label">Source Files Total</div>
-      </div>
-      <div class="card" style="align-items:center;justify-content:center;text-align:center;">
-        <div class="stat-num">2</div>
-        <div class="stat-label">Commands to Start</div>
+      <div class="focus-support-grid cols-2">
+        <div class="focus-support">
+          <span>Product Reading</span>
+          <strong>Small Surface, Rich Ritual</strong>
+          <p>Most of the experience compresses into one terminal even though the capability stack underneath is multimodal.</p>
+        </div>
+        <div class="focus-support">
+          <span>Engineering Reading</span>
+          <strong>Focused, Not Toy-Sized</strong>
+          <p>The project stays compact enough to reason about while still supporting agent loops, media generation, and persistent memory.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -741,16 +1748,33 @@
     <span class="slide-title">0xRIP</span>
     <span class="slide-subtitle">github.com/yangjingo/0xRIP</span>
   </div>
-  <div class="slide-body body-center" style="gap:0;">
-    <div class="illustration-hero" style="margin-bottom:32px;"
-         data-imagen-prompt="Wide panoramic view of the same digital graveyard from slide 1, now seen from a elevated distance. Many geometric obsidian tombstones receding to the infinite horizon in orderly rows. The central floating terminal's glow is now dim and distant, a faint pinprick of white light. Ground mist heavier, obscuring the farthest graves. In the dark sky above, ghostly faint monospace text reads: 'Data dies, but does not disappear.' The phrase itself fading like dying pixels. Bookend composition — same world, wider view, closing shot. Style: monochrome terminal aesthetic, digital dark art, ethereal, cinematic wide shot. Color scheme: Strict monochrome — pure black #000000, ghost white #e0e0e0, ash gray #666666, deep charcoal #111111. Single muted ethereal blue-gray undertone #3a4a5a. Low-key ambient lighting. Subtle film grain. No saturated colors, no warm tones. Aspect 16:9.">
-      <span class="illustration-label">[IMG: End — Wide Panoramic 16:9]</span>
-      <span class="illustration-prompt">Elevated graveyard panorama · tombstones to horizon · terminal glow fading · ghost text in sky · 'Data dies, but does not disappear.'</span>
+  <div class="slide-body">
+    <div class="closing-page">
+    <div class="illustration-hero" style="margin-bottom:0;"
+         data-illustration-kind="hero"
+         data-prompt-intent="Closing slide bookend image returning to the graveyard after the ritual, emphasizing closure and the persistence of memory."
+         data-prompt-subject="The same graveyard world after the ritual, now quieter and more distant."
+         data-prompt-composition="Wide panoramic pullback, terminal glow small and far away, mood of closure."
+         data-prompt-must="bookend continuity, distant terminal glow, graveyard horizon, calm ending"
+         data-prompt-avoid="new narrative objects, dramatic climax energy, text in sky, colorful light"
+         data-imagen-prompt="Create a closing bookend image for the final slide of the 0xRIP deck. Return to the same digital graveyard world as the opening scene, but pull back into a wider, quieter panorama. The central terminal glow should now feel distant and diminished, suggesting the ritual has ended and memory remains. The image should communicate closure, persistence, and calm rather than spectacle. Strict monochrome palette with subtle atmospheric depth only. No text, no bright accents, no unnecessary narrative objects. Aspect ratio 16:9.">
+      <span class="illustration-label">[Q&amp;A / THANKS]</span>
+      <span class="illustration-prompt">Thanks. Questions on ritual loop, architecture, summon flow, memory model, or terminal UX · click to view/copy closing prompt</span>
     </div>
-    <h1>0xRIP</h1>
-    <p class="hero-sub">Digital Graveyard Terminal</p>
-    <div class="hero-divider">══════════════════════════</div>
-    <p class="hero-tag">Data dies, but does not disappear.</p>
+    <div class="closing-band">
+      <div class="closing-thesis">
+        <span>Closing Statement</span>
+        <strong>Data dies, but does not disappear. 0xRIP gives digital endings a ritual form.</strong>
+      </div>
+      <div class="closing-side">
+        <div class="closing-note">A memorial terminal for burying what matters, summoning presence one last time, and letting memory rest with intention instead of silent accumulation.</div>
+        <div class="closing-qa">
+          <span>Q&amp;A / Thanks</span>
+          <p>Thanks. Happy to go deeper on the ritual loop, system architecture, summon flow, memory model, or the terminal UX.</p>
+        </div>
+      </div>
+    </div>
+    </div>
   </div>
   <div class="slide-footer">
     <span>Built with deepseek-v4-pro</span>
@@ -766,10 +1790,613 @@
 <div class="nav" id="nav"></div>
 
 <script>
+  const deckMeta = {
+    version: 'v0.3.0',
+    model: 'deepseek-v4-pro',
+    releasedAt: '2026-05-23'
+  };
+
+  function esc(text) {
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function bindDeckMeta() {
+    document.querySelectorAll('[data-deck-version]').forEach(node => {
+      node.textContent = deckMeta.version;
+    });
+    document.querySelectorAll('[data-deck-build]').forEach(node => {
+      node.textContent = `Built with ${deckMeta.model} · ${deckMeta.version}`;
+    });
+  }
+
+  function baseSvg(viewBox, defs, body, preserveAspectRatio = 'xMidYMid meet') {
+    return `<svg class="illustration-svg" viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="${preserveAspectRatio}" aria-hidden="true">
+      <defs>
+        <linearGradient id="fog" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.00"/>
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0.12"/>
+        </linearGradient>
+        <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+        </linearGradient>
+        <filter id="softGlow">
+          <feGaussianBlur stdDeviation="8" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+        <filter id="grain">
+          <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="1" seed="7" result="noise"/>
+          <feColorMatrix type="saturate" values="0"/>
+          <feComponentTransfer>
+            <feFuncA type="table" tableValues="0 0 0.03 0.05"/>
+          </feComponentTransfer>
+        </filter>
+        ${defs || ''}
+      </defs>
+      <rect width="100%" height="100%" fill="#020202"/>
+      ${body}
+      <rect width="100%" height="100%" filter="url(#grain)" opacity="0.28"/>
+    </svg>`;
+  }
+
+  function meta(label, prompt) {
+    return `<div class="illustration-meta">
+      <span class="illustration-label">${esc(label)}</span>
+      <span class="illustration-prompt">${esc(prompt)}</span>
+    </div>`;
+  }
+
+  function joinLine(label, value) {
+    return value ? `${label}: ${value}.` : '';
+  }
+
+  const promptTemplates = {
+    'hero': ({ intent, aspect, subject, composition, must, avoid }) => [
+      'Create a presentation hero illustration for 0xRIP.',
+      joinLine('Goal', intent),
+      joinLine('Primary subject', subject),
+      joinLine('Composition', composition),
+      'Readability requirement: the image must communicate its core idea instantly from slide distance and leave disciplined negative space for layout.',
+      joinLine('Must include', must),
+      'Style: cinematic monochrome terminal aesthetic, restrained geometry, solemn mood, black field, ghost white highlights, ash-gray structure, deep charcoal mass, only a faint cool blue-gray undertone when essential for depth.',
+      joinLine('Avoid', avoid),
+      `Aspect ratio: ${aspect}.`
+    ].filter(Boolean).join(' '),
+    'narrative-image': ({ intent, aspect, subject, composition, must, avoid }) => [
+      'Create a narrative concept illustration for the 0xRIP presentation.',
+      joinLine('Goal', intent),
+      joinLine('Primary subject', subject),
+      joinLine('Composition', composition),
+      'Narrative requirement: one clear emotional idea, legible subjects, low ambiguity, fast comprehension.',
+      joinLine('Must include', must),
+      'Style: monochrome digital-dark-art grounded in terminal culture, using black, ghost white, ash gray, and deep charcoal with only minimal cool undertone.',
+      joinLine('Avoid', avoid),
+      `Aspect ratio: ${aspect}.`
+    ].filter(Boolean).join(' '),
+    'system-diagram': ({ intent, aspect, subject, composition, must, avoid }) => [
+      'Create a presentation-grade system diagram for 0xRIP.',
+      joinLine('Goal', intent),
+      joinLine('Diagram subject', subject),
+      joinLine('Layout', composition),
+      'Information-design requirement: precise hierarchy, immediate readability, few but meaningful labels, disciplined connectors, presentation clarity over decoration.',
+      joinLine('Must include', must),
+      'Style: monochrome terminal diagramming on black, white and ash-gray lines, restrained labeling, no gradients.',
+      joinLine('Avoid', avoid),
+      `Aspect ratio: ${aspect}.`
+    ].filter(Boolean).join(' '),
+    'ui-mockup': ({ intent, aspect, subject, composition, must, avoid }) => [
+      'Create a UI/UX mockup for the 0xRIP deck.',
+      joinLine('Goal', intent),
+      joinLine('Primary subject', subject),
+      joinLine('Composition', composition),
+      'Mockup requirement: believable product surface, readable interaction state, sharp-corner severe monochrome interface, focus on what the user is doing now.',
+      joinLine('Must include', must),
+      'Style: thin borders, monospace typography, black interface surfaces, no decorative chrome, no color accents.',
+      joinLine('Avoid', avoid),
+      `Aspect ratio: ${aspect}.`
+    ].filter(Boolean).join(' ')
+  };
+
+  function inferAspect(host) {
+    if (host.classList.contains('illustration-hero')) return '16:9';
+    if (host.classList.contains('illustration-icon')) return host.style.height === '200px' ? '3:4' : '4:3';
+    if (host.classList.contains('terminal-demo-host')) return '3:4';
+    return '16:9';
+  }
+
+  function shortPrompt(kind) {
+    if (kind === 'hero') return 'Hero prompt · click to view/copy full prompt';
+    if (kind === 'narrative-image') return 'Narrative prompt · click to view/copy full prompt';
+    if (kind === 'system-diagram') return 'Diagram prompt · click to view/copy full prompt';
+    if (kind === 'ui-mockup') return 'Mockup prompt · click to view/copy full prompt';
+    return 'Prompt · click to view/copy full prompt';
+  }
+
+  function hydratePrompt(host) {
+    const kind = host.dataset.illustrationKind;
+    const intent = host.dataset.promptIntent;
+    const subject = host.dataset.promptSubject || '';
+    const composition = host.dataset.promptComposition || '';
+    const must = host.dataset.promptMust || '';
+    const avoid = host.dataset.promptAvoid || '';
+    if (!kind || !intent || !promptTemplates[kind]) return;
+    const fullPrompt = promptTemplates[kind]({
+      intent,
+      subject,
+      composition,
+      must,
+      avoid,
+      aspect: inferAspect(host)
+    });
+    host.dataset.imagenPrompt = fullPrompt;
+    const promptNode = host.querySelector('.illustration-prompt');
+    if (promptNode) promptNode.textContent = shortPrompt(kind);
+  }
+
+  function tombstones(rows, yStart, yGap, cols, xStart, xGap, scaleStart, scaleStep, glowEvery = 0) {
+    let out = '';
+    for (let r = 0; r < rows; r++) {
+      const y = yStart + r * yGap;
+      const scale = scaleStart + r * scaleStep;
+      for (let c = 0; c < cols; c++) {
+        const x = xStart + c * xGap + (r % 2 ? xGap * 0.35 : 0);
+        const w = 28 * scale;
+        const h = 46 * scale;
+        const glow = glowEvery && (c + r) % glowEvery === 0;
+        out += `<g opacity="${0.3 + r * 0.08}">
+          <path d="M ${x} ${y} q ${w/2} ${-h*0.32} ${w} 0 v ${h} h ${-w} z" fill="#090909" stroke="#6c6c6c" stroke-width="${1.2 * scale}"/>
+          ${glow ? `<circle cx="${x + w/2}" cy="${y + h*0.45}" r="${3.2 * scale}" fill="#d9d9d9" opacity="0.7" filter="url(#softGlow)"/>` : ''}
+        </g>`;
+      }
+    }
+    return out;
+  }
+
+  function boxLabel(x, y, w, h, title, subtitle = '') {
+    return `<g>
+      <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#040404" stroke="#f4f4f4" stroke-width="2"/>
+      <text x="${x + w/2}" y="${y + 38}" text-anchor="middle" fill="#f4f4f4" font-size="24">${esc(title)}</text>
+      ${subtitle ? `<text x="${x + w/2}" y="${y + 68}" text-anchor="middle" fill="#8a8a8a" font-size="16">${esc(subtitle)}</text>` : ''}
+    </g>`;
+  }
+
+  function terminal(x, y, w, h, lines = [], small = false) {
+    const fs = small ? 18 : 22;
+    const lh = small ? 24 : 30;
+    const text = lines.map((line, i) => `<text x="${x + 26}" y="${y + 44 + i * lh}" fill="${line.dim ? '#7f7f7f' : '#f4f4f4'}" font-size="${fs}" font-style="${line.italic ? 'italic' : 'normal'}">${esc(line.text)}</text>`).join('');
+    return `<g>
+      <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#020202" stroke="#f4f4f4" stroke-width="2"/>
+      <rect x="${x + 18}" y="${y + 16}" width="${60}" height="8" fill="#f4f4f4" opacity="0.5"/>
+      ${text}
+    </g>`;
+  }
+
+  function heroScene(closing = false) {
+    const text = closing
+      ? `<g>
+          <rect x="930" y="152" width="410" height="176" fill="#040404" fill-opacity="0.76" stroke="#2b2b2b"/>
+          <text x="962" y="218" fill="#f5f5f5" font-size="56" font-weight="700" letter-spacing="6">THANKS</text>
+          <text x="964" y="278" fill="#d8d8d8" font-size="38" font-weight="700" letter-spacing="4">Q&amp;A?</text>
+          <line x1="964" y1="296" x2="1228" y2="296" stroke="#f5f5f5" stroke-opacity="0.22"/>
+          <text x="964" y="324" fill="#8c8c8c" font-size="16" letter-spacing="2">RITUAL LOOP · SYSTEM · MEMORY · UX</text>
+        </g>`
+      : '';
+    const terminalGlow = closing
+      ? `<g filter="url(#softGlow)">
+          <circle cx="806" cy="334" r="8" fill="#fafafa"/>
+        </g>`
+      : `<g filter="url(#softGlow)">
+          <rect x="718" y="164" width="164" height="98" fill="#050505" stroke="#f4f4f4" stroke-width="2"/>
+          <rect x="738" y="194" width="122" height="8" fill="#f4f4f4" opacity="0.85"/>
+          <rect x="738" y="218" width="96" height="8" fill="#f4f4f4" opacity="0.56"/>
+          <rect x="738" y="242" width="66" height="8" fill="#f4f4f4" opacity="0.34"/>
+        </g>
+        <path d="M758 262 L724 378 L884 378 L842 262 Z" fill="url(#beam)" opacity="0.75"/>`;
+    return baseSvg('0 0 1600 900', '', `
+      <rect y="582" width="1600" height="318" fill="url(#fog)"/>
+      <path d="M0 664 C244 620 486 690 800 646 C1122 600 1360 632 1600 588 L1600 900 L0 900 Z" fill="#090909" stroke="#242424"/>
+      ${tombstones(closing ? 6 : 5, closing ? 364 : 422, closing ? 52 : 60, closing ? 11 : 7, 120, closing ? 118 : 170, 0.55, 0.08, closing ? 5 : 0)}
+      ${closing ? `<path d="M0 736 C310 686 772 740 1600 694" stroke="#f4f4f4" stroke-opacity="0.07" stroke-width="20" fill="none"/>` : ''}
+      ${!closing ? `<path d="M700 330 L800 286 L896 330" stroke="#f4f4f4" stroke-opacity="0.24" stroke-width="2" fill="none"/>` : ''}
+      ${terminalGlow}
+      ${closing ? '' : `<path d="M0 720 C420 660 850 740 1600 690" stroke="#f4f4f4" stroke-opacity="0.08" stroke-width="20" fill="none"/>`}
+      ${text}
+    `);
+  }
+
+  function digitalChaos() {
+    return baseSvg('0 0 800 600', '', `
+      <g stroke="#d8d8d8" stroke-width="2" opacity="0.78">
+        <rect x="104" y="176" width="148" height="102" fill="#070707" transform="rotate(-16 178 227)"/>
+        <rect x="248" y="230" width="162" height="98" fill="#050505" transform="rotate(11 329 279)"/>
+        <rect x="414" y="144" width="126" height="88" fill="#060606" transform="rotate(-8 477 188)"/>
+        <rect x="544" y="236" width="106" height="72" fill="#040404" transform="rotate(18 597 272)"/>
+        <path d="M58 424 C164 308 244 490 362 352 S552 250 716 414" fill="none"/>
+        <path d="M92 356 C162 236 300 288 388 198 S620 184 744 306" fill="none" opacity="0.5"/>
+      </g>
+      <g fill="#f4f4f4" opacity="0.62">
+        <rect x="128" y="194" width="70" height="9"/>
+        <rect x="144" y="214" width="56" height="9"/>
+        <rect x="284" y="256" width="96" height="10"/>
+        <rect x="444" y="168" width="64" height="9"/>
+        <rect x="564" y="252" width="52" height="9"/>
+        <rect x="604" y="286" width="28" height="8"/>
+      </g>
+      <g fill="#d5d5d5" opacity="0.55">
+        <circle cx="96" cy="128" r="4"/><circle cx="156" cy="114" r="3"/><circle cx="218" cy="124" r="2.5"/>
+        <circle cx="596" cy="128" r="3"/><circle cx="662" cy="162" r="2.5"/><circle cx="710" cy="198" r="3.5"/>
+        <circle cx="344" cy="112" r="2.5"/><circle cx="430" cy="118" r="3"/><circle cx="528" cy="92" r="2.5"/>
+      </g>
+      <g stroke="#ffffff" stroke-opacity="0.28">
+        <path d="M316 388 l44 -18 l26 32 l-52 24 z" fill="none"/>
+        <path d="M442 382 l36 -16 l20 24 l-42 18 z" fill="none"/>
+      </g>
+    `);
+  }
+
+  function digitalGraveyard() {
+    return baseSvg('0 0 800 600', '', `
+      <rect y="380" width="800" height="220" fill="url(#fog)"/>
+      <path d="M0 434 C170 414 322 448 428 424 C564 398 682 414 800 394 L800 600 L0 600 Z" fill="#080808"/>
+      ${tombstones(4, 184, 66, 6, 104, 104, 0.72, 0.1, 2)}
+      <path d="M124 430 L674 430" stroke="#ffffff" stroke-opacity="0.12" stroke-width="2" stroke-dasharray="6 12"/>
+      <path d="M154 488 L716 488" stroke="#ffffff" stroke-opacity="0.08" stroke-width="2" stroke-dasharray="6 14"/>
+    `);
+  }
+
+  function lifecycleDiagram() {
+    const steps = [
+      ['BURY', 800, 172],
+      ['SUMMON', 1060, 320],
+      ['MOURN', 960, 594],
+      ['DECAY', 640, 594],
+      ['RETURN', 540, 320],
+    ];
+    const nodes = steps.map(([label, x, y], i) => `
+      <g>
+        <circle cx="${x}" cy="${y}" r="78" fill="#040404" stroke="#f0f0f0" stroke-width="2.5"/>
+        <circle cx="${x}" cy="${y}" r="66" fill="none" stroke="#f0f0f0" stroke-opacity="0.14" stroke-width="1.5"/>
+        ${label === 'BURY' ? `<path d="M${x-22} ${y+18} l26 -28 l16 12 l-26 28 z M${x+4} ${y-4} v42" stroke="#f0f0f0" stroke-width="2.5" fill="none"/>` : ''}
+        ${label === 'SUMMON' ? `<circle cx="${x}" cy="${y-2}" r="20" stroke="#f0f0f0" stroke-width="2.5" fill="none"/><path d="M${x-36} ${y-2} h18 M${x+18} ${y-2} h18" stroke="#f0f0f0" stroke-width="2.5"/><path d="M${x} ${y-30} v12 M${x} ${y+18} v12" stroke="#f0f0f0" stroke-width="2"/>` : ''}
+        ${label === 'MOURN' ? `<path d="M${x} ${y-24} c22 0 26 30 0 58 c-26 -28 -22 -58 0 -58z" fill="none" stroke="#f0f0f0" stroke-width="2.5"/>` : ''}
+        ${label === 'DECAY' ? `<path d="M${x-18} ${y-30} h36 v16 l-12 14 v30 h-12 v-30 l-12 -14 z" fill="none" stroke="#f0f0f0" stroke-width="2.5"/><path d="M${x-12} ${y-18} h24 M${x-10} ${y+6} h20" stroke="#f0f0f0" stroke-width="2"/>` : ''}
+        ${label === 'RETURN' ? `<path d="M${x-26} ${y+10} c2 -30 24 -46 56 -40" fill="none" stroke="#f0f0f0" stroke-width="2.5"/><path d="M${x+18} ${y-34} l18 12 l-20 10" fill="none" stroke="#f0f0f0" stroke-width="2.5"/>` : ''}
+        <text x="${x}" y="${y + 102}" text-anchor="middle" fill="#f0f0f0" font-size="24" letter-spacing="2">${label}</text>
+      </g>`).join('');
+    return baseSvg('0 0 1600 900', `
+      <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 Z" fill="#f0f0f0"/>
+      </marker>
+    `, `
+      <ellipse cx="800" cy="402" rx="420" ry="270" fill="none" stroke="#f0f0f0" stroke-opacity="0.18" stroke-width="3" stroke-dasharray="10 16"/>
+      <path d="M800 132 C1012 144 1158 228 1198 380" fill="none" stroke="#f0f0f0" stroke-opacity="0.42" stroke-width="2.5" marker-end="url(#arrow)"/>
+      <path d="M1096 356 C1108 470 1060 556 992 624" fill="none" stroke="#f0f0f0" stroke-opacity="0.42" stroke-width="2.5" marker-end="url(#arrow)"/>
+      <path d="M900 664 C818 702 732 702 650 664" fill="none" stroke="#f0f0f0" stroke-opacity="0.42" stroke-width="2.5" marker-end="url(#arrow)"/>
+      <path d="M608 624 C540 556 492 470 504 356" fill="none" stroke="#f0f0f0" stroke-opacity="0.42" stroke-width="2.5" marker-end="url(#arrow)"/>
+      <path d="M402 380 C442 228 588 144 800 132" fill="none" stroke="#f0f0f0" stroke-opacity="0.42" stroke-width="2.5" marker-end="url(#arrow)"/>
+      <text x="800" y="392" text-anchor="middle" fill="#f0f0f0" font-size="40" letter-spacing="8">0xRIP</text>
+      <text x="800" y="430" text-anchor="middle" fill="#8a8a8a" font-size="18" letter-spacing="3">RITUAL LIFECYCLE</text>
+      ${nodes}
+    `);
+  }
+
+  function silhouettes() {
+    return baseSvg('0 0 800 600', '', `
+      <path d="M214 420 q34 -132 96 -132 q60 0 86 128 v96 h-182 z" fill="#d9d9d9"/>
+      <circle cx="308" cy="230" r="52" fill="#d9d9d9"/>
+      <path d="M454 420 q28 -118 88 -118 q56 0 78 114 v100 h-166 z" fill="#cfcfcf" opacity="0.28"/>
+      <circle cx="534" cy="244" r="46" fill="#d5d5d5" opacity="0.35"/>
+      <path d="M356 312 C410 296 450 302 500 316" stroke="#ffffff" stroke-width="2.5" opacity="0.7" filter="url(#softGlow)"/>
+      <g fill="#ffffff" opacity="0.42">
+        <circle cx="592" cy="138" r="4"/><circle cx="560" cy="112" r="3"/><circle cx="624" cy="170" r="3.5"/>
+        <circle cx="642" cy="208" r="2.5"/><circle cx="572" cy="188" r="2"/>
+      </g>
+    `);
+  }
+
+  function aiCore() {
+    return baseSvg('0 0 800 600', '', `
+      <g stroke="#f4f4f4" stroke-width="2" fill="none">
+        <path d="M144 414 C226 368 302 336 380 312"/>
+        <path d="M180 432 C250 396 310 370 366 354"/>
+      </g>
+      <path d="M82 466 q92 -70 180 -40 q-16 34 -4 74 h-182 z" fill="#cfcfcf" opacity="0.75"/>
+      <polygon points="492,168 582,218 604,322 542,404 444,392 390,304 420,212" fill="#050505" stroke="#f4f4f4" stroke-width="3"/>
+      <path d="M470 214 L550 374 M412 302 L600 314 M500 170 L444 392" stroke="#f4f4f4" stroke-opacity="0.5" stroke-width="2"/>
+      <g fill="#ffffff" opacity="0.35">
+        <circle cx="632" cy="206" r="3"/><circle cx="658" cy="238" r="2.5"/><circle cx="676" cy="270" r="2"/>
+        <circle cx="694" cy="304" r="2"/><circle cx="708" cy="334" r="1.5"/>
+      </g>
+    `);
+  }
+
+  function mirrorSelf() {
+    return baseSvg('0 0 800 600', '', `
+      <rect x="430" y="132" width="178" height="300" fill="#050505" stroke="#f4f4f4" stroke-width="2"/>
+      <path d="M522 132 L572 432" stroke="#f4f4f4" stroke-opacity="0.4" stroke-width="2"/>
+      <path d="M476 228 L556 168" stroke="#f4f4f4" stroke-opacity="0.3" stroke-width="2"/>
+      <circle cx="290" cy="208" r="44" fill="#dadada"/>
+      <path d="M214 420 q30 -130 92 -130 q62 0 90 130 v64 h-182 z" fill="#dadada"/>
+      <circle cx="518" cy="214" r="38" fill="#d4d4d4" opacity="0.22"/>
+      <path d="M454 418 q28 -110 82 -110 q56 0 76 110 v66 h-158 z" fill="#d4d4d4" opacity="0.18"/>
+    `);
+  }
+
+  function architecture() {
+    return baseSvg('0 0 1600 900', '', `
+      ${boxLabel(80, 210, 210, 120, 'BROWSER', 'React + R3F')}
+      ${boxLabel(340, 210, 230, 120, 'BUN SERVER', '19 routes + Zod')}
+      ${boxLabel(620, 210, 230, 120, 'AGENT LOOP', 'GhostAgent')}
+      ${boxLabel(900, 210, 250, 120, 'MINIMAX API', 'M2.7 endpoint')}
+      ${boxLabel(1200, 210, 220, 120, 'MMX CLI', 'image / speech / video')}
+      ${boxLabel(680, 520, 180, 110, 'SQLITE', 'graves + memories')}
+      <path d="M290 270 H340 M570 270 H620 M850 270 H900 M1150 270 H1200 M770 330 V520" stroke="#f4f4f4" stroke-width="2" fill="none"/>
+      <path d="M330 270 l-14 -8 v16 z M610 270 l-14 -8 v16 z M890 270 l-14 -8 v16 z M1190 270 l-14 -8 v16 z M770 510 l-8 -14 h16 z" fill="#f4f4f4"/>
+      <text x="184" y="372" fill="#7a7a7a" font-size="18">UI</text>
+      <text x="454" y="372" fill="#7a7a7a" font-size="18">HTTP</text>
+      <text x="738" y="372" fill="#7a7a7a" font-size="18">reasoning</text>
+      <text x="1018" y="372" fill="#7a7a7a" font-size="18">model</text>
+      <text x="1272" y="372" fill="#7a7a7a" font-size="18">media tools</text>
+    `);
+  }
+
+  function verticalFlow() {
+    const items = [
+      ['TERMINAL', 'command input', 250, 40],
+      ['CONTEXT', 'short + long memory', 250, 140],
+      ['GHOST AGENT', 'tool-use loop', 250, 240],
+      ['M2.7', 'anthropic-compatible', 250, 340],
+      ['TOOL LOOP', 'image / music / speech', 250, 440],
+      ['SSE STREAM', 'character-by-character', 250, 540],
+      ['TTS', 'speech playback', 250, 640],
+    ];
+    return baseSvg('0 0 800 1000', '', `
+      ${items.map(([label, subtitle, x, y]) => boxLabel(x, y, 300, 64, label, subtitle)).join('')}
+      <path d="M400 104 V140 M400 204 V240 M400 304 V340 M400 404 V440 M400 504 V540 M400 604 V640" stroke="#f4f4f4" stroke-width="2"/>
+      <g fill="#f4f4f4"><path d="M400 132 l-8 -14 h16 z"/><path d="M400 232 l-8 -14 h16 z"/><path d="M400 332 l-8 -14 h16 z"/><path d="M400 432 l-8 -14 h16 z"/><path d="M400 532 l-8 -14 h16 z"/><path d="M400 632 l-8 -14 h16 z"/></g>
+    `);
+  }
+
+  function summonRitual() {
+    return baseSvg('0 0 800 1000', '', `
+      ${terminal(220, 650, 360, 150, [{ text: '> /summon 0xDEADBEEF' }, { text: 'channel open', dim: true }], true)}
+      <path d="M398 650 C364 590 318 470 344 350 C370 232 432 232 458 348 C484 468 432 592 402 650 Z" fill="#f4f4f4" opacity="0.2"/>
+      <circle cx="400" cy="292" r="54" fill="#f4f4f4" opacity="0.16"/>
+      <g fill="#f4f4f4" opacity="0.34">
+        <rect x="346" y="452" width="8" height="22"/><rect x="372" y="412" width="8" height="18"/><rect x="436" y="438" width="8" height="26"/>
+        <circle cx="320" cy="388" r="4"/><circle cx="470" cy="354" r="3"/><circle cx="510" cy="430" r="2.5"/>
+      </g>
+    `);
+  }
+
+  function ecosystem() {
+    const node = (x, y, label) => `<g><circle cx="${x}" cy="${y}" r="86" fill="#050505" stroke="#f4f4f4" stroke-width="2"/><text x="${x}" y="${y + 10}" text-anchor="middle" fill="#f4f4f4" font-size="26">${label}</text></g>`;
+    return baseSvg('0 0 1600 900', '', `
+      <circle cx="800" cy="450" r="120" fill="#050505" stroke="#f4f4f4" stroke-width="2"/>
+      <text x="800" y="446" text-anchor="middle" fill="#f4f4f4" font-size="36">MINIMAX</text>
+      <text x="800" y="490" text-anchor="middle" fill="#8a8a8a" font-size="24">M2.7</text>
+      ${node(800, 170, 'IMAGE')}
+      ${node(1120, 320, 'MUSIC')}
+      ${node(1000, 690, 'SPEECH')}
+      ${node(600, 690, 'VIDEO')}
+      ${node(480, 320, 'VISION')}
+      <path d="M800 330 V256 M916 406 L1036 354 M872 560 L952 630 M728 560 L648 630 M684 406 L564 354" stroke="#f4f4f4" stroke-width="2"/>
+    `);
+  }
+
+  function memoryDiagram() {
+    return baseSvg('0 0 1600 900', '', `
+      ${boxLabel(90, 280, 350, 220, 'SHORT-TERM', '.rip / last 10 turns')}
+      ${boxLabel(620, 314, 170, 152, 'PROMOTE', 'selective')}
+      ${boxLabel(980, 250, 420, 280, 'LONG-TERM', 'SQLite / 500 cap')}
+      <g fill="#d9d9d9" opacity="0.5">
+        <rect x="150" y="400" width="88" height="56"/><rect x="264" y="376" width="88" height="56"/><rect x="340" y="420" width="88" height="56"/>
+        <rect x="1060" y="398" width="80" height="44"/><rect x="1150" y="360" width="80" height="44"/><rect x="1240" y="322" width="80" height="44"/><rect x="1330" y="284" width="80" height="44" opacity="0.4"/>
+      </g>
+      <path d="M440 390 H620 M790 390 H980" stroke="#f4f4f4" stroke-width="2"/>
+      <g fill="#f4f4f4"><path d="M610 390 l-14 -8 v16 z"/><path d="M970 390 l-14 -8 v16 z"/></g>
+      <text x="192" y="474" fill="#7a7a7a" font-size="18">ephemeral conversation shards</text>
+      <text x="1100" y="472" fill="#7a7a7a" font-size="18">durable promoted memory blocks</text>
+    `);
+  }
+
+  function terminalMockup() {
+    return baseSvg('0 0 1600 900', '', `
+      ${terminal(360, 180, 880, 430, [
+        { text: '> /' },
+        { text: '  /bury    Begin burial ritual', dim: true },
+        { text: '  /summon  Open channel to a grave' },
+        { text: '  /list    List all graves', dim: true },
+        { text: '' },
+        { text: '"The genesis block remains eternal."', italic: true },
+        { text: '0xDEADBEEF> _' },
+      ])}
+      <rect x="448" y="270" width="700" height="138" fill="#020202" stroke="#5e5e5e" stroke-width="1.5"/>
+      <text x="484" y="314" fill="#f4f4f4" font-size="22">/bury</text>
+      <text x="484" y="350" fill="#8a8a8a" font-size="18">/summon &lt;id&gt;</text>
+      <text x="484" y="386" fill="#8a8a8a" font-size="18">/list</text>
+    `);
+  }
+
+  function terminalScene() {
+    return baseSvg('0 0 800 1000', '', `
+      <path d="M0 700 C140 620 230 690 410 630 C538 588 650 620 800 560 L800 1000 L0 1000 Z" fill="#070707"/>
+      ${tombstones(4, 420, 72, 4, 90, 138, 0.75, 0.1, 0)}
+      ${terminal(120, 180, 560, 330, [
+        { text: 'Channel open: Satoshi [0xDEADBEEF]' },
+        { text: '"The genesis block remains eternal."', italic: true },
+        { text: '0xDEADBEEF> _' },
+      ], true)}
+      <path d="M180 544 C240 534 300 556 360 544 S486 532 624 544" stroke="#f4f4f4" stroke-width="2" fill="none" opacity="0.6"/>
+      <path d="M206 584 C260 584 290 560 334 560 S420 608 484 608 S550 566 604 566" stroke="#f4f4f4" stroke-width="2" fill="none" opacity="0.5"/>
+    `);
+  }
+
+  function mountTerminalDemo() {
+    const host = document.querySelector('.terminal-demo-host');
+    if (!host) return;
+    host.classList.add('illustration');
+
+    const lines = [
+      { cls: 'dim', text: '# open summon channel' },
+      { cls: '', text: '> /summon 0xDEADBEEF' },
+      { cls: 'dim', text: '  Channel open: Satoshi [0xDEADBEEF]' },
+      { cls: 'reply', text: '  "The genesis block remains eternal."' },
+      { cls: '', text: '0xDEADBEEF> What remains when the chain ends?' },
+      { cls: 'reply live', text: '  only the genesis block. and memory.' }
+    ];
+
+    const body = lines.map(line => `<div class="terminal-demo-line ${line.cls}">${esc(line.text)}</div>`).join('');
+    host.innerHTML = `
+      <div class="terminal-demo scene">
+        <div class="terminal-scene-graves">
+          <svg viewBox="0 0 1600 900" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M0 680 C220 626 480 718 790 662 C1092 606 1338 638 1600 588 L1600 900 L0 900 Z" fill="#070707"/>
+            <path d="M0 734 C380 696 884 758 1600 704" stroke="#ffffff" stroke-opacity="0.06" stroke-width="18" fill="none"/>
+            ${tombstones(4, 438, 72, 7, 120, 178, 0.65, 0.08, 0)}
+          </svg>
+        </div>
+        <div class="terminal-demo-shell">
+          <div class="terminal-demo-topbar">
+            <div class="terminal-demo-dots"><span></span><span></span><span></span></div>
+            <div>Summon Session</div>
+            <div>SSE + TTS</div>
+          </div>
+          <div class="terminal-demo-screen">
+            ${body}
+          </div>
+          <div class="terminal-demo-stream"></div>
+          <div class="terminal-demo-status">
+            <div>streaming ghost reply</div>
+            <div class="terminal-demo-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          </div>
+        </div>
+      </div>
+      ${meta(
+        host.querySelector('.illustration-label')?.textContent?.trim() || '[MOCKUP: Terminal in 3D Scene — Ghost Dialogue]',
+        host.querySelector('.illustration-prompt')?.textContent?.trim() || shortPrompt('ui-mockup')
+      )}
+    `;
+  }
+
+  function renderIllustrations() {
+    const illustrations = document.querySelectorAll('[data-imagen-prompt]');
+    illustrations.forEach(el => {
+      hydratePrompt(el);
+      const label = el.querySelector('.illustration-label')?.textContent?.trim() || '';
+      const prompt = el.querySelector('.illustration-prompt')?.textContent?.trim() || '';
+      let svg = '';
+
+      if (el.classList.contains('terminal-demo-host')) return;
+
+      if (label.includes('Hero')) svg = heroScene(false);
+      else if (label.includes('Digital Chaos')) svg = digitalChaos();
+      else if (label.includes('Digital Graveyard')) svg = digitalGraveyard();
+      else if (label.includes('Lifecycle')) svg = lifecycleDiagram();
+      else if (label.includes('Human → Human')) svg = silhouettes();
+      else if (label.includes('Human → AI')) svg = aiCore();
+      else if (label.includes('Human → Self')) svg = mirrorSelf();
+      else if (label.includes('System Architecture')) svg = architecture();
+      else if (label.includes('Summon Data Flow')) svg = verticalFlow();
+      else if (label.includes('Summon Ritual')) svg = summonRitual();
+      else if (label.includes('MiniMax Ecosystem')) svg = ecosystem();
+      else if (label.includes('Dual Memory Architecture')) svg = memoryDiagram();
+      else if (label.includes('Terminal UI')) svg = terminalMockup();
+      else if (label.includes('Terminal in 3D Scene')) svg = terminalScene();
+      else if (label.includes('End')) svg = heroScene(true);
+
+      el.classList.add('illustration');
+      el.innerHTML = svg + meta(label, prompt);
+    });
+  }
+
+  function mountPromptModal() {
+    const modal = document.createElement('div');
+    modal.className = 'prompt-modal';
+    modal.innerHTML = `
+      <div class="prompt-panel">
+        <h3 id="prompt-modal-title">Prompt</h3>
+        <p id="prompt-modal-kind">Prompt type</p>
+        <textarea id="prompt-modal-text" readonly></textarea>
+        <div class="prompt-actions">
+          <button type="button" id="prompt-copy">Copy Prompt</button>
+          <button type="button" id="prompt-close">Close</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    const title = modal.querySelector('#prompt-modal-title');
+    const kindText = modal.querySelector('#prompt-modal-kind');
+    const textarea = modal.querySelector('#prompt-modal-text');
+    const copyButton = modal.querySelector('#prompt-copy');
+
+    function close() {
+      modal.classList.remove('open');
+    }
+
+    modal.querySelector('#prompt-close').addEventListener('click', close);
+    modal.addEventListener('click', event => {
+      if (event.target === modal) close();
+    });
+    copyButton.addEventListener('click', async () => {
+      textarea.select();
+      try {
+        await navigator.clipboard.writeText(textarea.value);
+        copyButton.textContent = 'Copied';
+        setTimeout(() => { copyButton.textContent = 'Copy Prompt'; }, 1200);
+      } catch {
+        document.execCommand('copy');
+      }
+    });
+
+    document.addEventListener('click', event => {
+      const labelTrigger = event.target.closest('.illustration-label');
+      if (labelTrigger && labelTrigger.closest('.illustration-meta')) {
+        const meta = labelTrigger.closest('.illustration-meta');
+        const promptNode = meta.querySelector('.illustration-prompt');
+        if (promptNode) {
+          document.querySelectorAll('.illustration-meta.open').forEach(node => {
+            if (node !== meta) node.classList.remove('open');
+          });
+          meta.classList.toggle('open');
+        }
+        return;
+      }
+
+      const trigger = event.target.closest('.illustration-prompt');
+      if (!trigger) return;
+      const meta = trigger.closest('.illustration-meta');
+      if (!meta || !meta.classList.contains('open')) return;
+      const host = trigger.closest('[data-imagen-prompt]');
+      if (!host) return;
+      title.textContent = host.querySelector('.illustration-label')?.textContent?.trim() || 'Prompt';
+      kindText.textContent = `Type: ${host.dataset.illustrationKind || 'prompt'} · Click copy to place the full generation prompt on your clipboard.`;
+      textarea.value = host.dataset.imagenPrompt || '';
+      modal.classList.add('open');
+      textarea.focus();
+      textarea.select();
+    });
+  }
+
+  bindDeckMeta();
+  renderIllustrations();
+  hydratePrompt(document.querySelector('.terminal-demo-host'));
+  mountTerminalDemo();
+  mountPromptModal();
+
   const slides = document.querySelectorAll('.slide');
   const nav = document.getElementById('nav');
   const total = slides.length;
-  let current = 0;
+  let current = -1;
 
   for (let i = 0; i < total; i++) {
     const d = document.createElement('div');
@@ -779,9 +2406,13 @@
   }
 
   function go(n) {
-    slides[current].classList.remove('active');
-    nav.children[current].classList.remove('active');
-    current = (n + total) % total;
+    const next = Math.max(0, Math.min(n, total - 1));
+    if (next === current) return;
+    if (current >= 0) {
+      slides[current].classList.remove('active');
+      nav.children[current].classList.remove('active');
+    }
+    current = next;
     slides[current].classList.add('active');
     nav.children[current].classList.add('active');
   }

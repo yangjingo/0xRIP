@@ -3,7 +3,6 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { useStore } from '../../store/store'
 import { useEffect, useRef } from 'react'
 import { Grave } from './grave'
-import { Ghost } from './ghost'
 import { Terminal } from '../ui/terminal'
 
 const FloorGrid = () => {
@@ -44,7 +43,7 @@ export const Scene = () => {
   useEffect(() => {
     if (selectedGrave && cameraControlRef.current) {
       const [x, y, z] = selectedGrave.position
-      cameraControlRef.current.setLookAt(x + 10, y + 8, z + 10, x, y, z, true)
+      cameraControlRef.current.setLookAt(x + 20, y + 16, z + 20, x, y, z, true)
     }
   }, [selectedGrave])
 
@@ -53,7 +52,8 @@ export const Scene = () => {
       <color attach="background" args={['#000000']} />
       <fogExp2 attach="fog" args={['#000000', 0.006]} />
 
-      <CameraControls ref={cameraControlRef} maxPolarAngle={Math.PI / 2.1} minDistance={20} maxDistance={150} />
+      <CameraControls ref={cameraControlRef} maxPolarAngle={Math.PI / 2.1} minDistance={15} maxDistance={200}
+        dollySpeed={0.8} truckSpeed={0.6} azimuthRotateSpeed={0.5} polarRotateSpeed={0.5} />
 
       <ambientLight intensity={0.12} color="#222222" />
       <directionalLight position={[30, 50, 20]} intensity={0.35} color="#ffffff" castShadow
@@ -66,18 +66,16 @@ export const Scene = () => {
         <Grave key={grave.id} data={grave} />
       ))}
 
-      <Ghost />
-
       {/* Terminal — anchored to selected grave in 3D space */}
       <Html
         position={selectedGrave
           ? [selectedGrave.position[0], selectedGrave.position[1] + 1, selectedGrave.position[2] + 3.5]
           : [0, 3, 10]}
-        transform distanceFactor={14}
+        transform distanceFactor={21}
         occlude={false} zIndexRange={[50, 0]}
         style={{ pointerEvents: 'auto' }}
       >
-        <div style={{ width: 600 }}>
+        <div style={{ width: 880 }}>
           <Terminal />
         </div>
       </Html>

@@ -8,6 +8,8 @@ interface Suggestion {
 export const COMMANDS: Suggestion[] = [
   { cmd: '/bury',   desc: 'Begin burial ritual',          usage: '/bury' },
   { cmd: '/summon', desc: 'Open channel to a grave',      usage: '/summon <id>' },
+  { cmd: '/dream',  desc: 'Generate a dream video',       usage: '/dream <id>' },
+  { cmd: '/dreams', desc: 'List past dreams',             usage: '/dreams <id>' },
   { cmd: '/list',   desc: 'List all graves',              usage: '/list' },
   { cmd: '/help',   desc: 'Show all commands',            usage: '/help' },
   { cmd: '/clear',  desc: 'Clear terminal',               usage: '/clear' },
@@ -27,13 +29,14 @@ export function useSuggestions(graves: Grave[]) {
     // After space — suggest grave IDs for /summon
     if (prefix.includes(' ')) {
       const [cmd] = prefix.split(' ')
-      if (cmd === '/summon') {
-        const idPart = value.slice('/summon '.length).toLowerCase()
+      if (cmd === '/summon' || cmd === '/dream' || cmd === '/dreams') {
+        const prefixLen = `${cmd} `.length
+        const idPart = value.slice(prefixLen).toLowerCase()
         const matches = idPart
           ? graves.filter(g => g.id.toLowerCase().includes(idPart) || g.name.toLowerCase().includes(idPart))
           : graves
         if (matches.length) {
-          setSuggestions(matches.map(g => ({ cmd: g.id, desc: g.name, usage: `/summon ${g.id}` })))
+          setSuggestions(matches.map(g => ({ cmd: g.id, desc: g.name, usage: `/${cmd} ${g.id}` })))
           setSelected(0); setVisible(true); return
         }
       }

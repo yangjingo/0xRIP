@@ -36,11 +36,17 @@ export class ContextManager {
   ): Promise<Message[]> {
     const systemPrompt = await this.getSystemPrompt(grave);
     const history = await this.getConversationHistory(grave.id, sessionId);
+    const memoryCtx = await this.getMemoryContext(grave.id);
+
+    let userContent = userMessage;
+    if (memoryCtx) {
+      userContent = `[Relevant memories]\n${memoryCtx}\n\n[Message]\n${userMessage}`;
+    }
 
     return [
       { role: 'system', content: systemPrompt },
       ...history,
-      { role: 'user', content: userMessage },
+      { role: 'user', content: userContent },
     ];
   }
 
@@ -67,6 +73,8 @@ export class ContextManager {
       epitaph: grave.epitaph,
       skillType,
       skillPersona,
+      voiceId: grave.voiceId ?? null,
+      photos: grave.photos ?? undefined,
     });
   }
 

@@ -91,16 +91,37 @@ export function stopAmbient() {
 
 // ── TTS ──────────────────────────────────────────────────
 
-export async function speak(text: string) {
+export async function speak(text: string, voice?: string, onState?: (speaking: boolean) => void) {
   try {
+    const body: Record<string, string> = { text: text.slice(0, 500) }
+    if (voice) body.voice = voice
     const res = await fetch('http://localhost:8000/api/generate/speech', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: text.slice(0, 500) }),
+      body: JSON.stringify(body),
     })
     const data = await res.json()
     if (data.audio_url) {
       const audio = new Audio(data.audio_url); audio.volume = 0.7
+      onState?.(true)
+      audio.onended = () => onState?.(false)
+      audio.onerror = () => onState?.(false)
       await audio.play()
     }
+  } catch { onState?.(false) }
+}
+
+let requiemAudio: HTMLAudioElement | null = null
+
+export function startRequiem(url: string) {
+  try {
+    stopRequiem()
+    requiemAudio = new Audio(url); requiemAudio.loop = true; requiemAudio.volume = 0.3
+    requiemAudio.play()
+  } catch {}
+}
+
+export function stopRequiem() {
+  try {
+    if (requiemAudio) { requiemAudio.pause(); requiemAudio.src = ''; requiemAudio = null }
   } catch {}
 }
